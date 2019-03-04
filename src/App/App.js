@@ -8,7 +8,7 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <p>Nutrition InfoViz</p>
+          <h1 className="App-title">Nutrition InfoViz</h1>
           <a
             className="App-link"
             href="https://reactjs.org"
