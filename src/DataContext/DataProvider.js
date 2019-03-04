@@ -6,7 +6,7 @@ export default class ThemeProvider extends React.Component {
     super();
     this.state = {
       setDate: this.setData,
-      allData: []
+      allData: [],
     };
   }
 

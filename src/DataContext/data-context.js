@@ -5,6 +5,6 @@ export const DataContext = React.createContext(
   // matching Provider above it in the tree, useful for testing
   {
     setData: () => {},
-    allData: []
+    allData: [],
   }
 );
