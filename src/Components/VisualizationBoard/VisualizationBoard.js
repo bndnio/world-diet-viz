@@ -4,11 +4,21 @@ import './VisualizationBoard.css';
 import VisualizationSelector from '../VisualizationSelector';
 
 class VisualizationBoard extends Component {
+  state = {
+    openVisualization: null,
+  };
+
+  openVisualization = visualizationComponent => {
+    this.setState({ openVisualization: visualizationComponent });
+  };
+
   render() {
     return (
       <div className="VisualizationBoard">
-        <VisualizationSelector />
-        VisualizationBoard
+        <VisualizationSelector openVisualization={this.openVisualization} />
+        {!!this.state.openVisualization ? (
+          <this.state.openVisualization />
+        ) : null}
       </div>
     );
   }

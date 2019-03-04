@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withData from '../../DataContext/withData';
+import { withData } from '../../DataContext/withData';
 
 class SimpleViz extends Component {
   render() {
