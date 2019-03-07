@@ -1,3 +1,5 @@
+@import '~antd/dist/antd.css';
+
 .App {
   display: grid;
   background-color: #282c34;
@@ -25,6 +27,7 @@
 
 .App-title {
   font-size: 20pt;
+  color: white;
 }
 
 .App-link {

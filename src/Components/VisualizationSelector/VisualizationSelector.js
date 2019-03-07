@@ -1,29 +1,43 @@
 import React, { Component } from 'react';
-import './VisualizationSelector.css';
 import PropTypes from 'prop-types';
-
+import './VisualizationSelector.css';
+import { Menu, Dropdown, Icon } from 'antd';
 import * as Visualizations from '../../Visualizations';
 
 class VisualizationSelector extends Component {
+  static propTypes = {};
+
+  state = {
+    openVisualization: 'something',
+  };
+
   openVisualization = visualizationComponent => () => {
     this.props.openVisualization(visualizationComponent);
   };
 
   render() {
+    const visualizationMenu = (
+      <Menu>
+        <Menu.Item onClick={this.openVisualization(Visualizations.SimpleViz)}>
+          <span>SimpleViz</span>
+        </Menu.Item>
+        <Menu.Item>
+          <span>other</span>
+        </Menu.Item>
+        <Menu.Item>
+          <span>and another</span>
+        </Menu.Item>
+      </Menu>
+    );
+
     return (
       <div className="VisualizationSelector">
-        <ul>
-          <li onClick={this.openVisualization(Visualizations.SimpleViz)}>
-            SimpleViz
-          </li>
-          <li>other</li>
-          <li>and another</li>
-        </ul>
+        <Dropdown overlay={visualizationMenu}>
+          <span>this</span>
+        </Dropdown>
       </div>
     );
   }
 }
-
-VisualizationSelector.propTypes = {};
 
 export default VisualizationSelector;

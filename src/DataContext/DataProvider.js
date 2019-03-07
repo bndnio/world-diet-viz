@@ -10,7 +10,7 @@ export default class ThemeProvider extends React.Component {
     };
   }
 
-  setData = ({ nextData }) => {
+  setData = nextData => {
     // save data to state
     this.setState({ ...nextData });
   };
