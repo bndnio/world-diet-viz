@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import './VisualizationBoard.css';
 import VisualizationSelector from '../VisualizationSelector';
 
@@ -24,6 +23,7 @@ class VisualizationBoard extends Component {
   }
 }
 
+// Receives no props
 VisualizationBoard.propTypes = {};
 
 export default VisualizationBoard;

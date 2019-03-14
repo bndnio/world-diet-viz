@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { DataContext } from './theme-context';
+import { DataContext } from './data-context';
 
-export default class ThemeProvider extends React.Component {
+export default class DataProvider extends React.Component {
   constructor() {
     super();
     this.state = {

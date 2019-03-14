@@ -1,31 +1,40 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './VisualizationSelector.css';
-import { Menu, Dropdown, Icon } from 'antd';
+import { Menu, Dropdown, Button } from 'antd';
 import * as Visualizations from '../../Visualizations';
 
 class VisualizationSelector extends Component {
-  static propTypes = {};
-
-  state = {
-    openVisualization: 'something',
+  static propTypes = {
+    // Set open visualization in parent component
+    openVisualization: PropTypes.func.isRequired,
   };
 
-  openVisualization = visualizationComponent => () => {
+  state = {
+    openVisualization: 'ClickMe',
+  };
+
+  openVisualization = (visualizationName, visualizationComponent) => () => {
+    this.setState({ openVisualization: visualizationName });
     this.props.openVisualization(visualizationComponent);
   };
 
   render() {
     const visualizationMenu = (
       <Menu>
-        <Menu.Item onClick={this.openVisualization(Visualizations.SimpleViz)}>
+        <Menu.Item
+          onClick={this.openVisualization(
+            'SimpleViz',
+            Visualizations.SimpleViz
+          )}
+        >
           <span>SimpleViz</span>
         </Menu.Item>
-        <Menu.Item>
-          <span>other</span>
+        <Menu.Item onClick={this.openVisualization('Other', null)}>
+          <span>Other</span>
         </Menu.Item>
-        <Menu.Item>
-          <span>and another</span>
+        <Menu.Item onClick={this.openVisualization('AndAnother', null)}>
+          <span>AndAnother</span>
         </Menu.Item>
       </Menu>
     );
@@ -33,7 +42,7 @@ class VisualizationSelector extends Component {
     return (
       <div className="VisualizationSelector">
         <Dropdown overlay={visualizationMenu}>
-          <span>this</span>
+          <Button>{this.state.openVisualization}</Button>
         </Dropdown>
       </div>
     );
