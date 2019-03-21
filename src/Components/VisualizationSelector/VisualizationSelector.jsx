@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './VisualizationSelector.css';
-import { Menu, Dropdown, Button } from 'antd';
+import { Menu } from 'antd';
 import * as Visualizations from '../../Visualizations';
 
 class VisualizationSelector extends Component {
@@ -11,40 +11,39 @@ class VisualizationSelector extends Component {
   };
 
   state = {
-    openVisualization: 'ClickMe',
+    openKeys: ['visualizations'],
   };
 
-  openVisualization = (visualizationName, visualizationComponent) => () => {
-    this.setState({ openVisualization: visualizationName });
-    this.props.openVisualization(visualizationComponent);
+  toggleOpen = () => {
+    this.setState(state => {
+      if (state.openKeys.length === 0) {
+        return { openKeys: ['visualizations'] };
+      } else {
+        return { openKeys: [] };
+      }
+    });
+  };
+
+  handleClick = e => {
+    const { key } = e;
+    console.log(Visualizations[key]);
+    this.props.openVisualization(Visualizations[key] || null);
   };
 
   render() {
-    const visualizationMenu = (
-      <Menu>
-        <Menu.Item
-          onClick={this.openVisualization(
-            'SimpleViz',
-            Visualizations.SimpleViz
-          )}
-        >
-          <span>SimpleViz</span>
-        </Menu.Item>
-        <Menu.Item onClick={this.openVisualization('Other', null)}>
-          <span>Other</span>
-        </Menu.Item>
-        <Menu.Item onClick={this.openVisualization('AndAnother', null)}>
-          <span>AndAnother</span>
-        </Menu.Item>
-      </Menu>
-    );
-
     return (
-      <div className="VisualizationSelector">
-        <Dropdown overlay={visualizationMenu}>
-          <Button>{this.state.openVisualization}</Button>
-        </Dropdown>
-      </div>
+      <Menu
+        mode="inline"
+        openKeys={this.state.openKeys}
+        onOpenChange={this.toggleOpen}
+        onClick={this.handleClick}
+      >
+        <Menu.SubMenu key="visualizations" title={<span>Visualization</span>}>
+          <Menu.Item key="SimpleViz">SimpleViz</Menu.Item>
+          <Menu.Item>Other</Menu.Item>
+          <Menu.Item>AndAnother</Menu.Item>
+        </Menu.SubMenu>
+      </Menu>
     );
   }
 }
