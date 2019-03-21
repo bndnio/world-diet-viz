@@ -31,7 +31,8 @@
     "eject": "react-scripts eject"
   },
   "crcf": [
-    "proptypes"
+    "proptypes",
+    "jsx"
   ],
   "husky": {
     "hooks": {
