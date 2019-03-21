@@ -1,5 +1,5 @@
 .VisualizationBoard {
   display: flex;
   flex-direction: column;
-  background-color: #343a46;
+  background-color: lightgray;
 }
