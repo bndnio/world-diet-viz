@@ -1,3 +1,15 @@
+# Hey, you! Read this
+
+To build a component use `crcf`. To run this use:
+`npx crcf myDir/myComponent` where `myDir` is the directory to the component you wish to create, and `myComponent` is the name of the component.
+
+You can also use the follow to create an index for a folder of multiple components.  
+`npx crcf --createindex`
+
+If you're missing `npx`, run `npm i -g npx`
+
+# Generated
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
