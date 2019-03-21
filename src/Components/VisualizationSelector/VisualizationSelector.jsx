@@ -26,7 +26,6 @@ class VisualizationSelector extends Component {
 
   handleClick = e => {
     const { key } = e;
-    console.log(Visualizations[key]);
     this.props.openVisualization(Visualizations[key] || null);
   };
 
