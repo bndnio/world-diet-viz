@@ -10,7 +10,7 @@ class VisualizationBase extends Component {
   render() {
     return (
       <div className="VisualizationBase-container">
-        {this.props.children || 'Visualization Placeholder'}
+        {this.props.children || 'Pick a visualization to get started'}
       </div>
     );
   }

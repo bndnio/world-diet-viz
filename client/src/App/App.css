@@ -28,6 +28,7 @@
 .App-title {
   font-size: 20pt;
   color: darkslategrey;
+  padding: 5px;
 }
 
 .App-link {
