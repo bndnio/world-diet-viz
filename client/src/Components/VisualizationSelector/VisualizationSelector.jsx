@@ -39,6 +39,7 @@ class VisualizationSelector extends Component {
       >
         <Menu.SubMenu key="visualizations" title={<span>Visualization</span>}>
           <Menu.Item key="SimpleViz">SimpleViz</Menu.Item>
+          <Menu.Item key="LifeExpectancy">Life Expectancy</Menu.Item>
           <Menu.Item>Other</Menu.Item>
           <Menu.Item>AndAnother</Menu.Item>
         </Menu.SubMenu>

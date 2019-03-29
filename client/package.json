@@ -3,20 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^3.5.0",
+    "@craco/craco": "^3.6.0",
     "antd": "^3.14.1",
     "craco-antd": "^1.10.0",
     "d3": "^5.9.2",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
-    "react-scripts": "2.1.5"
+    "react-linechart": "^1.1.12",
+    "react-scripts": "^2.1.8",
+    "react-svg-line-chart": "^2.0.1"
   },
   "devDependencies": {
     "create-react-component-folder": "^0.1.26",
     "nodemon": "^1.18.10"
   },
   "scripts": {
-    "start": "nodemon -w craco.config.js -w ./antd.customize.less --exec 'craco start'",
+    "start": "craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject"

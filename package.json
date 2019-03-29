@@ -31,5 +31,9 @@
   "bugs": {
     "url": "https://github.com/bndnio/world-diet-viz/issues"
   },
-  "homepage": "https://github.com/bndnio/world-diet-viz#readme"
+  "homepage": "https://github.com/bndnio/world-diet-viz#readme",
+  "dependencies": {
+    "react-linechart": "^1.1.12",
+    "react-svg-line-chart": "^2.0.1"
+  }
 }
