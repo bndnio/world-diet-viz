@@ -103,8 +103,9 @@ const FoodGroup = [
 ];
 
 const groupMap = item => {
-  if (FoodGroup.includes(item)) return 'FOODGROUP';
-  else return 'OTHER';
+  // if (FoodGroup.includes(item)) return 'FOODGROUP';
+  // else return 'OTHER';
+  return 'OTHER';
 };
 
 // Type definitions define the "shape" of your data and specify
