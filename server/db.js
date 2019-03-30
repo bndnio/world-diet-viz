@@ -11,11 +11,14 @@ client
   )
   .then(res => {
     console.log('good', res);
-    client.end();
-  })
-  .catch(err => {
-    console.log('error', err);
-    client.end();
   });
 
-module.exports = client;
+const runQuery = (queryString, func) =>
+  client
+    .query(queryString)
+    .then(res => func(res))
+    .catch(err => {
+      console.log('error', err);
+    });
+
+module.exports = runQuery;

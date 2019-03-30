@@ -1,4 +1,5 @@
 const { gql } = require('apollo-server');
+const runQuery = require('./db');
 
 const db_items = [
   'Aquatic Plants',
@@ -101,6 +102,11 @@ const FoodGroup = [
   'Alcoholic beverages',
 ];
 
+const groupMap = item => {
+  if (FoodGroup.includes(item)) return 'FOODGROUP';
+  else return 'OTHER';
+};
+
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
@@ -115,61 +121,113 @@ const typeDefs = gql`
   enum Group {
     MACRONUTRIENT
     FOODGROUP
+    OTHER
   }
 
-  type Element {
+  type Item {
     group: Group
     key: String
     value: Int
   }
 
-  type YearElement {
+  type YearItem {
     year: Int!
-    elements: [Element!]!
+    items: [Item!]!
   }
 
-  type CountryElement {
-    name: String!
-    elements: [Element!]!
+  type CountryItem {
+    country: String!
+    items: [Item!]!
   }
 
   type CountryYears {
     country: String!
-    years: [YearElement]!
+    years: [YearItem]!
   }
 
   type YearCountries {
     year: Int!
-    countries: [CountryElement!]!
+    countries: [CountryItem!]!
   }
 
   # The "Query" type is the root of all GraphQL queries.
   # (A "Mutation" type will be covered later on.)
   type Query {
-    elementByYearCountry: [YearCountries!]
-    elementByCountryYear: [CountryYears!]
+    itemByYearCountry: [YearCountries!]
+    itemByCountryYear: [CountryYears!]
   }
 `;
 
-// This is a (sample) collection of books we'll be able to query
-// the GraphQL server for.  A more complete example might fetch
-// from an existing data source like a REST API or database.
-const books = [
-  {
-    title: 'Harry Potter and the Chamber of Secrets',
-    author: 'J.K. Rowling',
-  },
-  {
-    title: 'Jurassic Park',
-    author: 'Michael Crichton',
-  },
-];
+const queryString = `SELECT DISTINCT area, year_code, item, value 
+  FROM undiet
+  WHERE area = 'Canada' AND
+    element_code = '664'
+  ORDER BY area, year_code;`;
+
+const aggregateItemByCountryYear = res => {
+  const { rows } = res;
+  const countryGrouped = rows.reduce(
+    (acc, row) => ({
+      ...acc,
+      [row.area]: {
+        ...(acc[row.area] || {}),
+        [row.year_code]: [
+          ...((acc[row.area] && acc[row.area][row.year_code]) || []),
+          {
+            group: groupMap(row.item),
+            key: row.item,
+            value: row.value,
+          },
+        ],
+      },
+    }),
+    {}
+  );
+  const output = Object.entries(countryGrouped).map(([country, years]) => ({
+    country,
+    years: Object.entries(years).map(([year, items]) => ({
+      year,
+      items,
+    })),
+  }));
+  return output;
+};
+
+const aggregateItemByYearCountry = res => {
+  const { rows } = res;
+  const yearGrouped = rows.reduce(
+    (acc, row) => ({
+      ...acc,
+      [row.year_code]: {
+        ...(acc[row.year_code] || {}),
+        [row.area]: [
+          ...((acc[row.year_code] && acc[row.year_code][row.area]) || []),
+          {
+            group: groupMap(row.item),
+            key: row.item,
+            value: row.value,
+          },
+        ],
+      },
+    }),
+    {}
+  );
+  const output = Object.entries(yearGrouped).map(([year, countries]) => ({
+    year,
+    countries: Object.entries(countries).map(([country, items]) => ({
+      country,
+      items,
+    })),
+  }));
+  return output;
+};
 
 // Resolvers define the technique for fetching the types in the
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    books: () => books,
+    itemByCountryYear: () => runQuery(queryString, aggregateItemByCountryYear),
+    itemByYearCountry: () => runQuery(queryString, aggregateItemByYearCountry),
   },
 };
 
