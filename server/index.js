@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { ApolloServer, gql } = require('apollo-server');
 const schema = require('./schema');
 const db = require('./db');
@@ -9,6 +11,6 @@ const server = new ApolloServer(schema);
 
 // This `listen` method launches a web-server.  Existing apps
 // can utilize middleware options, which we'll discuss later.
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
+server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
+  console.log(`🚀  Server ready at ${url}:${process.env.PORT || 4000}`);
 });

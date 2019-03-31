@@ -4,13 +4,18 @@
   "description": "server for the world-data-viz client",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -w index.js -w schema.js -w db.js --exec 'node index.js'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node getEnv && nodemon -w index.js -w schema.js -w db.js --exec 'node index.js'",
+    "test": "echo \"Warning: no test specified\" && exit 0"
+  },
+  "engines": {
+    "node": "10.x.x"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/storage": "^2.4.3",
     "apollo-server": "^2.4.8",
+    "dotenv": "^7.0.0",
     "graphql": "^14.2.0",
     "nodemon": "^1.18.10",
     "pg": "^7.9.0"
