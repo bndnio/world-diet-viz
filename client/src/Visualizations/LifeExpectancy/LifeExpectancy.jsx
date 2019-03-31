@@ -6,38 +6,66 @@ import { withData } from '../../DataContext/withData';
 import './LifeExpectancy.css';
 
 const settings = {
-  width: 600,
+  width: 500,
   height: 300,
-  padding: 30,
-  numDataPoints: 10,
+  padding: 40,
+  numDataPoints: 50,
   maxRange: () => Math.random() * 1000,
 };
 
-class Axis extends React.Component {
+class XAxis extends React.Component {
   static propTypes = {
     translate: PropTypes.string.isRequired,
-    orient: PropTypes.oneOf(['bottom', 'left']).isRequired,
     scale: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
-    this.renderAxis();
+    this.renderXAxis();
   }
 
   componentDidUpdate() {
-    this.renderAxis();
+    this.renderXAxis();
   }
 
-  renderAxis() {
+  renderXAxis() {
     const node = this.refs.axisContainer;
-    const baseAxis =
-      this.props.orient === 'bottom'
-        ? d3.axisBottom()
-        : this.props.orient === 'left'
-        ? d3.axisLeft()
-        : null;
-    const axis = baseAxis.ticks(5).scale(this.props.scale);
+    const baseAxis = d3
+      .axisBottom()
+      .ticks(5)
+      .tickFormat(d3.format('d'));
+    const axis = baseAxis.scale(this.props.scale);
+    d3.select(node).call(axis);
+  }
 
+  render() {
+    return (
+      <g
+        className="axis"
+        ref="axisContainer"
+        transform={this.props.translate}
+      />
+    );
+  }
+}
+
+class YAxis extends React.Component {
+  static propTypes = {
+    translate: PropTypes.string.isRequired,
+    scale: PropTypes.func.isRequired,
+  };
+
+  componentDidMount() {
+    this.renderYAxis();
+  }
+
+  componentDidUpdate() {
+    this.renderYAxis();
+  }
+
+  renderYAxis() {
+    const node = this.refs.axisContainer;
+    const baseAxis = d3.axisLeft().ticks(5);
+    const axis = baseAxis.scale(this.props.scale);
     d3.select(node).call(axis);
   }
 
@@ -62,19 +90,41 @@ class XYAxis extends React.Component {
 
   render() {
     return (
-      <g className="xy-axis">
-        <Axis
+      <g className="LE-xy-axis">
+        <XAxis
           translate={`translate(0, ${this.props.height - this.props.padding})`}
           scale={this.props.xScale}
-          orient="bottom"
         />
-        <Axis
+        <YAxis
           translate={`translate(${this.props.padding}, 0)`}
           scale={this.props.yScale}
-          orient="left"
         />
       </g>
     );
+  }
+}
+
+class Lines extends React.Component {
+  static propTypes = {
+    xScale: PropTypes.func.isRequired,
+    yScale: PropTypes.func.isRequired,
+  };
+
+  renderLine(coords) {
+    return (
+      <line
+        x1={this.props.xScale(coords[0])}
+        y1={this.props.yScale(coords[1])}
+        x2={this.props.xScale(coords[2])}
+        y2={this.props.yScale(coords[3])}
+        strokeWidth={2}
+        stroke={'#cbcfd6'}
+      />
+    );
+  }
+
+  render() {
+    return <g>{this.props.data.map(this.renderLine.bind(this))}</g>;
   }
 }
 
@@ -87,10 +137,11 @@ class DataCircles extends React.Component {
   renderCircle(coords) {
     return (
       <circle
-        cx={this.props.xScale(coords[0])}
-        cy={this.props.yScale(coords[1])}
-        r={2}
-        key={Math.random() * 1}
+        cx={this.props.xScale(coords[2])}
+        cy={this.props.yScale(coords[3])}
+        r={3}
+        key={Math.random()}
+        fill={'#4295f4'}
       />
     );
   }
@@ -100,7 +151,7 @@ class DataCircles extends React.Component {
   }
 }
 
-class ScatterPlot extends React.Component {
+class LineGraph extends React.Component {
   static propTypes = {
     padding: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
@@ -109,20 +160,16 @@ class ScatterPlot extends React.Component {
   };
 
   getXScale() {
-    const xMax = d3.max(this.props.data, d => d[0]);
-
     return d3
       .scaleLinear()
-      .domain([0, xMax])
+      .domain([1985, 2015]) // When data begins, ends
       .range([this.props.padding, this.props.width - this.props.padding * 2]);
   }
 
   getYScale() {
-    const yMax = d3.max(this.props.data, d => d[1]);
-
     return d3
       .scaleLinear()
-      .domain([0, yMax])
+      .domain([0, 100]) // Age 0 to age 100. Should be constant values
       .range([this.props.height - this.props.padding, this.props.padding]);
   }
 
@@ -132,6 +179,7 @@ class ScatterPlot extends React.Component {
 
     return (
       <svg width={this.props.width} height={this.props.height}>
+        <Lines xScale={xScale} yScale={yScale} {...this.props} />
         <DataCircles xScale={xScale} yScale={yScale} {...this.props} />
         <XYAxis xScale={xScale} yScale={yScale} {...this.props} />
       </svg>
@@ -139,39 +187,41 @@ class ScatterPlot extends React.Component {
   }
 }
 
-class LifeExpectancy extends Component {
+class LifeExpectancy extends React.Component {
   componentWillMount() {
-    this.randomizeData();
+    this.getData();
   }
 
-  randomizeData() {
-    const randomData = d3.range(settings.numDataPoints).map(() => {
-      return [
-        Math.floor(Math.random() * settings.maxRange()),
-        Math.floor(Math.random() * settings.maxRange()),
-      ];
-    });
-    this.setState({ data: randomData });
+  getData() {
+    // each datapoint in form of [year, age, nextYear, nextAge]
+    const myData = [
+      [1985, 55, 1986, 56],
+      [1986, 56, 1988, 53],
+      [1988, 53, 1990, 61],
+      [1990, 61, 1992, 64],
+      [1992, 64, 1995, 62],
+      [1995, 62, 1998, 59],
+      [1998, 59, 2000, 63],
+      [2000, 63, 2002, 65],
+      [2002, 65, 2005, 64],
+      [2005, 64, 2007, 66],
+      [2007, 66, 2010, 69],
+      [2010, 69, 2012, 68],
+      [2012, 68, 2015, 70],
+    ];
+    this.setState({ data: myData });
   }
 
   render() {
     return (
       <div>
-        <h1>React and D3 are Friends</h1>
-        <ScatterPlot data={this.state.data} {...settings} />
-        <div className="controls">
-          <button
-            className="btn randomize"
-            onClick={this.randomizeData.bind(this)}
-          >
-            Randomize Data
-          </button>
-        </div>
+        <h1>Life Expectancy</h1>
+        <LineGraph data={this.state.data} {...settings} />
+        <text className="x-axis">Year</text>
+        <text className="y-axis">Age</text>
       </div>
     );
   }
 }
-
-LifeExpectancy.propTypes = {};
 
 export default withData(LifeExpectancy);

@@ -33,7 +33,11 @@
   },
   "homepage": "https://github.com/bndnio/world-diet-viz#readme",
   "dependencies": {
+    "react": "^16.8.6",
+    "react-d3-pie-chart": "^1.0.3",
+    "react-dom": "^16.8.6",
     "react-linechart": "^1.1.12",
-    "react-svg-line-chart": "^2.0.1"
+    "react-svg-line-chart": "^2.0.1",
+    "react-svg-pathline": "^0.5.0"
   }
 }
