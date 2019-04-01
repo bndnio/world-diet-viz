@@ -7,10 +7,11 @@ import './Waterfall.css';
 
 const settings = {
   width: 500,
-  height: 300,
-  padding: 30,
-  numDataPoints: 50,
-  maxRange: () => Math.random() * 1000,
+  height: 600,
+  padding: 40,
+  baseYear: 1960,
+  numDataPoints: 20,
+  maxRange: () => Math.random() * 100,
 };
 
 class Axis extends React.Component {
@@ -109,20 +110,22 @@ class ScatterPlot extends React.Component {
   };
 
   getXScale() {
+    const xMin = d3.min(this.props.data, d => d[0]);
     const xMax = d3.max(this.props.data, d => d[0]);
 
     return d3
       .scaleLinear()
-      .domain([0, xMax])
+      .domain([xMin, xMax])
       .range([this.props.padding, this.props.width - this.props.padding * 2]);
   }
 
   getYScale() {
+    const yMin = d3.min(this.props.data, d => d[1]);
     const yMax = d3.max(this.props.data, d => d[1]);
 
     return d3
       .scaleLinear()
-      .domain([0, yMax])
+      .domain([yMin, yMax])
       .range([this.props.height - this.props.padding, this.props.padding]);
   }
 
@@ -145,12 +148,22 @@ class Waterfall extends Component {
   }
 
   randomizeData() {
-    const randomData = d3.range(settings.numDataPoints).map(() => {
+    const randomData = d3.range(settings.numDataPoints).map((value, index) => {
       return [
         Math.floor(Math.random() * settings.maxRange()),
-        Math.floor(Math.random() * settings.maxRange()),
+        settings.baseYear + index,
       ];
     });
+    const randomDataDiffs = randomData
+      .map((datum, index) => {
+        if (index !== 0) {
+          console.log(datum);
+          return [datum[0] - randomData[index - 1][0], datum[1]];
+        }
+        return null;
+      })
+      .filter(val => !!val);
+    console.log(randomDataDiffs);
     this.setState({ data: randomData });
   }
 
