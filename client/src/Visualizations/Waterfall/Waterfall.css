@@ -8,6 +8,16 @@ svg {
   background-color: white;
 }
 
+rect {
+  fill-opacity: 0.5;
+}
+rect.goodBar {
+  fill: green;
+}
+rect.badBar {
+  fill: red;
+}
+
 .axis path,
 .axis line {
   fill: none;

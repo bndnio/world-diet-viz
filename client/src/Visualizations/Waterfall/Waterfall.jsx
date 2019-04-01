@@ -81,25 +81,34 @@ class XYAxis extends React.Component {
   }
 }
 
-class DataCircles extends React.Component {
+class DataRectangles extends React.Component {
   static propTypes = {
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
-  renderCircle(coords) {
+  renderRect(coords) {
+    const distToAxis = settings.width / 2 - this.props.xScale(coords[0]);
+    const width = Math.abs(distToAxis);
+    const x =
+      distToAxis > 0 ? this.props.xScale(coords[0]) : settings.width / 2;
+
     return (
-      <circle
-        cx={this.props.xScale(coords[0])}
-        cy={this.props.yScale(coords[1])}
-        r={2}
+      <rect
+        x={x}
+        y={this.props.yScale(coords[1])}
+        width={width}
+        height={
+          (settings.height - settings.padding * 2) / settings.numDataPoints
+        }
+        className={distToAxis < 0 ? 'goodBar' : 'badBar'}
         key={Math.random() * 1}
       />
     );
   }
 
   render() {
-    return <g>{this.props.data.map(this.renderCircle.bind(this))}</g>;
+    return <g>{this.props.data.map(this.renderRect.bind(this))}</g>;
   }
 }
 
@@ -137,7 +146,7 @@ class ScatterPlot extends React.Component {
 
     return (
       <svg width={this.props.width} height={this.props.height}>
-        <DataCircles xScale={xScale} yScale={yScale} {...this.props} />
+        <DataRectangles xScale={xScale} yScale={yScale} {...this.props} />
         <XYAxis xScale={xScale} yScale={yScale} {...this.props} />
       </svg>
     );
@@ -166,7 +175,7 @@ class Waterfall extends Component {
       })
       .filter(val => !!val);
     console.log(randomDataDiffs);
-    this.setState({ data: randomData });
+    this.setState({ data: randomDataDiffs });
   }
 
   render() {
