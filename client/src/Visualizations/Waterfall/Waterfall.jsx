@@ -91,10 +91,15 @@ class DataRectangles extends React.Component {
   };
 
   renderRect = coord => {
-    const distToAxis = settings.width / 2 - this.props.xScale(coord.xDiff);
+    if (settings.mode === MODE[0]) {
+      var xCoord = coord.xDiff;
+    } else if (settings.mode === MODE[1]) {
+      xCoord = coord.xAbs;
+    }
+
+    const distToAxis = settings.width / 2 - this.props.xScale(xCoord);
     const width = Math.abs(distToAxis);
-    const x =
-      distToAxis > 0 ? this.props.xScale(coord.xDiff) : settings.width / 2;
+    const x = distToAxis > 0 ? this.props.xScale(xCoord) : settings.width / 2;
 
     return (
       <rect
@@ -111,7 +116,13 @@ class DataRectangles extends React.Component {
   };
 
   renderRectText = coord => {
-    const distToAxis = settings.width / 2 - this.props.xScale(coord.xDiff);
+    if (settings.mode === MODE[0]) {
+      var xCoord = coord.xDiff;
+    } else if (settings.mode === MODE[1]) {
+      xCoord = coord.xAbs;
+    }
+
+    const distToAxis = settings.width / 2 - this.props.xScale(xCoord);
     const x = settings.width / 2 - distToAxis;
 
     return (
@@ -124,8 +135,8 @@ class DataRectangles extends React.Component {
           3
         }
       >
-        {distToAxis < 0 ? '+' : '-'}
-        {Math.round(this.props.xScale(coord.xDiff))}
+        {distToAxis < 0 && '+'}
+        {xCoord}
       </text>
     );
   };
@@ -149,10 +160,16 @@ class ScatterPlot extends React.Component {
   };
 
   getXScale = () => {
-    const xMin = d3.min(this.props.data, d => d.xDiff);
-    const xMax = d3.max(this.props.data, d => d.xDiff);
-    const absMax = d3.max([Math.abs(xMin), Math.abs(xMax)]);
+    if (settings.mode === MODE[0]) {
+      var xMin = d3.min(this.props.data, d => d.xDiff);
+      var xMax = d3.max(this.props.data, d => d.xDiff);
+    } else if (settings.mode === MODE[1]) {
+      xMin = d3.min(this.props.data, d => d.xAbs);
+      xMax = d3.max(this.props.data, d => d.xAbs);
+    }
 
+    const absMax = d3.max([Math.abs(xMin), Math.abs(xMax)]);
+    console.log(absMax, xMin, xMax);
     return d3
       .scaleLinear()
       .domain([-absMax, absMax])
