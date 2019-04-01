@@ -1,3 +1,4 @@
 import ScatterPlot from './ScatterPlot';
 import Waterfall from './Waterfall';
-export { ScatterPlot, Waterfall };
+import LifeExpectancy from './LifeExpectancy';
+export { ScatterPlot, Waterfall, LifeExpectancy };

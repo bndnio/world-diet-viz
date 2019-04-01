@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^3.5.0",
+    "@craco/craco": "^3.6.0",
     "antd": "^3.14.1",
     "craco-antd": "^1.10.0",
     "d3": "^5.9.2",
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3",
-    "react-scripts": "2.1.5"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-scripts": "^2.1.8"
   },
   "devDependencies": {
     "create-react-component-folder": "^0.1.26",

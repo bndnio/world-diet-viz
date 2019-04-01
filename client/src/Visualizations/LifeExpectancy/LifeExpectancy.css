@@ -1,0 +1,15 @@
+.x-axis {
+  color: #4295f4;
+  font-size: 15px;
+  position: relative;
+  bottom: 24px;
+  right: 20px;
+}
+
+.y-axis {
+  color: #4295f4;
+  font-size: 15px;
+  position: relative;
+  bottom: 170px;
+  right: 260px;
+}
