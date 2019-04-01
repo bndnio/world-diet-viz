@@ -73,15 +73,31 @@ class XYAxis extends React.Component {
     return (
       <g className="xy-axis">
         <Axis
-          translate={`translate(0, ${this.props.settings.padding})`}
+          translate={`translate(0, ${settings.padding})`}
           scale={this.props.xScale}
           orient="top"
         />
+        <text
+          className="axis"
+          textAnchor="middle"
+          transform={`translate(${settings.width / 2}, 15)`}
+        >
+          [kCal / person / day]
+        </text>
         <Axis
           translate={`translate(${settings.width / 2}, 0)`}
           scale={this.props.yScale}
           orient="left"
         />
+        <text
+          className="axis"
+          textAnchor="middle"
+          transform={`translate(${settings.width / 2}, ${settings.height -
+            settings.padding +
+            15})`}
+        >
+          [year]
+        </text>
       </g>
     );
   }
@@ -291,7 +307,7 @@ class Waterfall extends Component {
 
     return (
       <div>
-        <h1>React and D3 are Friends</h1>
+        <h1>Sample Waterfall Plot</h1>
         <WaterfallPlot
           data={this.state.data}
           settings={{ ...settings, mode: this.state.mode }}
