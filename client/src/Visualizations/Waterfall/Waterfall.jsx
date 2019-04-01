@@ -110,8 +110,33 @@ class DataRectangles extends React.Component {
     );
   };
 
+  renderRectText = coords => {
+    const distToAxis = settings.width / 2 - this.props.xScale(coords[0]);
+    const x = settings.width / 2 - distToAxis;
+
+    return (
+      <text
+        textAnchor={distToAxis < 0 ? 'start' : 'end'}
+        x={x}
+        y={
+          this.props.yScale(coords[1]) +
+          settings.height / settings.numDataPoints / 2 +
+          3
+        }
+      >
+        {distToAxis < 0 ? '+' : '-'}
+        {Math.round(this.props.xScale(coords[0]))}
+      </text>
+    );
+  };
+
   render() {
-    return <g>{this.props.data.map(this.renderRect)}</g>;
+    return (
+      <g>
+        {this.props.data.map(this.renderRect)}
+        {this.props.data.map(this.renderRectText)}
+      </g>
+    );
   }
 }
 
