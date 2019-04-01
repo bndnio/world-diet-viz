@@ -17,7 +17,7 @@ const settings = {
 class Axis extends React.Component {
   static propTypes = {
     translate: PropTypes.string.isRequired,
-    orient: PropTypes.oneOf(['bottom', 'left']).isRequired,
+    orient: PropTypes.oneOf(['bottom', 'top', 'left']).isRequired,
     scale: PropTypes.func.isRequired,
   };
 
@@ -34,6 +34,8 @@ class Axis extends React.Component {
     const baseAxis =
       this.props.orient === 'bottom'
         ? d3.axisBottom()
+        : this.props.orient === 'top'
+        ? d3.axisTop()
         : this.props.orient === 'left'
         ? d3.axisLeft()
         : null;
@@ -65,12 +67,12 @@ class XYAxis extends React.Component {
     return (
       <g className="xy-axis">
         <Axis
-          translate={`translate(0, ${this.props.height - this.props.padding})`}
+          translate={`translate(0, ${this.props.padding})`}
           scale={this.props.xScale}
-          orient="bottom"
+          orient="top"
         />
         <Axis
-          translate={`translate(${this.props.padding}, 0)`}
+          translate={`translate(${settings.width / 2}, 0)`}
           scale={this.props.yScale}
           orient="left"
         />
@@ -116,7 +118,7 @@ class ScatterPlot extends React.Component {
     return d3
       .scaleLinear()
       .domain([xMin, xMax])
-      .range([this.props.padding, this.props.width - this.props.padding * 2]);
+      .range([this.props.padding, this.props.width - this.props.padding]);
   }
 
   getYScale() {
