@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import SimpleViz from './SimpleViz';
+import ScatterPlot from './ScatterPlot';
 
-describe('<SimpleViz />', () => {
+describe('<ScatterPlot />', () => {
   test('renders', () => {
-    const wrapper = shallow(<SimpleViz />);
+    const wrapper = shallow(<ScatterPlot />);
     expect(wrapper).toMatchSnapshot();
   });
 });

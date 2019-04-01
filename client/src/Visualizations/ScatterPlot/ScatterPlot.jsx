@@ -2,21 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import { withData } from '../../DataContext/withData';
+import { Typography } from 'antd';
 
-import './SimpleViz.css';
+import './ScatterPlot.css';
 
-const settings = {
-  width: 500,
-  height: 300,
-  padding: 30,
-  numDataPoints: 50,
-  maxRange: () => Math.random() * 1000,
-};
+const { Title } = Typography;
 
 class Axis extends React.Component {
   static propTypes = {
     translate: PropTypes.string.isRequired,
-    orient: PropTypes.oneOf(['bottom', 'left']).isRequired,
+    orient: PropTypes.oneOf(['bottom', 'top', 'left']).isRequired,
     scale: PropTypes.func.isRequired,
   };
 
@@ -28,7 +23,7 @@ class Axis extends React.Component {
     this.renderAxis();
   }
 
-  renderAxis() {
+  renderAxis = () => {
     const node = this.refs.axisContainer;
     const baseAxis =
       this.props.orient === 'bottom'
@@ -39,7 +34,7 @@ class Axis extends React.Component {
     const axis = baseAxis.ticks(5).scale(this.props.scale);
 
     d3.select(node).call(axis);
-  }
+  };
 
   render() {
     return (
@@ -54,22 +49,26 @@ class Axis extends React.Component {
 
 class XYAxis extends React.Component {
   static propTypes = {
-    padding: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      padding: PropTypes.number,
+    }),
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
   render() {
+    const { settings } = this.props;
+
     return (
       <g className="xy-axis">
         <Axis
-          translate={`translate(0, ${this.props.height - this.props.padding})`}
+          translate={`translate(0, ${settings.height - settings.padding})`}
           scale={this.props.xScale}
           orient="bottom"
         />
         <Axis
-          translate={`translate(${this.props.padding}, 0)`}
+          translate={`translate(${settings.padding}, 0)`}
           scale={this.props.yScale}
           orient="left"
         />
@@ -80,11 +79,17 @@ class XYAxis extends React.Component {
 
 class DataCircles extends React.Component {
   static propTypes = {
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      numDataPoints: PropTypes.number,
+    }),
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
-  renderCircle(coords) {
+  renderCircle = coords => {
     return (
       <circle
         cx={this.props.xScale(coords[0])}
@@ -93,45 +98,57 @@ class DataCircles extends React.Component {
         key={Math.random() * 1}
       />
     );
-  }
+  };
 
   render() {
-    return <g>{this.props.data.map(this.renderCircle.bind(this))}</g>;
+    return <g>{this.props.data.map(this.renderCircle)}</g>;
   }
 }
 
 class ScatterPlot extends React.Component {
   static propTypes = {
-    padding: PropTypes.number.isRequired,
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      numDataPoints: PropTypes.number,
+      maxRange: PropTypes.func,
+    }),
     data: PropTypes.array.isRequired,
+    xScale: PropTypes.func,
+    yScale: PropTypes.func,
   };
 
-  getXScale() {
+  getXScale = () => {
+    const { settings } = this.props;
+
     const xMax = d3.max(this.props.data, d => d[0]);
 
     return d3
       .scaleLinear()
       .domain([0, xMax])
-      .range([this.props.padding, this.props.width - this.props.padding * 2]);
-  }
+      .range([settings.padding, settings.width - settings.padding * 2]);
+  };
 
-  getYScale() {
+  getYScale = () => {
+    const { settings } = this.props;
+
     const yMax = d3.max(this.props.data, d => d[1]);
 
     return d3
       .scaleLinear()
       .domain([0, yMax])
-      .range([this.props.height - this.props.padding, this.props.padding]);
-  }
+      .range([settings.height - settings.padding, settings.padding]);
+  };
 
   render() {
-    const xScale = this.getXScale();
-    const yScale = this.getYScale();
+    const { settings } = this.props;
+
+    const xScale = settings.xScale || this.getXScale();
+    const yScale = settings.yScale || this.getYScale();
 
     return (
-      <svg width={this.props.width} height={this.props.height}>
+      <svg width={settings.width} height={settings.height}>
         <DataCircles xScale={xScale} yScale={yScale} {...this.props} />
         <XYAxis xScale={xScale} yScale={yScale} {...this.props} />
       </svg>
@@ -139,12 +156,35 @@ class ScatterPlot extends React.Component {
   }
 }
 
-class SimpleViz extends Component {
+class ScatterPlotViz extends Component {
+  static propTypes = {
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      numDataPoints: PropTypes.number,
+      maxRange: PropTypes.func,
+    }),
+    xScale: PropTypes.func,
+    yScale: PropTypes.func,
+  };
+  static defaultProps = {
+    settings: {
+      width: 500,
+      height: 300,
+      padding: 30,
+      numDataPoints: 50,
+      maxRange: () => Math.random() * 1000,
+    },
+  };
+
   componentWillMount() {
     this.randomizeData();
   }
 
-  randomizeData() {
+  randomizeData = () => {
+    const { settings } = this.props;
+
     const randomData = d3.range(settings.numDataPoints).map(() => {
       return [
         Math.floor(Math.random() * settings.maxRange()),
@@ -152,18 +192,17 @@ class SimpleViz extends Component {
       ];
     });
     this.setState({ data: randomData });
-  }
+  };
 
   render() {
+    const { settings } = this.props;
+
     return (
       <div>
-        <h1>React and D3 are Friends</h1>
-        <ScatterPlot data={this.state.data} {...settings} />
+        <Title>Sample Scatterplot</Title>
+        <ScatterPlot data={this.state.data} settings={settings} />
         <div className="controls">
-          <button
-            className="btn randomize"
-            onClick={this.randomizeData.bind(this)}
-          >
+          <button className="btn randomize" onClick={this.randomizeData}>
             Randomize Data
           </button>
         </div>
@@ -172,6 +211,4 @@ class SimpleViz extends Component {
   }
 }
 
-SimpleViz.propTypes = {};
-
-export default withData(SimpleViz);
+export default withData(ScatterPlotViz);

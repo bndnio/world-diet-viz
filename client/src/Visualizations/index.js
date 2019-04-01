@@ -1,4 +1,4 @@
-import SimpleViz from './SimpleViz';
+import ScatterPlot from './ScatterPlot';
+import Waterfall from './Waterfall';
 import LifeExpectancy from './LifeExpectancy';
-export { SimpleViz };
-export { LifeExpectancy };
+export { ScatterPlot, Waterfall, LifeExpectancy };
