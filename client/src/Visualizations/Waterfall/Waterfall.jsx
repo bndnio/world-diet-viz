@@ -10,15 +10,6 @@ const { Title } = Typography;
 
 const MODE = ['ALIGN', 'FOLLOW'];
 
-const settings = {
-  width: 500,
-  height: 600,
-  padding: 40,
-  baseYear: 1960,
-  numDataPoints: 20,
-  mode: MODE[1],
-  maxRange: () => Math.random() * 100,
-};
 
 class Axis extends React.Component {
   static propTypes = {
@@ -216,9 +207,11 @@ class WaterfallPlot extends React.Component {
       .scaleLinear()
       .domain([-absMax, absMax])
       .range([settings.padding, settings.width - settings.padding]);
-  };
+  }
 
   getYScale = () => {
+    const { settings } = this.props;
+
     const yMin = d3.min(this.props.data, d => d.year);
     const yMax = d3.max(this.props.data, d => d.year);
 
@@ -229,6 +222,8 @@ class WaterfallPlot extends React.Component {
   };
 
   render() {
+    const { settings } = this.props;
+
     const xScale = this.props.xScale || this.getXScale();
     const yScale = this.props.xScale || this.getYScale();
 
@@ -256,7 +251,7 @@ class Waterfall extends Component {
   };
   static defaultProps = {
     settings: {
-      width: 500,
+      width: 1000,
       height: 600,
       padding: 40,
       baseYear: 1960,
