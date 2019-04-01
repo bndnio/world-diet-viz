@@ -16,6 +16,7 @@ rect.goodBar {
 }
 rect.badBar {
   fill: red;
+  /* fill: linear-gradient(to right, #ed3434 1%,#ad1818 100%) */
 }
 
 .axis path,

@@ -60,8 +60,10 @@ class Axis extends React.Component {
 
 class XYAxis extends React.Component {
   static propTypes = {
-    padding: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      padding: PropTypes.number,
+    }),
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
@@ -71,7 +73,7 @@ class XYAxis extends React.Component {
     return (
       <g className="xy-axis">
         <Axis
-          translate={`translate(0, ${this.props.padding})`}
+          translate={`translate(0, ${this.props.settings.padding})`}
           scale={this.props.xScale}
           orient="top"
         />
@@ -87,6 +89,12 @@ class XYAxis extends React.Component {
 
 class DataRectangles extends React.Component {
   static propTypes = {
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      numDataPoints: PropTypes.number,
+    }),
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
@@ -160,10 +168,17 @@ class DataRectangles extends React.Component {
 
 class WaterfallPlot extends React.Component {
   static propTypes = {
-    padding: PropTypes.number.isRequired,
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      baseYear: PropTypes.number,
+      numDataPoints: PropTypes.number,
+      maxRange: PropTypes.func,
+    }),
     data: PropTypes.array.isRequired,
+    xScale: PropTypes.func,
+    yScale: PropTypes.func,
   };
 
   getXScale = () => {
@@ -181,7 +196,7 @@ class WaterfallPlot extends React.Component {
     return d3
       .scaleLinear()
       .domain([-absMax, absMax])
-      .range([this.props.padding, this.props.width - this.props.padding]);
+      .range([settings.padding, settings.width - settings.padding]);
   };
 
   getYScale = () => {
@@ -191,15 +206,15 @@ class WaterfallPlot extends React.Component {
     return d3
       .scaleLinear()
       .domain([yMin, yMax + 1])
-      .range([this.props.padding, this.props.height - this.props.padding]);
+      .range([settings.padding, settings.height - settings.padding]);
   };
 
   render() {
-    const xScale = this.getXScale();
-    const yScale = this.getYScale();
+    const xScale = this.props.xScale || this.getXScale();
+    const yScale = this.props.xScale || this.getYScale();
 
     return (
-      <svg width={this.props.width} height={this.props.height}>
+      <svg width={settings.width} height={settings.height}>
         <DataRectangles xScale={xScale} yScale={yScale} {...this.props} />
         <XYAxis xScale={xScale} yScale={yScale} {...this.props} />
       </svg>
@@ -208,7 +223,18 @@ class WaterfallPlot extends React.Component {
 }
 
 class Waterfall extends Component {
-  static propTypes = {};
+  static propTypes = {
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      baseYear: PropTypes.number,
+      numDataPoints: PropTypes.number,
+      maxRange: PropTypes.func,
+    }),
+    xScale: PropTypes.func,
+    yScale: PropTypes.func,
+  };
   static defaultProps = {
     settings: {
       width: 500,
@@ -268,7 +294,6 @@ class Waterfall extends Component {
         <h1>React and D3 are Friends</h1>
         <WaterfallPlot
           data={this.state.data}
-          {...settings}
           settings={{ ...settings, mode: this.state.mode }}
         />
         <div className="controls">
