@@ -1,3 +1,3 @@
-import SimpleViz from './SimpleViz';
+import ScatterPlot from './ScatterPlot';
 import Waterfall from './Waterfall';
-export { SimpleViz, Waterfall };
+export { ScatterPlot, Waterfall };

@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import { withData } from '../../DataContext/withData';
+import { Typography } from 'antd';
 
 import './Waterfall.css';
+
+const { Title } = Typography;
 
 const MODE = ['ALIGN', 'FOLLOW'];
 
@@ -307,7 +310,7 @@ class Waterfall extends Component {
 
     return (
       <div>
-        <h1>Sample Waterfall Plot</h1>
+        <Title>Sample Waterfall</Title>
         <WaterfallPlot
           data={this.state.data}
           settings={{ ...settings, mode: this.state.mode }}

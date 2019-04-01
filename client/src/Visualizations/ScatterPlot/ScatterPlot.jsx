@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import { withData } from '../../DataContext/withData';
+import { Typography } from 'antd';
 
-import './SimpleViz.css';
+import './ScatterPlot.css';
+
+const { Title } = Typography;
 
 const settings = {
   width: 500,
@@ -139,7 +142,7 @@ class ScatterPlot extends React.Component {
   }
 }
 
-class SimpleViz extends Component {
+class ScatterPlotViz extends Component {
   static propTypes = {};
 
   componentWillMount() {
@@ -159,7 +162,7 @@ class SimpleViz extends Component {
   render() {
     return (
       <div>
-        <h1>React and D3 are Friends</h1>
+        <Title>Sample Scatterplot</Title>
         <ScatterPlot data={this.state.data} {...settings} />
         <div className="controls">
           <button className="btn randomize" onClick={this.randomizeData}>
@@ -171,4 +174,4 @@ class SimpleViz extends Component {
   }
 }
 
-export default withData(SimpleViz);
+export default withData(ScatterPlotViz);
