@@ -8,18 +8,10 @@ import './ScatterPlot.css';
 
 const { Title } = Typography;
 
-const settings = {
-  width: 500,
-  height: 300,
-  padding: 30,
-  numDataPoints: 50,
-  maxRange: () => Math.random() * 1000,
-};
-
 class Axis extends React.Component {
   static propTypes = {
     translate: PropTypes.string.isRequired,
-    orient: PropTypes.oneOf(['bottom', 'left']).isRequired,
+    orient: PropTypes.oneOf(['bottom', 'top', 'left']).isRequired,
     scale: PropTypes.func.isRequired,
   };
 
@@ -57,22 +49,26 @@ class Axis extends React.Component {
 
 class XYAxis extends React.Component {
   static propTypes = {
-    padding: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      padding: PropTypes.number,
+    }),
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
   render() {
+    const { settings } = this.props;
+
     return (
       <g className="xy-axis">
         <Axis
-          translate={`translate(0, ${this.props.height - this.props.padding})`}
+          translate={`translate(0, ${settings.height - settings.padding})`}
           scale={this.props.xScale}
           orient="bottom"
         />
         <Axis
-          translate={`translate(${this.props.padding}, 0)`}
+          translate={`translate(${settings.padding}, 0)`}
           scale={this.props.yScale}
           orient="left"
         />
@@ -83,6 +79,12 @@ class XYAxis extends React.Component {
 
 class DataCircles extends React.Component {
   static propTypes = {
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      numDataPoints: PropTypes.number,
+    }),
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
@@ -105,36 +107,48 @@ class DataCircles extends React.Component {
 
 class ScatterPlot extends React.Component {
   static propTypes = {
-    padding: PropTypes.number.isRequired,
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      numDataPoints: PropTypes.number,
+      maxRange: PropTypes.func,
+    }),
     data: PropTypes.array.isRequired,
+    xScale: PropTypes.func,
+    yScale: PropTypes.func,
   };
 
   getXScale = () => {
+    const { settings } = this.props;
+
     const xMax = d3.max(this.props.data, d => d[0]);
 
     return d3
       .scaleLinear()
       .domain([0, xMax])
-      .range([this.props.padding, this.props.width - this.props.padding * 2]);
+      .range([settings.padding, settings.width - settings.padding * 2]);
   };
 
   getYScale = () => {
+    const { settings } = this.props;
+
     const yMax = d3.max(this.props.data, d => d[1]);
 
     return d3
       .scaleLinear()
       .domain([0, yMax])
-      .range([this.props.height - this.props.padding, this.props.padding]);
+      .range([settings.height - settings.padding, settings.padding]);
   };
 
   render() {
-    const xScale = this.getXScale();
-    const yScale = this.getYScale();
+    const { settings } = this.props;
+
+    const xScale = settings.xScale || this.getXScale();
+    const yScale = settings.yScale || this.getYScale();
 
     return (
-      <svg width={this.props.width} height={this.props.height}>
+      <svg width={settings.width} height={settings.height}>
         <DataCircles xScale={xScale} yScale={yScale} {...this.props} />
         <XYAxis xScale={xScale} yScale={yScale} {...this.props} />
       </svg>
@@ -143,13 +157,34 @@ class ScatterPlot extends React.Component {
 }
 
 class ScatterPlotViz extends Component {
-  static propTypes = {};
+  static propTypes = {
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      numDataPoints: PropTypes.number,
+      maxRange: PropTypes.func,
+    }),
+    xScale: PropTypes.func,
+    yScale: PropTypes.func,
+  };
+  static defaultProps = {
+    settings: {
+      width: 500,
+      height: 300,
+      padding: 30,
+      numDataPoints: 50,
+      maxRange: () => Math.random() * 1000,
+    },
+  };
 
   componentWillMount() {
     this.randomizeData();
   }
 
   randomizeData = () => {
+    const { settings } = this.props;
+
     const randomData = d3.range(settings.numDataPoints).map(() => {
       return [
         Math.floor(Math.random() * settings.maxRange()),
@@ -160,10 +195,12 @@ class ScatterPlotViz extends Component {
   };
 
   render() {
+    const { settings } = this.props;
+
     return (
       <div>
         <Title>Sample Scatterplot</Title>
-        <ScatterPlot data={this.state.data} {...settings} />
+        <ScatterPlot data={this.state.data} settings={settings} />
         <div className="controls">
           <button className="btn randomize" onClick={this.randomizeData}>
             Randomize Data
