@@ -13,7 +13,7 @@ const settings = {
   padding: 40,
   baseYear: 1960,
   numDataPoints: 20,
-  mode: MODE[0],
+  mode: MODE[1],
   maxRange: () => Math.random() * 100,
 };
 
@@ -92,14 +92,18 @@ class DataRectangles extends React.Component {
 
   renderRect = coord => {
     if (settings.mode === MODE[0]) {
-      var xCoord = coord.xDiff;
+      var dist = settings.width / 2 - this.props.xScale(coord.xDiff);
+      var width = Math.abs(dist);
+      var x = dist > 0 ? this.props.xScale(coord.xDiff) : settings.width / 2;
     } else if (settings.mode === MODE[1]) {
-      xCoord = coord.xAbs;
+      dist = this.props.xScale(coord.xAbs) - this.props.xScale(coord.xLast);
+      width = Math.abs(dist);
+      x =
+        coord.xDiff > 0
+          ? this.props.xScale(coord.xLast)
+          : this.props.xScale(coord.xAbs);
     }
-
-    const distToAxis = settings.width / 2 - this.props.xScale(xCoord);
-    const width = Math.abs(distToAxis);
-    const x = distToAxis > 0 ? this.props.xScale(xCoord) : settings.width / 2;
+    console.log(coord.xLast, coord.xDiff);
 
     return (
       <rect
@@ -109,7 +113,7 @@ class DataRectangles extends React.Component {
         height={
           (settings.height - settings.padding * 2) / settings.numDataPoints
         }
-        className={distToAxis < 0 ? 'goodBar' : 'badBar'}
+        className={coord.xDiff > 0 ? 'goodBar' : 'badBar'}
         key={Math.random() * 1}
       />
     );
@@ -117,26 +121,26 @@ class DataRectangles extends React.Component {
 
   renderRectText = coord => {
     if (settings.mode === MODE[0]) {
-      var xCoord = coord.xDiff;
+      var dist = settings.width / 2 - this.props.xScale(coord.xDiff);
+      var x = settings.width / 2 - dist;
     } else if (settings.mode === MODE[1]) {
-      xCoord = coord.xAbs;
+      dist = this.props.xScale(coord.xAbs) - this.props.xScale(coord.xLast);
+      x = this.props.xScale(coord.xLast) + (coord.xDiff > 0 ? 3 : -3);
     }
-
-    const distToAxis = settings.width / 2 - this.props.xScale(xCoord);
-    const x = settings.width / 2 - distToAxis;
 
     return (
       <text
-        textAnchor={distToAxis < 0 ? 'start' : 'end'}
+        textAnchor={coord.xDiff > 0 ? 'start' : 'end'}
         x={x}
         y={
           this.props.yScale(coord.year) +
           settings.height / settings.numDataPoints / 2 +
           3
         }
+        key={Math.random() * 1}
       >
-        {distToAxis < 0 && '+'}
-        {xCoord}
+        {coord.xDiff > 0 && '+'}
+        {coord.xDiff}
       </text>
     );
   };
@@ -182,8 +186,8 @@ class ScatterPlot extends React.Component {
 
     return d3
       .scaleLinear()
-      .domain([yMin, yMax])
-      .range([this.props.height - this.props.padding, this.props.padding]);
+      .domain([yMin, yMax + 1])
+      .range([this.props.padding, this.props.height - this.props.padding]);
   };
 
   render() {
@@ -217,6 +221,7 @@ class Waterfall extends Component {
         if (index !== 0) {
           return {
             year: datum[0],
+            xLast: arr[index - 1][1],
             xDiff: datum[1] - arr[index - 1][1],
             xAbs: datum[1],
           };
