@@ -90,16 +90,16 @@ class DataRectangles extends React.Component {
     yScale: PropTypes.func.isRequired,
   };
 
-  renderRect = coords => {
-    const distToAxis = settings.width / 2 - this.props.xScale(coords[0]);
+  renderRect = coord => {
+    const distToAxis = settings.width / 2 - this.props.xScale(coord.xDiff);
     const width = Math.abs(distToAxis);
     const x =
-      distToAxis > 0 ? this.props.xScale(coords[0]) : settings.width / 2;
+      distToAxis > 0 ? this.props.xScale(coord.xDiff) : settings.width / 2;
 
     return (
       <rect
         x={x}
-        y={this.props.yScale(coords[1])}
+        y={this.props.yScale(coord.year)}
         width={width}
         height={
           (settings.height - settings.padding * 2) / settings.numDataPoints
@@ -110,8 +110,8 @@ class DataRectangles extends React.Component {
     );
   };
 
-  renderRectText = coords => {
-    const distToAxis = settings.width / 2 - this.props.xScale(coords[0]);
+  renderRectText = coord => {
+    const distToAxis = settings.width / 2 - this.props.xScale(coord.xDiff);
     const x = settings.width / 2 - distToAxis;
 
     return (
@@ -119,13 +119,13 @@ class DataRectangles extends React.Component {
         textAnchor={distToAxis < 0 ? 'start' : 'end'}
         x={x}
         y={
-          this.props.yScale(coords[1]) +
+          this.props.yScale(coord.year) +
           settings.height / settings.numDataPoints / 2 +
           3
         }
       >
         {distToAxis < 0 ? '+' : '-'}
-        {Math.round(this.props.xScale(coords[0]))}
+        {Math.round(this.props.xScale(coord.xDiff))}
       </text>
     );
   };
@@ -149,8 +149,8 @@ class ScatterPlot extends React.Component {
   };
 
   getXScale = () => {
-    const xMin = d3.min(this.props.data, d => d[0]);
-    const xMax = d3.max(this.props.data, d => d[0]);
+    const xMin = d3.min(this.props.data, d => d.xDiff);
+    const xMax = d3.max(this.props.data, d => d.xDiff);
     const absMax = d3.max([Math.abs(xMin), Math.abs(xMax)]);
 
     return d3
@@ -160,8 +160,8 @@ class ScatterPlot extends React.Component {
   };
 
   getYScale = () => {
-    const yMin = d3.min(this.props.data, d => d[1]);
-    const yMax = d3.max(this.props.data, d => d[1]);
+    const yMin = d3.min(this.props.data, d => d.year);
+    const yMax = d3.max(this.props.data, d => d.year);
 
     return d3
       .scaleLinear()
@@ -188,21 +188,26 @@ class Waterfall extends Component {
   }
 
   randomizeData = () => {
-    const randomData = d3.range(settings.numDataPoints).map((value, index) => {
-      return [
-        Math.floor(Math.random() * settings.maxRange()),
-        settings.baseYear + index,
-      ];
-    });
-    const randomDataDiffs = randomData
-      .map((datum, index) => {
+    const randomData = d3
+      .range(settings.numDataPoints)
+      .map((value, index) => {
+        return [
+          settings.baseYear + index,
+          Math.floor(Math.random() * settings.maxRange()),
+        ];
+      })
+      .map((datum, index, arr) => {
         if (index !== 0) {
-          return [datum[0] - randomData[index - 1][0], datum[1]];
+          return {
+            year: datum[0],
+            xDiff: datum[1] - arr[index - 1][1],
+            xAbs: datum[1],
+          };
         }
         return null;
       })
       .filter(val => !!val);
-    this.setState({ data: randomDataDiffs });
+    this.setState({ data: randomData });
   };
 
   render() {
