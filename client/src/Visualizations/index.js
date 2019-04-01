@@ -1,2 +1,3 @@
 import SimpleViz from './SimpleViz';
-export { SimpleViz };
+import Waterfall from './Waterfall';
+export { SimpleViz, Waterfall };
