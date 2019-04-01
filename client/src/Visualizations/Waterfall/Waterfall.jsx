@@ -67,6 +67,7 @@ class XYAxis extends React.Component {
   };
 
   render() {
+    const { settings } = this.props;
     return (
       <g className="xy-axis">
         <Axis
@@ -91,6 +92,8 @@ class DataRectangles extends React.Component {
   };
 
   renderRect = coord => {
+    const { settings } = this.props;
+
     if (settings.mode === MODE[0]) {
       var dist = settings.width / 2 - this.props.xScale(coord.xDiff);
       var width = Math.abs(dist);
@@ -103,7 +106,6 @@ class DataRectangles extends React.Component {
           ? this.props.xScale(coord.xLast)
           : this.props.xScale(coord.xAbs);
     }
-    console.log(coord.xLast, coord.xDiff);
 
     return (
       <rect
@@ -120,6 +122,7 @@ class DataRectangles extends React.Component {
   };
 
   renderRectText = coord => {
+    const { settings } = this.props;
     if (settings.mode === MODE[0]) {
       var dist = settings.width / 2 - this.props.xScale(coord.xDiff);
       var x = settings.width / 2 - dist;
@@ -155,7 +158,7 @@ class DataRectangles extends React.Component {
   }
 }
 
-class ScatterPlot extends React.Component {
+class WaterfallPlot extends React.Component {
   static propTypes = {
     padding: PropTypes.number.isRequired,
     width: PropTypes.number.isRequired,
@@ -164,6 +167,8 @@ class ScatterPlot extends React.Component {
   };
 
   getXScale = () => {
+    const { settings } = this.props;
+
     if (settings.mode === MODE[0]) {
       var xMin = d3.min(this.props.data, d => d.xDiff);
       var xMax = d3.max(this.props.data, d => d.xDiff);
@@ -173,7 +178,6 @@ class ScatterPlot extends React.Component {
     }
 
     const absMax = d3.max([Math.abs(xMin), Math.abs(xMax)]);
-    console.log(absMax, xMin, xMax);
     return d3
       .scaleLinear()
       .domain([-absMax, absMax])
@@ -204,11 +208,35 @@ class ScatterPlot extends React.Component {
 }
 
 class Waterfall extends Component {
+  static propTypes = {};
+  static defaultProps = {
+    settings: {
+      width: 500,
+      height: 600,
+      padding: 40,
+      baseYear: 1960,
+      numDataPoints: 20,
+      maxRange: () => Math.random() * 100,
+    },
+  };
+
+  state = {
+    mode: MODE[1],
+  };
+
   componentWillMount() {
     this.randomizeData();
   }
 
+  toggleMode = () => {
+    const { mode } = this.state;
+    if (mode === MODE[0]) this.setState({ mode: MODE[1] });
+    else if (mode === MODE[1]) this.setState({ mode: MODE[0] });
+  };
+
   randomizeData = () => {
+    const { settings } = this.props;
+
     const randomData = d3
       .range(settings.numDataPoints)
       .map((value, index) => {
@@ -233,11 +261,20 @@ class Waterfall extends Component {
   };
 
   render() {
+    const { settings } = this.props;
+
     return (
       <div>
         <h1>React and D3 are Friends</h1>
-        <ScatterPlot data={this.state.data} {...settings} />
+        <WaterfallPlot
+          data={this.state.data}
+          {...settings}
+          settings={{ ...settings, mode: this.state.mode }}
+        />
         <div className="controls">
+          <button className="btn randomize" onClick={this.toggleMode}>
+            Toggle Mode
+          </button>
           <button className="btn randomize" onClick={this.randomizeData}>
             Randomize Data
           </button>
@@ -246,7 +283,5 @@ class Waterfall extends Component {
     );
   }
 }
-
-Waterfall.propTypes = {};
 
 export default withData(Waterfall);
