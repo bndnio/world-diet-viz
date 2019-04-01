@@ -170,8 +170,8 @@ class ScatterPlotViz extends Component {
   };
   static defaultProps = {
     settings: {
-      width: 500,
-      height: 300,
+      width: 1000,
+      height: 600,
       padding: 30,
       numDataPoints: 50,
       maxRange: () => Math.random() * 1000,

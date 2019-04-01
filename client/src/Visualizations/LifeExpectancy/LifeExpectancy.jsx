@@ -6,8 +6,8 @@ import { withData } from '../../DataContext/withData';
 import './LifeExpectancy.css';
 
 const settings = {
-  width: 500,
-  height: 300,
+  width: 1000,
+  height: 600,
   padding: 40,
   numDataPoints: 50,
   maxRange: () => Math.random() * 1000,
