@@ -8,19 +8,15 @@
     "craco-antd": "^1.10.0",
     "d3": "^5.9.2",
     "react": "^16.8.6",
-    "react-d3-pie-chart": "^1.0.3",
     "react-dom": "^16.8.6",
-    "react-linechart": "^1.1.12",
-    "react-scripts": "^2.1.8",
-    "react-svg-line-chart": "^2.0.1",
-    "react-svg-pathline": "^0.5.0"
+    "react-scripts": "^2.1.8"
   },
   "devDependencies": {
     "create-react-component-folder": "^0.1.26",
     "nodemon": "^1.18.10"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "nodemon -w craco.config.js -w ./antd.customize.less --exec 'craco start'",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject"
