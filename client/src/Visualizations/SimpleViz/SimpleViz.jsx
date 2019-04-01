@@ -28,7 +28,7 @@ class Axis extends React.Component {
     this.renderAxis();
   }
 
-  renderAxis() {
+  renderAxis = () => {
     const node = this.refs.axisContainer;
     const baseAxis =
       this.props.orient === 'bottom'
@@ -39,7 +39,7 @@ class Axis extends React.Component {
     const axis = baseAxis.ticks(5).scale(this.props.scale);
 
     d3.select(node).call(axis);
-  }
+  };
 
   render() {
     return (
@@ -84,7 +84,7 @@ class DataCircles extends React.Component {
     yScale: PropTypes.func.isRequired,
   };
 
-  renderCircle(coords) {
+  renderCircle = coords => {
     return (
       <circle
         cx={this.props.xScale(coords[0])}
@@ -93,10 +93,10 @@ class DataCircles extends React.Component {
         key={Math.random() * 1}
       />
     );
-  }
+  };
 
   render() {
-    return <g>{this.props.data.map(this.renderCircle.bind(this))}</g>;
+    return <g>{this.props.data.map(this.renderCircle)}</g>;
   }
 }
 
@@ -108,23 +108,23 @@ class ScatterPlot extends React.Component {
     data: PropTypes.array.isRequired,
   };
 
-  getXScale() {
+  getXScale = () => {
     const xMax = d3.max(this.props.data, d => d[0]);
 
     return d3
       .scaleLinear()
       .domain([0, xMax])
       .range([this.props.padding, this.props.width - this.props.padding * 2]);
-  }
+  };
 
-  getYScale() {
+  getYScale = () => {
     const yMax = d3.max(this.props.data, d => d[1]);
 
     return d3
       .scaleLinear()
       .domain([0, yMax])
       .range([this.props.height - this.props.padding, this.props.padding]);
-  }
+  };
 
   render() {
     const xScale = this.getXScale();
@@ -140,11 +140,13 @@ class ScatterPlot extends React.Component {
 }
 
 class SimpleViz extends Component {
+  static propTypes = {};
+
   componentWillMount() {
     this.randomizeData();
   }
 
-  randomizeData() {
+  randomizeData = () => {
     const randomData = d3.range(settings.numDataPoints).map(() => {
       return [
         Math.floor(Math.random() * settings.maxRange()),
@@ -152,7 +154,7 @@ class SimpleViz extends Component {
       ];
     });
     this.setState({ data: randomData });
-  }
+  };
 
   render() {
     return (
@@ -160,10 +162,7 @@ class SimpleViz extends Component {
         <h1>React and D3 are Friends</h1>
         <ScatterPlot data={this.state.data} {...settings} />
         <div className="controls">
-          <button
-            className="btn randomize"
-            onClick={this.randomizeData.bind(this)}
-          >
+          <button className="btn randomize" onClick={this.randomizeData}>
             Randomize Data
           </button>
         </div>
@@ -171,7 +170,5 @@ class SimpleViz extends Component {
     );
   }
 }
-
-SimpleViz.propTypes = {};
 
 export default withData(SimpleViz);
