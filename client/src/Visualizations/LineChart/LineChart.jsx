@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import { withData } from '../../DataContext/withData';
 
-import './LifeExpectancy.css';
+import './LineChart.css';
 
 const settings = {
   width: 1000,
@@ -187,7 +187,7 @@ class LineGraph extends React.Component {
   }
 }
 
-class LifeExpectancy extends React.Component {
+class LineChart extends React.Component {
   componentWillMount() {
     this.getData();
   }
@@ -224,4 +224,4 @@ class LifeExpectancy extends React.Component {
   }
 }
 
-export default withData(LifeExpectancy);
+export default withData(LineChart);

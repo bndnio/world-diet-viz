@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import LifeExpectancy from './LifeExpectancy';
+import LineChart from './LineChart';
 
-describe('<LifeExpectancy />', () => {
+describe('<LineChart />', () => {
   test('renders', () => {
-    const wrapper = shallow(<LifeExpectancy />);
+    const wrapper = shallow(<LineChart />);
     expect(wrapper).toMatchSnapshot();
   });
 });
