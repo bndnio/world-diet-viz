@@ -126,9 +126,11 @@ const typeDefs = gql`
   }
 
   type Item {
-    group: Group
-    key: String
-    value: Int
+    country: String!
+    year: Int!
+    group: Group!
+    key: String!
+    value: Int!
   }
 
   type YearItem {
@@ -175,6 +177,8 @@ const aggregateItemByCountryYear = res => {
         [row.year_code]: [
           ...((acc[row.area] && acc[row.area][row.year_code]) || []),
           {
+            country: row.area,
+            year: row.year_code,
             group: groupMap(row.item),
             key: row.item,
             value: row.value,
@@ -204,6 +208,8 @@ const aggregateItemByYearCountry = res => {
         [row.area]: [
           ...((acc[row.year_code] && acc[row.year_code][row.area]) || []),
           {
+            country: row.area,
+            year: row.year_code,
             group: groupMap(row.item),
             key: row.item,
             value: row.value,
