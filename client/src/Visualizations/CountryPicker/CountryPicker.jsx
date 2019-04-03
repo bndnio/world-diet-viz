@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withData } from '../../DataContext/withData';
-import { Select } from 'antd';
+import { Select, Typography } from 'antd';
+
+const { Text } = Typography;
 
 const Option = Select.Option;
 
@@ -22,17 +24,20 @@ class CountryPicker extends Component {
     const { countries } = this.props;
 
     return (
-      <Select
-        mode="multiple"
-        style={{ width: '100%' }}
-        placeholder="Please select"
-        defaultValue={[]}
-        onChange={this.handleChange}
-      >
-        {countries.map(country => (
-          <Option key={country}>{country}</Option>
-        ))}
-      </Select>
+      <div>
+        <Text>Country</Text>
+        <Select
+          mode="multiple"
+          style={{ width: '100%' }}
+          placeholder="Please select"
+          defaultValue={[]}
+          onChange={this.handleChange}
+        >
+          {countries.map(country => (
+            <Option key={country}>{country}</Option>
+          ))}
+        </Select>
+      </div>
     );
   }
 }

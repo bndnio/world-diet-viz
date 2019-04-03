@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Card } from 'antd';
+
 import './VisualizationBase.css';
 
 class VisualizationBase extends Component {
@@ -10,7 +12,9 @@ class VisualizationBase extends Component {
   render() {
     return (
       <div className="VisualizationBase-container">
-        {this.props.children || 'Pick a visualization to get started'}
+        <Card>
+          {this.props.children || 'Pick a visualization to get started'}
+        </Card>
       </div>
     );
   }

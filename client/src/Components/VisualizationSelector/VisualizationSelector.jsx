@@ -43,8 +43,6 @@ class VisualizationSelector extends Component {
           <Menu.Item key="LifeExpectancy">Life Expectancy</Menu.Item>
           <Menu.Item key="YearSlider">Year Slider</Menu.Item>
           <Menu.Item key="CountryPicker">Country Picker</Menu.Item>
-          <Menu.Item>Other</Menu.Item>
-          <Menu.Item>AndAnother</Menu.Item>
         </Menu.SubMenu>
       </Menu>
     );

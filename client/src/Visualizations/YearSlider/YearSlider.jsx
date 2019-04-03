@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withData } from '../../DataContext/withData';
-import { Slider } from 'antd';
+import { Slider, Typography } from 'antd';
+
+const { Text } = Typography;
 
 class YearSlider extends Component {
   static propTypes = {
@@ -22,12 +24,13 @@ class YearSlider extends Component {
 
     return (
       <div>
+        <Text>Year</Text>
         <Slider
           range
           defaultValue={[lowerBound, upperBound]}
           min={lowerBound}
           max={upperBound}
-          tooltipVisible={true}
+          // tooltipVisible={true}
           onChange={this.handleChange}
         />
       </div>

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { Layout } from 'antd';
-import './VisualizationContainer.css';
 import VisualizationSelector from '../VisualizationSelector';
 import VisualizationBase from '../VisualizationBase';
+import { CountryPicker, YearSlider } from '../../Visualizations';
+import { Layout } from 'antd';
+
+import './VisualizationContainer.css';
 
 const { Sider, Content } = Layout;
 
@@ -21,6 +23,8 @@ class VisualizationContainer extends Component {
         <Sider theme="light">
           <h1 className="App-title">Nutrition InfoViz</h1>
           <VisualizationSelector openVisualization={this.openVisualization} />
+          <CountryPicker />
+          <YearSlider />
         </Sider>
         <Content>
           <VisualizationBase>
