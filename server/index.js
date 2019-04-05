@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const { ApolloServer, gql } = require('apollo-server');
 const schema = require('./schema');
 const db = require('./db');
