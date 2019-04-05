@@ -4,7 +4,8 @@
   "description": "server for the world-data-viz client",
   "main": "index.js",
   "scripts": {
-    "start": "node getEnv && nodemon -w index.js -w schema.js -w db.js --exec 'node index.js'",
+    "start": "nodemon -w index.js -w schema.js -w db.js --exec 'node index.js'",
+    "prod": "node index.js",
     "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "engines": {
