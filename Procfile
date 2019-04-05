@@ -1,1 +1,1 @@
-web: cd server && npm install && npm test && npm prod
+web: cd server && npm prod
