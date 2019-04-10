@@ -21,41 +21,41 @@ def processMacronutrientData(conn, cur):
     # Add Macronutrient Data
     print('Adding macronutrient data (in kcal)')
     
-    # # Do Fat
-    # cur.execute("SELECT country, year, value "
-    #             "FROM test "
-    #             "WHERE name='Grand Total - Fat supply quantity' "
-    #             "ORDER BY country, year")
-    # rows = cur.fetchall()
-    # print("The number of rows for fat kcal: ", cur.rowcount)
-    # for row in rows:
-    #     cur.execute("INSERT INTO test (country, year, type, name, unit, value) "
-    #                 "VALUES(%s, %s, 'MACRO', 'Grand Total - Fat - Food supply', 'kcal/capita/day', %s)",
-    #                 [row[0], row[1], row[2]*9])
+    # Do Fat
+    cur.execute("SELECT country, year, value "
+                "FROM test "
+                "WHERE name='Grand Total - Fat supply quantity' "
+                "ORDER BY country, year")
+    rows = cur.fetchall()
+    print("The number of rows for fat kcal: ", cur.rowcount)
+    for row in rows:
+        cur.execute("INSERT INTO test (country, year, type, name, unit, value) "
+                    "VALUES(%s, %s, 'MACRO', 'Grand Total - Fat - Food supply', 'kcal/capita/day', %s)",
+                    [row[0], row[1], row[2]*9])
     
-    # # Do Protein
-    # cur.execute("SELECT country, year, value "
-    #             "FROM test "
-    #             "WHERE name='Grand Total - Protein supply quantity' "
-    #             "ORDER BY country, year")
-    # rows = cur.fetchall()
-    # print("The number of rows for total protein kcal: ", cur.rowcount)
-    # for row in rows:
-    #     cur.execute("INSERT INTO test (country, year, type, name, unit, value) "
-    #                 "VALUES(%s, %s, 'MACRO', 'Grand Total - Protein - Food supply', 'kcal/capita/day', %s)",
-    #                 [row[0], row[1], row[2]*4])
+    # Do Protein
+    cur.execute("SELECT country, year, value "
+                "FROM test "
+                "WHERE name='Grand Total - Protein supply quantity' "
+                "ORDER BY country, year")
+    rows = cur.fetchall()
+    print("The number of rows for total protein kcal: ", cur.rowcount)
+    for row in rows:
+        cur.execute("INSERT INTO test (country, year, type, name, unit, value) "
+                    "VALUES(%s, %s, 'MACRO', 'Grand Total - Protein - Food supply', 'kcal/capita/day', %s)",
+                    [row[0], row[1], row[2]*4])
 
-    # # Do Total (add MACRO label)
-    # cur.execute("SELECT country, year, value "
-    #             "FROM test "
-    #             "WHERE name='Grand Total - Food supply' "
-    #             "ORDER BY country, year")
-    # rows = cur.fetchall()
-    # print("The number of rows for total kcal: ", cur.rowcount)
-    # for row in rows:
-    #     cur.execute("INSERT INTO test (country, year, type, name, unit, value) "
-    #                 "VALUES(%s, %s, 'MACRO', 'Grand Total - Food supply', 'kcal/capita/day', %s)",
-    #                 [row[0], row[1], row[2]])
+    # Do Total (add MACRO label)
+    cur.execute("SELECT country, year, value "
+                "FROM test "
+                "WHERE name='Grand Total - Food supply' "
+                "ORDER BY country, year")
+    rows = cur.fetchall()
+    print("The number of rows for total kcal: ", cur.rowcount)
+    for row in rows:
+        cur.execute("INSERT INTO test (country, year, type, name, unit, value) "
+                    "VALUES(%s, %s, 'MACRO', 'Grand Total - Food supply', 'kcal/capita/day', %s)",
+                    [row[0], row[1], row[2]])
 
     # Do Plant Protein
     cur.execute("SELECT country, year, SUM(value) "
@@ -198,9 +198,46 @@ def processMacronutrientData(conn, cur):
         cur.execute("INSERT INTO test (country, year, type, name, unit, value) "
                     "VALUES(%s, %s, 'MACRO', 'Grand Total - Animal Protein - Food supply', 'kcal/capita/day', %s)",
                     [row[0], row[1], row[2]*4])
-
+    
     # Do Carbs
+    cur.execute("DROP VIEW fat_view")
+    cur.execute("DROP VIEW total_view")
+    cur.execute("DROP VIEW protein_view")
 
+    cur.execute("CREATE VIEW fat_view AS "
+                "SELECT country, year, name, value as fat_value "
+                "FROM test "
+                "WHERE name='Grand Total - Fat supply quantity' "
+                "ORDER BY country, year, name")
+
+    cur.execute("CREATE VIEW total_view AS "
+                "SELECT country, year, name, value as total_value "
+                "FROM test "
+                "WHERE name='Grand Total - Food supply' "
+                "ORDER BY country, year, name")
+
+    cur.execute("CREATE VIEW protein_view AS "
+                "SELECT country, year, name, value as protein_value "
+                "FROM test "
+                "WHERE name='Grand Total - Protein supply quantity' "
+                "ORDER BY country, year, name")
+
+    cur.execute("SELECT DISTINCT f.country, f.year, (total_value - protein_value*4 - fat_value*9)/4 as carb_value "
+	            "FROM fat_view f, total_view t, protein_view p "
+                "WHERE f.country = t.country  "
+                    "AND f.year = t.year "
+                    "AND t.country = p.country "
+                    "AND t.year = p.year")
+    rows = cur.fetchall()
+    print("The number of rows for carb kcal: ", cur.rowcount)
+    for row in rows:
+        cur.execute("INSERT INTO test (country, year, type, name, unit, value) "
+                    "VALUES(%s, %s, 'MACRO', 'Grand Total - Carbs - Food supply', 'kcal/capita/day', %s)",
+                    [row[0], row[1], row[2]])
+                    
+    cur.execute("DROP VIEW fat_view")
+    cur.execute("DROP VIEW total_view")
+    cur.execute("DROP VIEW protein_view")
 
     conn.commit()
 
