@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import VisualizationSelector from '../VisualizationSelector';
 import VisualizationBase from '../VisualizationBase';
-import { CountryPicker, YearSlider } from '../../Visualizations';
+import {
+  CountryPicker,
+  YearSlider,
+  LineChart,
+  Waterfall,
+} from '../../Visualizations';
 import { Layout } from 'antd';
 
 import './VisualizationContainer.css';
@@ -20,17 +25,25 @@ class VisualizationContainer extends Component {
   render() {
     return (
       <Layout style={{ height: '100vh' }}>
-        <Sider theme="light">
+        <Sider theme="light" className="sideBar">
           <h1 className="App-title">Nutrition InfoViz</h1>
-          <VisualizationSelector openVisualization={this.openVisualization} />
+          {/* <VisualizationSelector openVisualization={this.openVisualization} /> */}
           <CountryPicker />
+          <br />
           <YearSlider />
         </Sider>
-        <Content>
+        <Content className="dashboard">
           <VisualizationBase>
-            {!!this.state.openVisualization ? (
+            {/* {!!this.state.openVisualization ? (
               <this.state.openVisualization />
-            ) : null}
+            ) : null} */}
+            <LineChart />
+          </VisualizationBase>
+          <VisualizationBase width={375}>
+            <Waterfall />
+          </VisualizationBase>
+          <VisualizationBase width={375}>
+            Click to add Waterfall
           </VisualizationBase>
         </Content>
       </Layout>
