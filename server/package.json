@@ -1,11 +1,10 @@
 {
-  "name": "world-data-viz-server",
+  "name": "world-diet-viz-server",
   "version": "0.0.0",
-  "description": "server for the world-data-viz client",
+  "description": "server for the world-diet-viz client",
   "main": "index.js",
   "scripts": {
     "start": "nodemon -w index.js -w schema.js -w db.js --exec 'node index.js'",
-    "prod": "node index.js",
     "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "engines": {

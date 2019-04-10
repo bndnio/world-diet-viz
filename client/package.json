@@ -1,7 +1,8 @@
 {
-  "name": "world-diet-viz",
+  "name": "world-diet-viz-client",
   "version": "0.1.0",
   "private": true,
+  "description": "client for the world-diet-viz",
   "dependencies": {
     "@craco/craco": "^3.6.0",
     "antd": "^3.14.1",
