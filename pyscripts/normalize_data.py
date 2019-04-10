@@ -35,12 +35,23 @@ def main():
     total_rows = 0
     # Count Size of file
     with open(path.abspath(fi_loc), 'r', encoding="Latin-1") as csv_file:
-        print('\nChecking Size of File')
+        print('\nChecking size of input File')
         csv_reader = csv.reader(csv_file, delimiter=',')
         total_rows = sum(1 for row in csv_reader)
         print(f'Counted {total_rows} rows')
 
     # Actually process file
+    validElements = ["Total Population - Both sexes", "Protein supply quantity (g/capita/day)", "Fat supply quantity (g/capita/day)", "Food supply (kcal/capita/day)"]
+    def typeMap(typeStr):
+        if typeStr == "Total Population - Both sexes":
+            return "Total Population"
+        elif typeStr == "Protein supply quantity (g/capita/day)":
+            return "Protein supply quantity"
+        elif typeStr == "Fat supply quantity (g/capita/day)":
+            return "Fat supply quantity"
+        elif typeStr == "Food supply (kcal/capita/day)":
+            return "Food supply"
+    
     with open(path.abspath(fi_loc), 'r', encoding="Latin-1") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         row_count = 0
@@ -50,13 +61,12 @@ def main():
             output_writer = csv.writer(output_file)
             for row in csv_reader:
                 if row_count == 0:
-                    # Add 'id' label to label row
+                    # Create Labels
+                    output_writer.writerow(["country", "year", "type", "name", "unit", "value"])
+                elif row_count != 0 and row[5] in validElements:
+                    # Simplify data
                     output_writer.writerow(
-                        ['id', *row])
-                elif row_count != 0:
-                    # Add 'id' field to existing rows
-                    output_writer.writerow(
-                        [f'{row[0].zfill(3)}{row[2].zfill(4)}{row[4].zfill(4)}{row[6].zfill(4)}', *row])
+                        [row[1], row[6], "RAW", f"{row[3]} - {typeMap(row[5])}", row[8], row[9]])
 
                 if row_count % 100000 == 0:
                     print(f'{row_count}/{total_rows} rows processed', end='\r')
