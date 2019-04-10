@@ -10,7 +10,6 @@ const { Title } = Typography;
 
 const MODE = ['ALIGN', 'FOLLOW'];
 
-
 class Axis extends React.Component {
   static propTypes = {
     translate: PropTypes.string.isRequired,
@@ -207,7 +206,7 @@ class WaterfallPlot extends React.Component {
       .scaleLinear()
       .domain([-absMax, absMax])
       .range([settings.padding, settings.width - settings.padding]);
-  }
+  };
 
   getYScale = () => {
     const { settings } = this.props;
@@ -251,11 +250,11 @@ class Waterfall extends Component {
   };
   static defaultProps = {
     settings: {
-      width: 1000,
-      height: 600,
+      width: 300,
+      height: 400,
       padding: 40,
-      baseYear: 1960,
-      numDataPoints: 20,
+      baseYear: 1985,
+      numDataPoints: 30,
       maxRange: () => Math.random() * 100,
     },
   };
@@ -304,8 +303,8 @@ class Waterfall extends Component {
     const { settings } = this.props;
 
     return (
-      <div>
-        <Title>Sample Waterfall</Title>
+      <div style={{ width: settings.width }}>
+        <Title level={3}>Canada - Vegetables</Title>
         <WaterfallPlot
           data={this.state.data}
           settings={{ ...settings, mode: this.state.mode }}

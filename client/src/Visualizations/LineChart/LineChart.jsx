@@ -7,8 +7,8 @@ import './LineChart.css';
 
 const settings = {
   width: 1000,
-  height: 600,
-  padding: 40,
+  height: 300,
+  padding: 50,
   numDataPoints: 50,
   maxRange: () => Math.random() * 1000,
 };
@@ -64,8 +64,10 @@ class YAxis extends React.Component {
 
   renderYAxis() {
     const node = this.refs.axisContainer;
-    const baseAxis = d3.axisLeft().ticks(5);
-    const axis = baseAxis.scale(this.props.scale);
+    let baseAxis;
+    if (this.props.flip) baseAxis = d3.axisRight();
+    else baseAxis = d3.axisLeft();
+    const axis = baseAxis.ticks(5).scale(this.props.scale);
     d3.select(node).call(axis);
   }
 
@@ -92,13 +94,42 @@ class XYAxis extends React.Component {
     return (
       <g className="LE-xy-axis">
         <XAxis
-          translate={`translate(0, ${this.props.height - this.props.padding})`}
+          translate={`translate(0, ${this.props.height -
+            (this.props.padding * 2) / 3})`}
           scale={this.props.xScale}
         />
+        <text
+          className="axis"
+          textAnchor="middle"
+          transform={`translate(${settings.width / 2 -
+            this.props.padding / 2}, ${settings.height - 5})`}
+        >
+          [year]
+        </text>
         <YAxis
           translate={`translate(${this.props.padding}, 0)`}
           scale={this.props.yScale}
         />
+        <text
+          className="axis"
+          textAnchor="middle"
+          transform={`translate(10, ${settings.height / 2}), rotate(-90)`}
+        >
+          [total kCal]
+        </text>
+        <YAxis
+          translate={`translate(${settings.width - this.props.padding * 2}, 0)`}
+          scale={this.props.otherYScale}
+          flip
+        />
+        <text
+          className="axis"
+          textAnchor="middle"
+          transform={`translate(${settings.width - 10}, ${settings.height /
+            2}), rotate(-90)`}
+        >
+          [Mean Age of Death]
+        </text>
       </g>
     );
   }
@@ -118,7 +149,7 @@ class Lines extends React.Component {
         x2={this.props.xScale(coords[2])}
         y2={this.props.yScale(coords[3])}
         strokeWidth={2}
-        stroke={'#cbcfd6'}
+        stroke={this.props.color}
       />
     );
   }
@@ -141,7 +172,7 @@ class DataCircles extends React.Component {
         cy={this.props.yScale(coords[3])}
         r={3}
         key={Math.random()}
-        fill={'#4295f4'}
+        fill={this.props.color}
       />
     );
   }
@@ -162,26 +193,64 @@ class LineGraph extends React.Component {
   getXScale() {
     return d3
       .scaleLinear()
-      .domain([1985, 2015]) // When data begins, ends
+      .domain([1983, 2013]) // When data begins, ends
       .range([this.props.padding, this.props.width - this.props.padding * 2]);
   }
 
-  getYScale() {
+  getDataYScale() {
     return d3
       .scaleLinear()
-      .domain([0, 100]) // Age 0 to age 100. Should be constant values
+      .domain([1500, 2500])
+      .range([this.props.height - this.props.padding, this.props.padding]);
+  }
+  getDeathYScale() {
+    return d3
+      .scaleLinear()
+      .domain([50, 100])
       .range([this.props.height - this.props.padding, this.props.padding]);
   }
 
   render() {
     const xScale = this.getXScale();
-    const yScale = this.getYScale();
+    const yDataScale = this.getDataYScale();
+    const yDeathDataScale = this.getDeathYScale();
 
     return (
       <svg width={this.props.width} height={this.props.height}>
-        <Lines xScale={xScale} yScale={yScale} {...this.props} />
-        <DataCircles xScale={xScale} yScale={yScale} {...this.props} />
-        <XYAxis xScale={xScale} yScale={yScale} {...this.props} />
+        <Lines
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.data}
+          color="#cbcfd6"
+        />
+        <Lines
+          xScale={xScale}
+          yScale={yDeathDataScale}
+          {...this.props}
+          data={this.props.deathData}
+          color="#000000"
+        />
+        <DataCircles
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.data}
+          color="#cbcfd6"
+        />
+        <DataCircles
+          xScale={xScale}
+          yScale={yDeathDataScale}
+          {...this.props}
+          data={this.props.deathData}
+          color="#000000"
+        />
+        <XYAxis
+          xScale={xScale}
+          yScale={yDataScale}
+          otherYScale={yDeathDataScale}
+          {...this.props}
+        />
       </svg>
     );
   }
@@ -195,30 +264,49 @@ class LineChart extends React.Component {
   getData() {
     // each datapoint in form of [year, age, nextYear, nextAge]
     const myData = [
-      [1985, 55, 1986, 56],
-      [1986, 56, 1988, 53],
-      [1988, 53, 1990, 61],
-      [1990, 61, 1992, 64],
-      [1992, 64, 1995, 62],
-      [1995, 62, 1998, 59],
-      [1998, 59, 2000, 63],
-      [2000, 63, 2002, 65],
-      [2002, 65, 2005, 64],
-      [2005, 64, 2007, 66],
-      [2007, 66, 2010, 69],
-      [2010, 69, 2012, 68],
-      [2012, 68, 2015, 70],
+      [1983, 2055],
+      [1984, 2056],
+      [1986, 2053],
+      [1988, 2061],
+      [1990, 2164],
+      [1992, 2162],
+      [1994, 2189],
+      [1996, 2159],
+      [1998, 2209],
+      [2000, 2183],
+      [2002, 2155],
+      [2004, 2124],
+      [2006, 2124],
+      [2008, 2126],
+      [2010, 2199],
+      [2012, 2228],
     ];
-    this.setState({ data: myData });
+    this.setState({
+      data: myData
+        .map((yr, i, arr) => {
+          if (i === 0) return undefined;
+          else return [yr[0], yr[1], [arr[i - 1][0]], [arr[i - 1][1]]];
+        })
+        .filter(d => !!d),
+      deathData: myData
+        .map(d => [d[0], d[1] / 27 + (Math.random() - 0.5) * 2])
+        .map((yr, i, arr) => {
+          if (i === 0) return undefined;
+          else return [yr[0], yr[1], [arr[i - 1][0]], [arr[i - 1][1]]];
+        })
+        .filter(d => !!d),
+    });
   }
 
   render() {
     return (
       <div>
-        <h1>Life Expectancy</h1>
-        <LineGraph data={this.state.data} {...settings} />
-        <text className="x-axis">Year</text>
-        <text className="y-axis">Age</text>
+        <h1>Total kCal Consumption & Mortality v. Time</h1>
+        <LineGraph
+          data={this.state.data}
+          deathData={this.state.deathData}
+          {...settings}
+        />
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import LineChart from './LineChart';
+import LineChart from './LineChart.test';
 
 describe('<LineChart />', () => {
   test('renders', () => {
