@@ -120,17 +120,18 @@ const typeDefs = gql`
   }
 
   enum Group {
-    MACRONUTRIENT
-    FOODGROUP
+    RAW
+    MACRO
+    GROUP
     OTHER
   }
 
   type Item {
     country: String!
     year: Int!
-    group: Group!
+    type: Group!
     key: String!
-    value: Int!
+    value: Float!
   }
 
   type YearItem {
@@ -156,62 +157,38 @@ const typeDefs = gql`
   # The "Query" type is the root of all GraphQL queries.
   # (A "Mutation" type will be covered later on.)
   type Query {
-    itemByYearCountry: [YearCountries!]
-    itemByCountryYear: [CountryYears!]
+    itemByYearCountry(
+      years: [Int!]
+      countries: [String!]
+      type: Group
+    ): [YearCountries!]
+    itemByCountryYear(
+      countries: [String!]
+      years: [Int!]
+      type: Group
+    ): [CountryYears!]
   }
 `;
 
-const queryString = `SELECT DISTINCT area, year_code, item, value 
-  FROM undiet
-  WHERE area = 'Canada' AND
-    element_code = '664'
-  ORDER BY area, year_code;`;
-
-const aggregateItemByCountryYear = res => {
-  const { rows } = res;
-  const countryGrouped = rows.reduce(
-    (acc, row) => ({
-      ...acc,
-      [row.area]: {
-        ...(acc[row.area] || {}),
-        [row.year_code]: [
-          ...((acc[row.area] && acc[row.area][row.year_code]) || []),
-          {
-            country: row.area,
-            year: row.year_code,
-            group: groupMap(row.item),
-            key: row.item,
-            value: row.value,
-          },
-        ],
-      },
-    }),
-    {}
-  );
-  const output = Object.entries(countryGrouped).map(([country, years]) => ({
-    country,
-    years: Object.entries(years).map(([year, items]) => ({
-      year,
-      items,
-    })),
-  }));
-  return output;
-};
+const queryString = `SELECT DISTINCT country, year, type, name, value 
+  FROM diet
+  WHERE country='Canada'
+  ORDER BY country, year;`;
 
 const aggregateItemByYearCountry = res => {
   const { rows } = res;
   const yearGrouped = rows.reduce(
     (acc, row) => ({
       ...acc,
-      [row.year_code]: {
-        ...(acc[row.year_code] || {}),
-        [row.area]: [
-          ...((acc[row.year_code] && acc[row.year_code][row.area]) || []),
+      [row.year]: {
+        ...(acc[row.year] || {}),
+        [row.country]: [
+          ...((acc[row.year] && acc[row.year][row.country]) || []),
           {
-            country: row.area,
-            year: row.year_code,
-            group: groupMap(row.item),
-            key: row.item,
+            country: row.country,
+            year: row.year,
+            type: row.type,
+            key: row.name,
             value: row.value,
           },
         ],
@@ -229,12 +206,76 @@ const aggregateItemByYearCountry = res => {
   return output;
 };
 
+const aggregateItemByCountryYear = res => {
+  const { rows } = res;
+  const countryGrouped = rows.reduce(
+    (acc, row) => ({
+      ...acc,
+      [row.country]: {
+        ...(acc[row.country] || {}),
+        [row.year]: [
+          ...((acc[row.country] && acc[row.country][row.year]) || []),
+          {
+            country: row.country,
+            year: row.year,
+            type: row.type,
+            key: row.name,
+            value: row.value,
+          },
+        ],
+      },
+    }),
+    {}
+  );
+  const output = Object.entries(countryGrouped).map(([country, years]) => ({
+    country,
+    years: Object.entries(years).map(([year, items]) => ({
+      year,
+      items,
+    })),
+  }));
+  return output;
+};
+
+const buildQueryStr = ({ countries = [], years = [], type = '' }) =>
+  [
+    `SELECT DISTINCT country, year, type, name, value FROM diet`,
+    countries.length > 0 ? `WHERE ( country='${countries[0]}'` : '',
+    countries.length > 1
+      ? countries.slice(1).map(c => `OR country='${c}'`)
+      : '',
+    countries.length > 0 ? `)` : '',
+    countries.length > 0 && years.length > 0 ? `AND` : '',
+    countries.length === 0 && years.length > 0 ? `WHERE` : '',
+    years.length > 0 ? `( year=${years[0]}` : '',
+    years.length > 1 ? years.slice(1).map(y => `OR year=${y}`) : '',
+    years.length > 0 ? `)` : '',
+    countries.length === 0 && years.length === 0 && years.length > 0
+      ? `WHERE`
+      : '',
+    (countries.length > 0 || years.length > 0) && !!type ? `AND` : '',
+    !!type ? `type='${type}'` : '',
+
+    `ORDER BY country, year;`,
+  ].join(' ');
+
 // Resolvers define the technique for fetching the types in the
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    itemByCountryYear: () => runQuery(queryString, aggregateItemByCountryYear),
-    itemByYearCountry: () => runQuery(queryString, aggregateItemByYearCountry),
+    itemByYearCountry(parent, args) {
+      return runQuery(buildQueryStr(args), aggregateItemByYearCountry);
+    },
+    itemByCountryYear: args =>
+      runQuery(
+        `SELECT DISTINCT country, year, type, name, value FROM diet ` +
+          args.countries.length >
+          0 &&
+          `WHERE country='${args.countries[0]}' ${args.countries.length > 1 &&
+            args.countries.slice(1).map(c => `OR country='${c}' `)}` +
+            `ORDER BY country, year;`,
+        aggregateItemByCountryYear
+      ),
   },
 };
 

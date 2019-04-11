@@ -10,6 +10,7 @@ const runQuery = (queryString, func) =>
     .query(queryString)
     .then(res => func(res))
     .catch(err => {
+      console.log('queryString: ', queryString);
       console.log('error', err);
     });
 
