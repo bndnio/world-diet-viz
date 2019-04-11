@@ -167,6 +167,7 @@ const typeDefs = gql`
       years: [Int!]
       type: Group
     ): [CountryYears!]
+    countries: [String!]!
   }
 `;
 
@@ -274,6 +275,11 @@ const resolvers = {
             `ORDER BY country, year;`,
         aggregateItemByCountryYear
       ),
+    countries() {
+      return runQuery(`SELECT DISTINCT country FROM diet`, res =>
+        res.rows.map(r => r.country)
+      );
+    },
   },
 };
 
