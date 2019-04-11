@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
 import VisualizationContainer from '../Components/VisualizationContainer';
+import DataProvider from '../DataContext/DataProvider';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <VisualizationContainer />
-      </div>
+      <DataProvider>
+        <div className="App">
+          <VisualizationContainer />
+        </div>
+      </DataProvider>
     );
   }
 }
