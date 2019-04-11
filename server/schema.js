@@ -250,9 +250,7 @@ const buildQueryStr = ({ countries = [], years = [], type = '' }) =>
     years.length > 0 ? `( year=${years[0]}` : '',
     years.length > 1 ? years.slice(1).map(y => `OR year=${y}`) : '',
     years.length > 0 ? `)` : '',
-    countries.length === 0 && years.length === 0 && years.length > 0
-      ? `WHERE`
-      : '',
+    countries.length === 0 && years.length === 0 && !!type ? `WHERE` : '',
     (countries.length > 0 || years.length > 0) && !!type ? `AND` : '',
     !!type ? `type='${type}'` : '',
 
