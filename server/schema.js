@@ -126,6 +126,11 @@ const typeDefs = gql`
     OTHER
   }
 
+  type Range {
+    min: Int!
+    max: Int!
+  }
+
   type Item {
     country: String!
     year: Int!
@@ -168,6 +173,7 @@ const typeDefs = gql`
       type: Group
     ): [CountryYears!]
     countries: [String!]!
+    yearRange: Range
   }
 `;
 
@@ -264,24 +270,18 @@ const buildQueryStr = ({ countries = [], years = [], type = '' }) =>
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    itemByYearCountry(parent, args) {
-      return runQuery(buildQueryStr(args), aggregateItemByYearCountry);
-    },
-    itemByCountryYear: args =>
-      runQuery(
-        `SELECT DISTINCT country, year, type, name, value FROM diet ` +
-          args.countries.length >
-          0 &&
-          `WHERE country='${args.countries[0]}' ${args.countries.length > 1 &&
-            args.countries.slice(1).map(c => `OR country='${c}' `)}` +
-            `ORDER BY country, year;`,
-        aggregateItemByCountryYear
-      ),
-    countries() {
-      return runQuery(`SELECT DISTINCT country FROM diet`, res =>
+    itemByYearCountry: (parent, args) =>
+      runQuery(buildQueryStr(args), aggregateItemByYearCountry),
+    itemByCountryYear: (parent, args) =>
+      runQuery(buildQueryStr(args), aggregateItemByCountryYear),
+    countries: () =>
+      runQuery(`SELECT DISTINCT country FROM diet`, res =>
         res.rows.map(r => r.country)
-      );
-    },
+      ),
+    yearRange: () => ({
+      min: runQuery(`SELECT MIN(year) from diet`, res => res.rows[0].min),
+      max: runQuery(`SELECT MAX(year) from diet`, res => res.rows[0].max),
+    }),
   },
 };
 
