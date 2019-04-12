@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import VisualizationSelector from '../VisualizationSelector';
 import VisualizationBase from '../VisualizationBase';
 import {
   CountryPicker,
   YearSlider,
   LineChart,
   Waterfall,
+  ScatterPlot,
 } from '../../Visualizations';
 import { Layout } from 'antd';
 
@@ -15,7 +15,7 @@ const { Sider, Content } = Layout;
 
 class VisualizationContainer extends Component {
   state = {
-    openVisualization: null,
+    waterfalls: [],
   };
 
   openVisualization = visualizationComponent => {
@@ -34,15 +34,25 @@ class VisualizationContainer extends Component {
         </Sider>
         <Content className="dashboard">
           <VisualizationBase>
-            {/* {!!this.state.openVisualization ? (
-              <this.state.openVisualization />
-            ) : null} */}
+            <ScatterPlot />
+          </VisualizationBase>
+          <VisualizationBase>
             <LineChart />
           </VisualizationBase>
-          <VisualizationBase style={{ width: 375 }}>
-            <Waterfall />
-          </VisualizationBase>
-          <VisualizationBase style={{ width: 375 }}>
+          {this.state.waterfalls}
+          <VisualizationBase
+            onClick={() =>
+              this.setState({
+                waterfalls: [
+                  ...this.state.waterfalls,
+                  <VisualizationBase>
+                    <Waterfall />
+                  </VisualizationBase>,
+                ],
+              })
+            }
+            style={{ width: 375 }}
+          >
             Click to add Waterfall
           </VisualizationBase>
         </Content>

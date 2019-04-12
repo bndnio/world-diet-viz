@@ -12,6 +12,7 @@ const Selector = props => {
 
   return (
     <Select
+      {...props}
       showSearch
       style={{ width: 200 }}
       placeholder={props.placeholder || 'Select one'}

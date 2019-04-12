@@ -26,6 +26,7 @@ class WaterfallConfig extends Component {
       availableCountries,
       availableYears,
     } = this.props.interaction.fields;
+    const { country, group, year } = this.props;
 
     const GET_GROUP_OPTIONS = gql`
       {
@@ -50,16 +51,19 @@ class WaterfallConfig extends Component {
                 placeholder="Select a country"
                 options={availableCountries}
                 handleChange={handleChange('country')}
+                value={country || undefined}
               />
               <Selector
                 placeholder="Select a group"
                 options={data.names.map(name => MacroNameMap[name])}
                 handleChange={handleChange('group')}
+                value={group || undefined}
               />
               <Selector
                 placeholder="Select a year"
                 options={availableYears}
                 handleChange={handleChange('year')}
+                value={year || undefined}
               />
               <Button type="primary" onClick={this.props.toggleView}>
                 Visualize

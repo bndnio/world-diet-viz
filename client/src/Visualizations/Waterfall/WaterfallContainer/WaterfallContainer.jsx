@@ -33,7 +33,7 @@ class WaterfallContainer extends Component {
           </button>
         </span>
         {this.state.displayConfig ? (
-          <WaterfallConfig handleChange={this.handleChange} />
+          <WaterfallConfig handleChange={this.handleChange} {...this.state} />
         ) : (
           <WaterfallViz {...this.props} />
         )}
