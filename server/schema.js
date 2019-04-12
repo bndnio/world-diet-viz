@@ -275,7 +275,7 @@ const resolvers = {
     itemByCountryYear: (parent, args) =>
       runQuery(buildQueryStr(args), aggregateItemByCountryYear),
     countries: () =>
-      runQuery(`SELECT DISTINCT country FROM diet`, res =>
+      runQuery(`SELECT DISTINCT country FROM diet ORDER BY country ASC`, res =>
         res.rows.map(r => r.country)
       ),
     yearRange: () => ({
