@@ -55,7 +55,10 @@ class WaterfallConfig extends Component {
               />
               <Selector
                 placeholder="Select a group"
-                options={data.names.map(name => MacroNameMap[name])}
+                options={data.names.map(name => ({
+                  value: name,
+                  display: MacroNameMap[name],
+                }))}
                 handleChange={handleChange('group')}
                 value={group || undefined}
               />

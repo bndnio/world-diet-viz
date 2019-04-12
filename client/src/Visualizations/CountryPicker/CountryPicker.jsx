@@ -11,6 +11,7 @@ const Option = Select.Option;
 
 class CountryPicker extends Component {
   handleChange = value => {
+    this.props.data.setQuery({ countries: value || [] });
     this.props.interaction.setFields({ availableCountries: value || [] });
   };
 

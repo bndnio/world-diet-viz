@@ -13,7 +13,7 @@ export default class DataProvider extends React.Component {
       data: [],
       queryParams: {
         type: 'MACRO',
-        countries: ['Canada'],
+        countries: [],
         years: [],
       },
       loading: true,

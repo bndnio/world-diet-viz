@@ -23,8 +23,8 @@ const Selector = props => {
       }
     >
       {props.options.map((option, index) => (
-        <Option key={index} value={option}>
-          {option}
+        <Option key={option.value || index} value={option.value || option}>
+          {option.display || option}
         </Option>
       ))}
     </Select>
@@ -35,10 +35,15 @@ Selector.propTypes = {
   placeholder: PropTypes.string,
   handleChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(
-    PropTypes.oneOfType(
-      PropTypes.string.isRequired,
-      PropTypes.number.isRequired
-    )
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.shape({
+        value: PropTypes.string.isRequired,
+        display: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+          .isRequired,
+      }),
+    ]).isRequired
   ).isRequired,
 };
 
