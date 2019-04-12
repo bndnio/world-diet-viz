@@ -182,6 +182,31 @@ class DataCircles extends React.Component {
   }
 }
 
+class FillBottom extends React.Component {
+  static propTypes = {
+    xScale: PropTypes.func.isRequired,
+    yScale: PropTypes.func.isRequired,
+  };
+
+  renderFillBottom(coords) {
+    return (
+      <polygon
+        points={`
+        ${this.props.xScale(coords[0])},${this.props.yScale(0)}
+        ${this.props.xScale(coords[2])},${this.props.yScale(0)}
+        ${this.props.xScale(coords[2])},${this.props.yScale(coords[3])}
+        ${this.props.xScale(coords[0])},${this.props.yScale(coords[1])}
+        `}
+        fill={this.props.color}
+      />
+    );
+  }
+
+  render() {
+    return <g>{this.props.data.map(this.renderFillBottom.bind(this))}</g>;
+  }
+}
+
 class LineGraph extends React.Component {
   static propTypes = {
     padding: PropTypes.number.isRequired,
@@ -200,7 +225,7 @@ class LineGraph extends React.Component {
   getDataYScale() {
     return d3
       .scaleLinear()
-      .domain([1500, 2500])
+      .domain([0, 2500])
       .range([this.props.height - this.props.padding, this.props.padding]);
   }
   getDeathYScale() {
@@ -217,12 +242,61 @@ class LineGraph extends React.Component {
 
     return (
       <svg width={this.props.width} height={this.props.height}>
+        <FillBottom
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.data}
+          color="#edf3ff"
+        />
         <Lines
           xScale={xScale}
           yScale={yDataScale}
           {...this.props}
           data={this.props.data}
-          color="#cbcfd6"
+          color="#ccddff"
+        />
+        <FillBottom
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.measure3}
+          color="#ddeaff"
+        />
+        <Lines
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.measure3}
+          color="#b3d0ff"
+        />
+        <FillBottom
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.measure2}
+          color="#c1d8ff"
+        />
+        <Lines
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.measure2}
+          color="#99beff"
+        />
+        <FillBottom
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.measure1}
+          color="#a0c4ff"
+        />
+        <Lines
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.measure1}
+          color="#80b0ff"
         />
         <Lines
           xScale={xScale}
@@ -230,13 +304,6 @@ class LineGraph extends React.Component {
           {...this.props}
           data={this.props.deathData}
           color="#000000"
-        />
-        <DataCircles
-          xScale={xScale}
-          yScale={yDataScale}
-          {...this.props}
-          data={this.props.data}
-          color="#cbcfd6"
         />
         <DataCircles
           xScale={xScale}
@@ -262,26 +329,27 @@ class LineChart extends React.Component {
   }
 
   getData() {
-    // each datapoint in form of [year, age, nextYear, nextAge]
+    // each datapoint in form of [year, totalKCal, measure1, measure2, measure3]
     const myData = [
-      [1983, 2055],
-      [1984, 2056],
-      [1986, 2053],
-      [1988, 2061],
-      [1990, 2164],
-      [1992, 2162],
-      [1994, 2189],
-      [1996, 2159],
-      [1998, 2209],
-      [2000, 2183],
-      [2002, 2155],
-      [2004, 2124],
-      [2006, 2124],
-      [2008, 2126],
-      [2010, 2199],
-      [2012, 2228],
+      [1983, 2055, 400, 500, 700],
+      [1984, 2056, 500, 600, 500],
+      [1986, 2053, 600, 500, 600],
+      [1988, 2061, 300, 300, 500],
+      [1990, 2164, 200, 200, 700],
+      [1992, 2162, 400, 600, 700],
+      [1994, 2189, 500, 300, 800],
+      [1996, 2159, 600, 600, 700],
+      [1998, 2209, 500, 500, 500],
+      [2000, 2183, 400, 400, 600],
+      [2002, 2155, 200, 300, 500],
+      [2004, 2124, 600, 200, 600],
+      [2006, 2124, 500, 100, 700],
+      [2008, 2126, 600, 500, 700],
+      [2010, 2199, 500, 600, 600],
+      [2012, 2228, 400, 500, 800],
     ];
     this.setState({
+      // x1, y1, x2, y2
       data: myData
         .map((yr, i, arr) => {
           if (i === 0) return undefined;
@@ -295,6 +363,24 @@ class LineChart extends React.Component {
           else return [yr[0], yr[1], [arr[i - 1][0]], [arr[i - 1][1]]];
         })
         .filter(d => !!d),
+      measure1: myData
+        .map((yr, i, arr) => {
+          if (i === 0) return undefined;
+          else return [yr[0], yr[2], [arr[i - 1][0]], [arr[i - 1][2]]];
+        })
+        .filter(d => !!d),
+      measure2: myData
+        .map((yr, i, arr) => {
+          if (i === 0) return undefined;
+          else return [yr[0], yr[2] + yr[3], [arr[i - 1][0]], [arr[i - 1][2] + arr[i - 1][3]]];
+        })
+        .filter(d => !!d),
+      measure3: myData
+        .map((yr, i, arr) => {
+          if (i === 0) return undefined;
+          else return [yr[0], yr[2] + yr[3] + yr[4], [arr[i - 1][0]], [arr[i - 1][2] + arr[i - 1][3] + arr[i - 1][4]]];
+        })
+        .filter(d => !!d),
     });
   }
 
@@ -305,6 +391,9 @@ class LineChart extends React.Component {
         <LineGraph
           data={this.state.data}
           deathData={this.state.deathData}
+          measure1={this.state.measure1}
+          measure2={this.state.measure2}
+          measure3={this.state.measure3}
           {...settings}
         />
       </div>
@@ -313,3 +402,4 @@ class LineChart extends React.Component {
 }
 
 export default withData(LineChart);
+
