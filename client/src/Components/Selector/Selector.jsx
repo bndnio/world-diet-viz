@@ -14,7 +14,7 @@ const Selector = props => {
     <Select
       showSearch
       style={{ width: 200 }}
-      placeholder="Select a Group"
+      placeholder={props.placeholder || 'Select one'}
       optionFilterProp="children"
       onChange={handleChange}
       filterOption={(input, option) =>
@@ -31,7 +31,14 @@ const Selector = props => {
 };
 
 Selector.propTypes = {
-  options: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  placeholder: PropTypes.string,
+  handleChange: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.oneOfType(
+      PropTypes.string.isRequired,
+      PropTypes.number.isRequired
+    )
+  ).isRequired,
 };
 
 export default Selector;
