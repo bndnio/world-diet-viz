@@ -39,10 +39,10 @@ class VisualizationContainer extends Component {
             ) : null} */}
             <LineChart />
           </VisualizationBase>
-          <VisualizationBase width={375}>
+          <VisualizationBase style={{ width: 375 }}>
             <Waterfall />
           </VisualizationBase>
-          <VisualizationBase width={375}>
+          <VisualizationBase style={{ width: 375 }}>
             Click to add Waterfall
           </VisualizationBase>
         </Content>

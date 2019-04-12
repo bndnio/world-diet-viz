@@ -10,10 +10,10 @@ class VisualizationBase extends Component {
   };
 
   render() {
-    const { children, ...rest } = this.props;
+    const { children, style, ...rest } = this.props;
     return (
       <div className="VisualizationBase-container">
-        <Card style={{ ...rest }}>
+        <Card style={style}>
           {this.props.children || 'Pick a visualization to get started'}
         </Card>
       </div>
