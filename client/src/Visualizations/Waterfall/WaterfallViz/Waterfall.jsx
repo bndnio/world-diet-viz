@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
-import { withData } from '../../../Contexts/DataContext/withData';
 import { Typography } from 'antd';
 
 import './Waterfall.css';
+import MacroNameMap from '../../../Modules/MacroNameMap';
 
 const { Title } = Typography;
 
@@ -264,7 +264,7 @@ class Waterfall extends Component {
   };
 
   componentWillMount() {
-    this.randomizeData();
+    this.processData();
   }
 
   toggleMode = () => {
@@ -273,17 +273,9 @@ class Waterfall extends Component {
     else if (mode === MODE[1]) this.setState({ mode: MODE[0] });
   };
 
-  randomizeData = () => {
-    const { settings } = this.props;
-
-    const randomData = d3
-      .range(settings.numDataPoints)
-      .map((value, index) => {
-        return [
-          settings.baseYear + index,
-          Math.floor(Math.random() * settings.maxRange()),
-        ];
-      })
+  processData = () => {
+    console.log(this.props);
+    const nextData = this.props.data
       .map((datum, index, arr) => {
         if (index !== 0) {
           return {
@@ -296,15 +288,17 @@ class Waterfall extends Component {
         return null;
       })
       .filter(val => !!val);
-    this.setState({ data: randomData });
+    this.setState({ data: nextData });
   };
 
   render() {
-    const { settings } = this.props;
+    const { settings, country, group } = this.props;
 
     return (
       <div style={{ width: settings.width }}>
-        <Title level={3}>Canada - Vegetables</Title>
+        <h3>
+          {country} - {MacroNameMap[group]}
+        </h3>
         <WaterfallPlot
           data={this.state.data}
           settings={{ ...settings, mode: this.state.mode }}
@@ -313,7 +307,7 @@ class Waterfall extends Component {
           <button className="btn randomize" onClick={this.toggleMode}>
             Toggle Mode
           </button>
-          <button className="btn randomize" onClick={this.randomizeData}>
+          <button className="btn randomize" onClick={this.processData}>
             Randomize Data
           </button>
         </div>
@@ -322,4 +316,4 @@ class Waterfall extends Component {
   }
 }
 
-export default withData(Waterfall);
+export default Waterfall;
