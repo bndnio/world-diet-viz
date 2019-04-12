@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
-import { withData } from '../../../DataContext/withData';
+import { withData } from '../../../Contexts/DataContext/withData';
 import { Typography } from 'antd';
 
 import './Waterfall.css';

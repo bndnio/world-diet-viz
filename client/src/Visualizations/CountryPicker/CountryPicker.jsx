@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
-import { withData } from '../../DataContext/withData';
+import { withData } from '../../Contexts/DataContext/withData';
 import { Select, Typography } from 'antd';
 
 const { Text } = Typography;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import VisualizationContainer from '../Components/VisualizationContainer';
-import DataProvider from '../DataContext/DataProvider';
+import DataProvider from '../Contexts/DataContext/DataProvider';
 
 class App extends Component {
   render() {
