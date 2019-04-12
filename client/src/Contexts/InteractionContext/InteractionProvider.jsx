@@ -5,7 +5,7 @@ export default class InteractionProvider extends React.Component {
   constructor() {
     super();
     this.state = {
-      setInteraction: this.setInteraction,
+      setFields: this.setFields,
       fields: {
         availableYears: [],
         availableCountries: [],
@@ -17,10 +17,11 @@ export default class InteractionProvider extends React.Component {
     };
   }
 
-  setInteraction = nextInteractionDiff => {
+  setFields = nextFieldsDiff => {
+    console.log(nextFieldsDiff);
     // save Interaction to state
     this.setState(state => ({
-      interaction: { ...state.interaction, ...nextInteractionDiff },
+      fields: { ...state.fields, ...nextFieldsDiff },
     }));
   };
 
