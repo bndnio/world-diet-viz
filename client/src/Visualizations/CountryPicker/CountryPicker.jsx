@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { withData } from '../../Contexts/DataContext/withData';
+import { withInteraction } from '../../Contexts/InteractionContext/withInteraction';
 import { Select, Typography } from 'antd';
 
 const { Text } = Typography;
@@ -9,9 +10,9 @@ const { Text } = Typography;
 const Option = Select.Option;
 
 class CountryPicker extends Component {
-  handleChange(value) {
-    console.log(`selected ${value}`);
-  }
+  handleChange = value => {
+    this.props.interaction.setFields({ availableCountries: value || [] });
+  };
 
   render() {
     const GET_COUNTRIES = gql`
@@ -49,4 +50,4 @@ class CountryPicker extends Component {
   }
 }
 
-export default withData(CountryPicker);
+export default withInteraction(withData(CountryPicker));

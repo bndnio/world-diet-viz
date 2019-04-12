@@ -18,7 +18,6 @@ export default class InteractionProvider extends React.Component {
   }
 
   setFields = nextFieldsDiff => {
-    console.log(nextFieldsDiff);
     // save Interaction to state
     this.setState(state => ({
       fields: { ...state.fields, ...nextFieldsDiff },
