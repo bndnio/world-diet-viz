@@ -1,0 +1,9 @@
+.WaterfallConfig {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.WaterfallConfig > * {
+  margin-bottom: 1rem;
+}

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './WaterfallConfig.css';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { withInteraction } from '../../../Contexts/InteractionContext/withInteraction';
 import Selector from '../../../Components/Selector';
 import MacroNameMap from '../../../Modules/MacroNameMap';
+import { Button } from 'antd';
 
 class WaterfallConfig extends Component {
   render() {
@@ -30,8 +32,8 @@ class WaterfallConfig extends Component {
           if (error) console.log('Error loading gql data for YearSlider');
 
           return (
-            <div>
-              WaterfallConfig
+            <div className="WaterfallConfig">
+              <h3>Config</h3>
               <Selector
                 placeholder="Select a country"
                 options={availableCountries}
@@ -47,6 +49,9 @@ class WaterfallConfig extends Component {
                 options={availableYears}
                 handleChange={handleChange('year')}
               />
+              <Button type="primary" onClick={this.props.toggleView}>
+                Visualize
+              </Button>
             </div>
           );
         }}
@@ -55,6 +60,15 @@ class WaterfallConfig extends Component {
   }
 }
 
-WaterfallConfig.propTypes = {};
+WaterfallConfig.propTypes = {
+  toggleView: PropTypes.func.isRequired,
+  interaction: PropTypes.shape({
+    fields: PropTypes.shape({
+      availableCountries: PropTypes.arrayOf(PropTypes.string.isRequired)
+        .isRequired,
+      availableYears: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 export default withInteraction(WaterfallConfig);

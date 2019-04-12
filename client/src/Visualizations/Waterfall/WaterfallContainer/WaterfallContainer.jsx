@@ -5,9 +5,14 @@ import WaterfallConfig from '../WaterfallConfig';
 
 class WaterfallContainer extends Component {
   state = {
+    displayConfig: true,
     country: null,
     group: null,
     year: null,
+  };
+
+  toggleView = () => {
+    this.setState(state => ({ displayConfig: !state.displayConfig }));
   };
 
   handleChange = diff => {
@@ -17,9 +22,22 @@ class WaterfallContainer extends Component {
   render() {
     return (
       <div>
-        WaterfallContainer
-        <WaterfallConfig />
-        <WaterfallViz {...this.props} />
+        <span>
+          <h2>Waterfall</h2>
+          <button
+            onClick={this.toggleView}
+            type="primary"
+            shape="circle"
+            icon="search"
+          >
+            switch
+          </button>
+        </span>
+        {this.state.displayConfig ? (
+          <WaterfallConfig handleChange={this.handleChange} />
+        ) : (
+          <WaterfallViz {...this.props} />
+        )}
       </div>
     );
   }
