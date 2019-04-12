@@ -9,6 +9,18 @@ import MacroNameMap from '../../../Modules/MacroNameMap';
 import { Button } from 'antd';
 
 class WaterfallConfig extends Component {
+  static propTypes = {
+    toggleView: PropTypes.func.isRequired,
+    interaction: PropTypes.shape({
+      fields: PropTypes.shape({
+        availableCountries: PropTypes.arrayOf(PropTypes.string.isRequired)
+          .isRequired,
+        availableYears: PropTypes.arrayOf(PropTypes.number.isRequired)
+          .isRequired,
+      }).isRequired,
+    }).isRequired,
+  };
+
   render() {
     const {
       availableCountries,
@@ -33,7 +45,7 @@ class WaterfallConfig extends Component {
 
           return (
             <div className="WaterfallConfig">
-              <h3>Config</h3>
+              <h2>Waterfall Config</h2>
               <Selector
                 placeholder="Select a country"
                 options={availableCountries}
@@ -59,16 +71,5 @@ class WaterfallConfig extends Component {
     );
   }
 }
-
-WaterfallConfig.propTypes = {
-  toggleView: PropTypes.func.isRequired,
-  interaction: PropTypes.shape({
-    fields: PropTypes.shape({
-      availableCountries: PropTypes.arrayOf(PropTypes.string.isRequired)
-        .isRequired,
-      availableYears: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
-    }).isRequired,
-  }).isRequired,
-};
 
 export default withInteraction(WaterfallConfig);

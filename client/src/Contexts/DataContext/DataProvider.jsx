@@ -64,7 +64,7 @@ export default class DataProvider extends React.Component {
                   country
                   year
                   type
-                  key
+                  name
                   value
                 }
               }
@@ -72,7 +72,8 @@ export default class DataProvider extends React.Component {
           }
         `,
       })
-      .then(result => this.setData(result.data.itemByYearCountry));
+      .then(result => this.setData(result.data.itemByYearCountry))
+      .catch(err => console.log(err));
   };
 
   render() {

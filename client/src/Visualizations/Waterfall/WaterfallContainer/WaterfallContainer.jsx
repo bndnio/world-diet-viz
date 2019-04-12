@@ -23,7 +23,6 @@ class WaterfallContainer extends Component {
     return (
       <div>
         <span>
-          <h2>Waterfall</h2>
           <button
             onClick={this.toggleView}
             type="primary"
