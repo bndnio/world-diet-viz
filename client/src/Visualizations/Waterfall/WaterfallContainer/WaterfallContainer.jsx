@@ -9,20 +9,26 @@ class WaterfallContainer extends Component {
     displayConfig: true,
     country: null,
     group: null,
-    year: null,
     data: [],
   };
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.data.data !== this.props.data.data) this.filterData();
+  }
 
   toggleView = () => {
     this.setState(state => ({ displayConfig: !state.displayConfig }));
   };
 
-  handleChange = diff => {
-    this.setState({ ...diff });
-    const { country, group, year } = { ...this.state, ...diff };
+  handleChange = async diff => {
+    await this.setState({ ...diff });
+    this.filterData();
+  };
 
-    let nextData = null;
-    if (!!country && !!group && !!year) {
+  filterData = () => {
+    const { country, group } = this.state;
+    let nextData = [];
+    if (!!country && !!group) {
       nextData = this.props.data.data.map(d => [
         d.year,
         d.countries
@@ -50,7 +56,7 @@ class WaterfallContainer extends Component {
         {this.state.displayConfig ? (
           <WaterfallConfig handleChange={this.handleChange} {...config} />
         ) : (
-          <WaterfallViz {...this.props} data={data} />
+          <WaterfallViz {...this.props} {...config} data={data} />
         )}
       </div>
     );

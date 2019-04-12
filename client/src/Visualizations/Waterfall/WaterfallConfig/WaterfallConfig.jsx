@@ -62,12 +62,6 @@ class WaterfallConfig extends Component {
                 handleChange={handleChange('group')}
                 value={group || undefined}
               />
-              <Selector
-                placeholder="Select a year"
-                options={availableYears}
-                handleChange={handleChange('year')}
-                value={year || undefined}
-              />
               <Button type="primary" onClick={this.props.toggleView}>
                 Visualize
               </Button>

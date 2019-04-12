@@ -25,8 +25,8 @@ export default class DataProvider extends React.Component {
     this.getData();
   }
 
-  setQuery = nextQuery => {
-    this.setState(state => ({
+  setQuery = async nextQuery => {
+    await this.setState(state => ({
       queryParams: {
         ...state.queryParams,
         ...nextQuery,
@@ -38,10 +38,12 @@ export default class DataProvider extends React.Component {
   setData = nextData => {
     // save data to state
     this.setState({ data: nextData, loading: false });
+    console.log('setData', nextData);
   };
 
   getData = () => {
     const { years, countries, type } = this.state.queryParams;
+    console.log(this.state.queryParams);
     this.setState({ loading: true });
     this.client
       .query({

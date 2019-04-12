@@ -6,8 +6,6 @@ import { Typography } from 'antd';
 import './Waterfall.css';
 import MacroNameMap from '../../../Modules/MacroNameMap';
 
-const { Title } = Typography;
-
 const MODE = ['ALIGN', 'FOLLOW'];
 
 class Axis extends React.Component {
@@ -160,7 +158,7 @@ class DataRectangles extends React.Component {
         key={Math.random() * 1}
       >
         {coord.xDiff > 0 && '+'}
-        {coord.xDiff}
+        {coord.xDiff.toFixed(1)}
       </text>
     );
   };
@@ -265,6 +263,10 @@ class Waterfall extends Component {
 
   componentWillMount() {
     this.processData();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.data !== this.props.data) this.processData();
   }
 
   toggleMode = () => {
