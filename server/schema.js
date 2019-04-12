@@ -135,7 +135,7 @@ const typeDefs = gql`
     country: String!
     year: Int!
     type: Group!
-    key: String!
+    name: String!
     value: Float!
   }
 
@@ -173,7 +173,8 @@ const typeDefs = gql`
       type: Group
     ): [CountryYears!]
     countries: [String!]!
-    yearRange: Range
+    yearRange: Range!
+    names(type: Group): [String!]!
   }
 `;
 
@@ -195,7 +196,7 @@ const aggregateItemByYearCountry = res => {
             country: row.country,
             year: row.year,
             type: row.type,
-            key: row.name,
+            name: row.name,
             value: row.value,
           },
         ],
@@ -226,7 +227,7 @@ const aggregateItemByCountryYear = res => {
             country: row.country,
             year: row.year,
             type: row.type,
-            key: row.name,
+            name: row.name,
             value: row.value,
           },
         ],
@@ -282,6 +283,13 @@ const resolvers = {
       min: runQuery(`SELECT MIN(year) from diet`, res => res.rows[0].min),
       max: runQuery(`SELECT MAX(year) from diet`, res => res.rows[0].max),
     }),
+    names: (parent, args) =>
+      runQuery(
+        `SELECT DISTINCT name from diet ${
+          !!args.type ? `WHERE type='${args.type}'` : ''
+        }`,
+        res => res.rows.map(r => r.name)
+      ),
   },
 };
 
