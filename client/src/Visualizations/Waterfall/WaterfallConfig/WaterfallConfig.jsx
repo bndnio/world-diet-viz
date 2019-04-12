@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
+import { withInteraction } from '../../../Contexts/InteractionContext/withInteraction';
 import Selector from '../../../Components/Selector';
 import MacroNameMap from '../../../Modules/MacroNameMap';
 
@@ -58,4 +59,4 @@ class WaterfallConfig extends Component {
 
 WaterfallConfig.propTypes = {};
 
-export default WaterfallConfig;
+export default withInteraction(WaterfallConfig);
