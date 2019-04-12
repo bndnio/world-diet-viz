@@ -15,18 +15,13 @@ class WaterfallConfig extends Component {
       fields: PropTypes.shape({
         availableCountries: PropTypes.arrayOf(PropTypes.string.isRequired)
           .isRequired,
-        availableYears: PropTypes.arrayOf(PropTypes.number.isRequired)
-          .isRequired,
       }).isRequired,
     }).isRequired,
   };
 
   render() {
-    const {
-      availableCountries,
-      availableYears,
-    } = this.props.interaction.fields;
-    const { country, group, year } = this.props;
+    const { availableCountries } = this.props.interaction.fields;
+    const { country, group } = this.props;
 
     const GET_GROUP_OPTIONS = gql`
       {

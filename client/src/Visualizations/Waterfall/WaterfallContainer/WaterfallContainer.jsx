@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { withData } from '../../../Contexts/DataContext/withData';
 import WaterfallViz from '../WaterfallViz';
 import WaterfallConfig from '../WaterfallConfig';
