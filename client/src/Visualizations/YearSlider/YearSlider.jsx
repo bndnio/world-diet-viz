@@ -1,39 +1,51 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { Query } from 'react-apollo';
 import { withData } from '../../DataContext/withData';
 import { Slider, Typography } from 'antd';
 
 const { Text } = Typography;
 
 class YearSlider extends Component {
-  static propTypes = {
-    lowerBound: PropTypes.number,
-    upperBound: PropTypes.number,
+  handleRelease = value => {
+    this.props.data.setQuery({
+      // Create array of all years from base year to top year
+      years: [...Array(value[1] - value[0] + 1).keys()].map(v => value[0] + v),
+    });
   };
 
-  static defaultProps = {
-    lowerBound: 1960,
-    upperBound: 2013,
-  };
-
-  handleChange = value => {
-    // need to update withData
-  };
   render() {
-    const { lowerBound, upperBound } = this.props;
+    const GET_YEAR_RANGE = gql`
+      {
+        yearRange {
+          min
+          max
+        }
+      }
+    `;
 
     return (
-      <div>
-        <Text>Year</Text>
-        <Slider
-          range
-          defaultValue={[lowerBound, upperBound]}
-          min={lowerBound}
-          max={upperBound}
-          // tooltipVisible={true}
-          onChange={this.handleChange}
-        />
-      </div>
+      <Query query={GET_YEAR_RANGE}>
+        {({ loading, error, data }) => {
+          if (loading) return 'Loading...';
+          if (error) console.log('Error loading gql data for YearSlider');
+          const { min, max } = data.yearRange;
+
+          return (
+            <div>
+              <Text>Year</Text>
+              <Slider
+                range
+                defaultValue={[min, max]}
+                min={min}
+                max={max}
+                onAfterChange={this.handleRelease}
+              />
+            </div>
+          );
+        }}
+      </Query>
     );
   }
 }

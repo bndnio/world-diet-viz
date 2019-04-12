@@ -2,21 +2,25 @@ import * as React from 'react';
 import { DataContext } from './data-context';
 import ApolloClient from 'apollo-boost';
 import gql from 'graphql-tag';
+import { ApolloProvider } from 'react-apollo';
 
 export default class DataProvider extends React.Component {
   constructor() {
     super();
     this.state = {
       setDate: this.setData,
+      setQuery: this.setQuery,
       data: [],
       queryParams: {
         type: 'MACRO',
         countries: ['Canada'],
         years: [],
       },
+      loading: true,
     };
     this.client = new ApolloClient({
-      uri: 'http://gql.healthviz.xyz/graphql',
+      uri: 'http://localhost:4000/graphql',
+      // uri: 'http://gql.healthviz.xyz/graphql',
     });
     this.getData();
   }
@@ -28,15 +32,17 @@ export default class DataProvider extends React.Component {
         ...nextQuery,
       },
     }));
+    this.getData();
   };
 
   setData = nextData => {
     // save data to state
-    this.setState(state => ({ data: nextData }));
+    this.setState({ data: nextData, loading: false });
   };
 
   getData = () => {
     const { years, countries, type } = this.state.queryParams;
+    this.setState({ loading: true });
     this.client
       .query({
         query: gql`
@@ -72,7 +78,9 @@ export default class DataProvider extends React.Component {
   render() {
     return (
       <DataContext.Provider value={this.state}>
-        {this.props.children}
+        <ApolloProvider client={this.client}>
+          {this.props.children}
+        </ApolloProvider>
       </DataContext.Provider>
     );
   }
