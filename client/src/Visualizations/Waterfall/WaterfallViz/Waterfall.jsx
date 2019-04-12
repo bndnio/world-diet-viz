@@ -59,32 +59,40 @@ class XYAxis extends React.Component {
   };
 
   render() {
-    const { settings } = this.props;
+    const {
+      settings: { padding, width, height, mode },
+    } = this.props;
     return (
       <g className="xy-axis">
         <Axis
-          translate={`translate(0, ${settings.padding})`}
+          translate={`translate(0, ${padding})`}
           scale={this.props.xScale}
           orient="top"
         />
         <text
           className="axis"
           textAnchor="middle"
-          transform={`translate(${settings.width / 2}, 15)`}
+          transform={`translate(${width / 2}, 15)`}
         >
           [kCal / person / day]
         </text>
         <Axis
-          translate={`translate(${settings.width / 2}, 0)`}
+          translate={
+            mode === mode[1]
+              ? `translate(${padding}, 0)`
+              : `translate(${width / 2}, 0)`
+          }
           scale={this.props.yScale}
           orient="left"
         />
         <text
           className="axis"
           textAnchor="middle"
-          transform={`translate(${settings.width / 2}, ${settings.height -
-            settings.padding +
-            15})`}
+          transform={
+            mode === MODE[1]
+              ? `translate(${padding}, ${height - padding + 15})`
+              : `translate(${width / 2}, ${height - padding + 15})`
+          }
         >
           [year]
         </text>
@@ -201,7 +209,7 @@ class WaterfallPlot extends React.Component {
     const absMax = d3.max([Math.abs(xMin), Math.abs(xMax)]);
     return d3
       .scaleLinear()
-      .domain([-absMax, absMax])
+      .domain([settings.mode === MODE[0] ? -absMax : xMin, absMax])
       .range([settings.padding, settings.width - settings.padding]);
   };
 
@@ -258,6 +266,7 @@ class Waterfall extends Component {
 
   state = {
     mode: MODE[1],
+    data: [],
   };
 
   componentWillMount() {
@@ -275,7 +284,6 @@ class Waterfall extends Component {
   };
 
   processData = () => {
-    console.log(this.props);
     const nextData = this.props.data
       .map((datum, index, arr) => {
         if (index !== 0) {
@@ -302,7 +310,11 @@ class Waterfall extends Component {
         </h3>
         <WaterfallPlot
           data={this.state.data}
-          settings={{ ...settings, mode: this.state.mode }}
+          settings={{
+            ...settings,
+            numDataPoints: this.state.data.length + 1,
+            mode: this.state.mode,
+          }}
         />
         <div className="controls">
           <button className="btn randomize" onClick={this.toggleMode}>
