@@ -188,11 +188,6 @@ class FillBottom extends React.Component {
     yScale: PropTypes.func.isRequired,
   };
 
-  // x1={this.props.xScale(coords[0])}
-  // y1={this.props.yScale(coords[1])}
-  // x2={this.props.xScale(coords[2])}
-  // y2={this.props.yScale(coords[3])}
-
   renderFillBottom(coords) {
     return (
       <polygon
@@ -261,13 +256,6 @@ class LineGraph extends React.Component {
           data={this.props.data}
           color="#ccddff"
         />
-        {/*<DataCircles*/}
-        {/*  xScale={xScale}*/}
-        {/*  yScale={yDataScale}*/}
-        {/*  {...this.props}*/}
-        {/*  data={this.props.data}*/}
-        {/*  color="#edf3ff"*/}
-        {/*/>*/}
         <FillBottom
           xScale={xScale}
           yScale={yDataScale}
@@ -282,13 +270,6 @@ class LineGraph extends React.Component {
           data={this.props.measure3}
           color="#b3d0ff"
         />
-        {/*<DataCircles*/}
-        {/*  xScale={xScale}*/}
-        {/*  yScale={yDataScale}*/}
-        {/*  {...this.props}*/}
-        {/*  data={this.props.measure3}*/}
-        {/*  color="#ddeaff"*/}
-        {/*/>*/}
         <FillBottom
           xScale={xScale}
           yScale={yDataScale}
@@ -303,13 +284,6 @@ class LineGraph extends React.Component {
           data={this.props.measure2}
           color="#99beff"
         />
-        {/*<DataCircles*/}
-        {/*  xScale={xScale}*/}
-        {/*  yScale={yDataScale}*/}
-        {/*  {...this.props}*/}
-        {/*  data={this.props.measure2}*/}
-        {/*  color="#c1d8ff"*/}
-        {/*/>*/}
         <FillBottom
           xScale={xScale}
           yScale={yDataScale}
@@ -324,13 +298,6 @@ class LineGraph extends React.Component {
           data={this.props.measure1}
           color="#80b0ff"
         />
-        {/*<DataCircles*/}
-        {/*  xScale={xScale}*/}
-        {/*  yScale={yDataScale}*/}
-        {/*  {...this.props}*/}
-        {/*  data={this.props.measure1}*/}
-        {/*  color="#a0c4ff"*/}
-        {/*/>*/}
         <Lines
           xScale={xScale}
           yScale={yDeathDataScale}
