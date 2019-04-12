@@ -6,13 +6,22 @@ export default class InteractionProvider extends React.Component {
     super();
     this.state = {
       setInteraction: this.setInteraction,
-      interaction: [],
+      fields: {
+        availableYears: [],
+        availableCountries: [],
+        selectedYear: null,
+        selectedCountry: null,
+        hoveredYear: null,
+        hoveredCountry: null,
+      },
     };
   }
 
-  setInteraction = nextInteraction => {
+  setInteraction = nextInteractionDiff => {
     // save Interaction to state
-    this.setState({ interaction: nextInteraction });
+    this.setState(state => ({
+      interaction: { ...state.interaction, ...nextInteractionDiff },
+    }));
   };
 
   render() {

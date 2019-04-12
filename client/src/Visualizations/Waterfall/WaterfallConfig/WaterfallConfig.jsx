@@ -8,12 +8,10 @@ import MacroNameMap from '../../../Modules/MacroNameMap';
 
 class WaterfallConfig extends Component {
   render() {
-    // placeholder
-    // const {interaction} = this.props
-    const interaction = {
-      availableYears: [1960, 1961],
-      availableCountries: ['Canada', 'Mexico'],
-    };
+    const {
+      availableCountries,
+      availableYears,
+    } = this.props.interaction.fields;
 
     const GET_GROUP_OPTIONS = gql`
       {
@@ -36,7 +34,7 @@ class WaterfallConfig extends Component {
               WaterfallConfig
               <Selector
                 placeholder="Select a country"
-                options={interaction.availableCountries}
+                options={availableCountries}
                 handleChange={handleChange('country')}
               />
               <Selector
@@ -46,7 +44,7 @@ class WaterfallConfig extends Component {
               />
               <Selector
                 placeholder="Select a year"
-                options={interaction.availableYears}
+                options={availableYears}
                 handleChange={handleChange('year')}
               />
             </div>
