@@ -25,3 +25,8 @@ svg {
   margin: 4em auto 4em auto;
   background-color: aquawhite;
 }
+
+.data_labels {
+  fill: grey;
+  font-size: 12px;
+}
