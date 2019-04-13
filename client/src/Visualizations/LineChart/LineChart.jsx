@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { Query } from 'react-apollo';
 import * as d3 from 'd3';
 import Color from 'color';
 import { Card } from 'antd';
@@ -241,6 +243,7 @@ class LineGraph extends React.Component {
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     data: PropTypes.array.isRequired,
+    kcalMax: PropTypes.array.isRequired,
   };
 
   getXScale() {
@@ -257,7 +260,7 @@ class LineGraph extends React.Component {
   getDataYScale() {
     return d3
       .scaleLinear()
-      .domain([0, 2500])
+      .domain([0, this.props.kcalMax])
       .range([this.props.height - this.props.padding, this.props.padding]);
   }
   getDeathYScale() {
@@ -433,6 +436,14 @@ class LineChart extends React.Component {
   }
 
   render() {
+    const GET_YEAR_RANGE = gql`
+      {
+        kcalRange {
+          max
+        }
+      }
+    `;
+
     return (
       <Card
         title={
@@ -441,7 +452,9 @@ class LineChart extends React.Component {
             <Selector
               options={this.props.interaction.fields.availableCountries || []}
               handleChange={value =>
-                this.props.interaction.setFields({ selectedCountry: value })
+                this.props.interaction.setFields({
+                  selectedCountry: value,
+                })
               }
               disabled={
                 this.props.data.loading ||
@@ -450,25 +463,30 @@ class LineChart extends React.Component {
             />
           </div>
         }
-        loading={
-          this.props.data.loading ||
-          !this.props.interaction.fields.availableCountries
-        }
       >
-        {!this.props.interaction.fields.selectedCountry ? (
-          'select a country'
-        ) : (
-          <LineGraph
-            {...this.props}
-            data={this.state.totalData}
-            deathData={this.state.deathData}
-            measure1={this.state.carbData}
-            measure2={this.state.fatData}
-            measure3={this.state.animalProteinData}
-            measure4={this.state.plantProteinData}
-            {...settings}
-          />
-        )}
+        <Query query={GET_YEAR_RANGE}>
+          {({ loading, error, data }) => {
+            if (this.props.data.loading || loading) return 'Loading...';
+            if (error) console.log('Error loading gql data for LineChart');
+            const { max } = data.kcalRange;
+
+            if (!this.props.interaction.fields.selectedCountry)
+              return 'select a country';
+            return (
+              <LineGraph
+                {...this.props}
+                data={this.state.totalData}
+                deathData={this.state.deathData}
+                measure1={this.state.carbData}
+                measure2={this.state.fatData}
+                measure3={this.state.animalProteinData}
+                measure4={this.state.plantProteinData}
+                kcalMax={max}
+                {...settings}
+              />
+            );
+          }}
+        </Query>
       </Card>
     );
   }
