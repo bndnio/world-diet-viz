@@ -5,9 +5,6 @@
   max-width: 250px !important;
   flex: 0 0 250px !important;
 }
-.sideBar > * {
-  margin-bottom: 0.5rem;
-}
 
 .dashboard {
   display: flex;

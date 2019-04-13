@@ -6,24 +6,37 @@ import { withInteraction } from '../../Contexts/InteractionContext/withInteracti
 
 class PresetButton extends Component {
   static propTypes = {
-    queryParams: PropTypes.shape({
-      years: PropTypes.arrayOf(PropTypes.number),
-      countries: PropTypes.arrayOf(PropTypes.string),
-    }),
-    fields: {
-      availableYears: PropTypes.arrayOf(PropTypes.number),
-      availableCountries: PropTypes.arrayOf(PropTypes.string),
-      selectedYear: PropTypes.number,
-      selectedCountry: PropTypes.string,
-    },
+    yearRange: PropTypes.arrayOf(PropTypes.number),
+    countries: PropTypes.arrayOf(PropTypes.string),
+    selectedYear: PropTypes.number,
+    selectedCountry: PropTypes.string,
     children: PropTypes.string.isRequired,
   };
 
   handleClick = () => {
-    if (!!this.props.queryParams)
-      this.props.data.setQuery(this.props.queryParams);
-    if (!!this.props.fields)
-      this.props.interaction.setFields(this.props.fields);
+    const { yearRange, countries, selectedYear, selectedCountry } = this.props;
+    let queryParams = {};
+    let fields = {};
+
+    if (!!yearRange) {
+      const years = [...Array(yearRange[1] - yearRange[0] + 1).keys()].map(
+        v => yearRange[0] + v
+      );
+      queryParams.years = years;
+      fields.availableYears = years;
+    }
+    if (!!countries) {
+      queryParams.countries = countries;
+      fields.availableCountries = countries;
+    }
+
+    if (!!selectedYear) fields.selectedYear = selectedYear;
+    if (!!selectedCountry) fields.selectedCountry = selectedCountry;
+
+    if (Object.keys(queryParams).length !== 0)
+      this.props.data.setQuery(queryParams);
+    if (Object.keys(fields).length !== 0)
+      this.props.interaction.setFields(fields);
   };
 
   render() {

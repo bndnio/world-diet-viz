@@ -9,6 +9,7 @@ import {
 import { Layout, Card } from 'antd';
 
 import './VisualizationContainer.css';
+import PresetButton from '../PresetButton/PresetButton';
 
 const { Sider, Content } = Layout;
 
@@ -23,8 +24,13 @@ class VisualizationContainer extends Component {
         <Sider theme="light" className="sideBar">
           <h1 className="App-title">Nutrition InfoViz</h1>
           <CountryPicker />
-          <br />
           <YearSlider />
+          <PresetButton
+            countries={['Canada', 'Afghanistan', 'Mexico']}
+            yearRange={[1990, 2000]}
+          >
+            Preset 1
+          </PresetButton>
         </Sider>
         <Content className="dashboard">
           <ScatterPlot />
