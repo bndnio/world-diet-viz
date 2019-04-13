@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
+import Color from 'color';
 import { Card } from 'antd';
 import Selector from '../../Components/Selector';
 import MacroNameMap from '../../Modules/MacroNameMap';
@@ -198,7 +199,12 @@ class FilledSeries extends Component {
     return (
       <React.Fragment>
         <FillBottom xScale={xScale} yScale={yScale} data={data} color={color} />
-        <Line xScale={xScale} yScale={yScale} data={data} color="#ccddff" />
+        <Line
+          xScale={xScale}
+          yScale={yScale}
+          data={data}
+          color={Color(color).darken(0.1)}
+        />
       </React.Fragment>
     );
   }
@@ -271,32 +277,26 @@ class LineGraph extends React.Component {
         <FilledSeries
           xScale={xScale}
           yScale={yDataScale}
-          data={this.props.data}
-          color="#edf3ff"
-        />
-        {/* <FilledSeries
-          xScale={xScale}
-          yScale={yDataScale}
           data={this.props.measure4}
-          color="#ff0000"
-        /> */}
+          color="#70b678"
+        />
         <FilledSeries
           xScale={xScale}
           yScale={yDataScale}
           data={this.props.measure3}
-          color="#ddeaff"
+          color="#bbdbad"
         />
         <FilledSeries
           xScale={xScale}
           yScale={yDataScale}
           data={this.props.measure2}
-          color="#c1d8ff"
+          color="#c79fc8"
         />
         <FilledSeries
           xScale={xScale}
           yScale={yDataScale}
           data={this.props.measure1}
-          color="#a0c4ff"
+          color="#f4a58a"
         />
         <Line
           xScale={xScale}
