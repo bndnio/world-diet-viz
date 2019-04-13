@@ -38,6 +38,10 @@ class MySlider extends Component {
     }
   }
 
+  handleChange = value => {
+    this.setState({ value });
+  };
+
   handleRelease = value => {
     // Create array of all years from base year to top year
     const selectedYears = [...Array(value[1] - value[0] + 1).keys()].map(
@@ -61,6 +65,7 @@ class MySlider extends Component {
           range
           min={min}
           max={max}
+          onChange={this.handleChange}
           onAfterChange={this.handleRelease}
           value={this.state.value}
         />
