@@ -125,6 +125,13 @@ class DataCircles extends React.Component {
     yScale: PropTypes.func.isRequired,
   };
 
+  constructor(props) {
+    super(props)
+    this.state = {
+      hovered: false
+    }
+  }
+
   getCircleRadius(value) {
     return Math.sqrt(value / Math.PI) * 2.5
   }
@@ -137,12 +144,15 @@ class DataCircles extends React.Component {
           cy={this.props.yScale(coords[3])}
           r={this.getCircleRadius(coords[4])}
           key={Math.random()}
-          fill={this.props.color}
+          //fill={this.props.color}
+          fill={this.state.hovered ? 'red' : this.props.color}
           //onMouseDown={function() {d3.select('circle').attr('fill', 'red')}}        // selects the first circle element
           //onMouseDown={function() {d3.selectAll('circle').attr('fill', 'red')}}     // selects all circle element
           //onMouseDown={function() {d3.select(this).attr('fill', 'red')}}            // doesn't work, but I feel like it should
-          onMouseOver={function() {console.log('Hovering')}}
-          onMouseOut={function() {console.log('Done hovering')}}
+          //onMouseOver={function() {console.log('Hovering')}}
+          //onMouseOut={function() {console.log('Done hovering')}}
+          onMouseOver={() => this.setState({hovered: true})}
+          onMouseOut={() => this.setState({hovered: false})}
         />
         <text
           className="data_labels"
