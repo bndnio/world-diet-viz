@@ -13,7 +13,7 @@ class VisualizationBase extends Component {
     const { children, style, ...rest } = this.props;
     return (
       <div className="VisualizationBase-container">
-        <Card style={style} {...rest}>
+        <Card style={{ ...style, padding: 0 }} {...rest} title="lol">
           {this.props.children || 'Pick a visualization to get started'}
         </Card>
       </div>

@@ -2,11 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import { withData } from '../../Contexts/DataContext/withData';
-import { Typography } from 'antd';
 
 import './ScatterPlot.css';
-
-const { Title } = Typography;
 
 class Axis extends React.Component {
   static propTypes = {
@@ -170,8 +167,8 @@ class ScatterPlotViz extends Component {
   };
   static defaultProps = {
     settings: {
-      width: 1000,
-      height: 600,
+      width: 350,
+      height: 350,
       padding: 30,
       numDataPoints: 50,
       maxRange: () => Math.random() * 1000,
@@ -199,7 +196,7 @@ class ScatterPlotViz extends Component {
 
     return (
       <div>
-        <Title>Sample Scatterplot</Title>
+        <h2>Sample Scatterplot</h2>
         <ScatterPlot data={this.state.data} settings={settings} />
         <div className="controls">
           <button className="btn randomize" onClick={this.randomizeData}>

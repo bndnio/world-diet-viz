@@ -6,7 +6,7 @@ import { withData } from '../../Contexts/DataContext/withData';
 import './LineChart.css';
 
 const settings = {
-  width: 1000,
+  width: 900,
   height: 300,
   padding: 50,
   numDataPoints: 50,
@@ -372,13 +372,25 @@ class LineChart extends React.Component {
       measure2: myData
         .map((yr, i, arr) => {
           if (i === 0) return undefined;
-          else return [yr[0], yr[2] + yr[3], [arr[i - 1][0]], [arr[i - 1][2] + arr[i - 1][3]]];
+          else
+            return [
+              yr[0],
+              yr[2] + yr[3],
+              [arr[i - 1][0]],
+              [arr[i - 1][2] + arr[i - 1][3]],
+            ];
         })
         .filter(d => !!d),
       measure3: myData
         .map((yr, i, arr) => {
           if (i === 0) return undefined;
-          else return [yr[0], yr[2] + yr[3] + yr[4], [arr[i - 1][0]], [arr[i - 1][2] + arr[i - 1][3] + arr[i - 1][4]]];
+          else
+            return [
+              yr[0],
+              yr[2] + yr[3] + yr[4],
+              [arr[i - 1][0]],
+              [arr[i - 1][2] + arr[i - 1][3] + arr[i - 1][4]],
+            ];
         })
         .filter(d => !!d),
     });
@@ -402,4 +414,3 @@ class LineChart extends React.Component {
 }
 
 export default withData(LineChart);
-
