@@ -99,8 +99,7 @@ class XYAxis extends React.Component {
     return (
       <g className="LE-xy-axis">
         <XAxis
-          translate={`translate(0, ${this.props.height -
-            (this.props.padding * 2) / 3})`}
+          translate={`translate(0, ${this.props.height - this.props.padding})`}
           scale={this.props.xScale}
         />
         <text
@@ -153,7 +152,7 @@ class Line extends React.Component {
         y1={this.props.yScale(coords[1])}
         x2={this.props.xScale(coords[2])}
         y2={this.props.yScale(coords[3])}
-        strokeWidth={2}
+        strokeWidth={1.5}
         stroke={this.props.color}
       />
     );
@@ -266,7 +265,7 @@ class LineGraph extends React.Component {
   getDeathYScale() {
     return d3
       .scaleLinear()
-      .domain([50, 100])
+      .domain([20, 80])
       .range([this.props.height - this.props.padding, this.props.padding]);
   }
 
@@ -306,7 +305,7 @@ class LineGraph extends React.Component {
           yScale={yDeathDataScale}
           {...this.props}
           data={this.props.deathData}
-          color="#000000"
+          color="#444444"
         />
         <XYAxis
           xScale={xScale}
@@ -370,7 +369,7 @@ class LineChart extends React.Component {
         })
         .filter(d => !!d),
       deathData: nextData
-        .map(d => [d[0], d[1] / 27 + (Math.random() - 0.5) * 2])
+        .map(d => [d[0], 65 + (Math.random() - 0.5) * 10])
         .map((yr, i, arr) => {
           if (i === 0) return undefined;
           else return [yr[0], yr[1], arr[i - 1][0], arr[i - 1][1]];
