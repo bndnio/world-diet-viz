@@ -145,7 +145,7 @@ class Line extends React.Component {
     yScale: PropTypes.func.isRequired,
   };
 
-  renderLine(coords) {
+  renderLine = (coords, index) => {
     return (
       <line
         x1={this.props.xScale(coords[0])}
@@ -154,12 +154,13 @@ class Line extends React.Component {
         y2={this.props.yScale(coords[3])}
         strokeWidth={1.5}
         stroke={this.props.color}
+        key={index}
       />
     );
-  }
+  };
 
   render() {
-    return <g>{this.props.data.map(this.renderLine.bind(this))}</g>;
+    return <g>{this.props.data.map(this.renderLine)}</g>;
   }
 }
 
@@ -217,7 +218,7 @@ class FillBottom extends React.Component {
     yScale: PropTypes.func.isRequired,
   };
 
-  renderFillBottom(coords) {
+  renderFillBottom = (coords, index) => {
     return (
       <polygon
         points={`
@@ -227,12 +228,13 @@ class FillBottom extends React.Component {
         ${this.props.xScale(coords[0])},${this.props.yScale(coords[1])}
         `}
         fill={this.props.color}
+        key={index}
       />
     );
-  }
+  };
 
   render() {
-    return <g>{this.props.data.map(this.renderFillBottom.bind(this))}</g>;
+    return <g>{this.props.data.map(this.renderFillBottom)}</g>;
   }
 }
 
@@ -242,7 +244,7 @@ class LineGraph extends React.Component {
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     data: PropTypes.array.isRequired,
-    kcalMax: PropTypes.array.isRequired,
+    kcalMax: PropTypes.number.isRequired,
   };
 
   getXScale() {
@@ -335,7 +337,6 @@ class LineChart extends React.Component {
 
   processData() {
     // each datapoint in form of [year, totalKCal, measure1, measure2, measure3]
-    console.log('processing');
     const { selectedCountry } = this.props.interaction.fields;
     let nextData = [];
     if (!!selectedCountry) {
