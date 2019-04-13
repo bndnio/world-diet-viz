@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
+import { Card } from 'antd';
 import { withData } from '../../DataContext/withData';
 
 import './ScatterPlot.css';
@@ -93,14 +94,14 @@ class XYAxis extends React.Component {
       <g className="LE-xy-axis">
         <XAxis
           translate={`translate(0, ${this.props.height -
-          (this.props.padding * 2) / 3})`}
+            (this.props.padding * 2) / 3})`}
           scale={this.props.xScale}
         />
         <text
           className="axis"
           textAnchor="middle"
           transform={`translate(${settings.width / 2 -
-          this.props.padding / 2}, ${settings.height - 5})`}
+            this.props.padding / 2}, ${settings.height - 5})`}
         >
           [Total KCals]
         </text>
@@ -113,7 +114,8 @@ class XYAxis extends React.Component {
           textAnchor="middle"
           transform={`translate(10, ${settings.height / 2}), rotate(-90)`}
         >
-          [Life Expectancy]</text>
+          [Life Expectancy]
+        </text>
       </g>
     );
   }
@@ -126,12 +128,12 @@ class DataCircles extends React.Component {
   };
 
   constructor(props) {
-    super(props)
-    this.state = {hovered: false}
+    super(props);
+    this.state = { hovered: false };
   }
 
   getCircleRadius(value) {
-    return Math.sqrt(value / Math.PI) * 2.5
+    return Math.sqrt(value / Math.PI) * 2.5;
   }
 
   renderCircle(coords) {
@@ -149,14 +151,16 @@ class DataCircles extends React.Component {
           //onMouseDown={function() {d3.select(this).attr('fill', 'red')}}            // doesn't work, but I feel like it should
           //onMouseOver={function() {console.log('Hovering')}}
           //onMouseOut={function() {console.log('Done hovering')}}
-          onMouseDown={() => this.setState({hovered: true})}
-          onMouseUp={() => this.setState({hovered: false})}
+          onMouseDown={() => this.setState({ hovered: true })}
+          onMouseUp={() => this.setState({ hovered: false })}
         />
         <text
           className="data_labels"
           x={this.props.xScale(coords[2]) + this.getCircleRadius(coords[4])}
           y={this.props.yScale(coords[3]) - 3}
-        >{coords[0]}</text>
+        >
+          {coords[0]}
+        </text>
       </svg>
     );
   }
@@ -201,17 +205,34 @@ class ScatterGraph extends React.Component {
           data={this.props.data}
           color="#80b0ff"
         />
-        <XYAxis
-          xScale={xScale}
-          yScale={yDataScale}
-          {...this.props}
-        />
+        <XYAxis xScale={xScale} yScale={yDataScale} {...this.props} />
       </svg>
     );
   }
 }
 
-class ScatterPlot extends React.Component {
+class ScatterPlotViz extends Component {
+  static propTypes = {
+    settings: PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      padding: PropTypes.number,
+      numDataPoints: PropTypes.number,
+      maxRange: PropTypes.func,
+    }),
+    xScale: PropTypes.func,
+    yScale: PropTypes.func,
+  };
+  static defaultProps = {
+    settings: {
+      width: 350,
+      height: 350,
+      padding: 30,
+      numDataPoints: 50,
+      maxRange: () => Math.random() * 1000,
+    },
+  };
+
   componentWillMount() {
     this.getData();
   }
@@ -219,42 +240,38 @@ class ScatterPlot extends React.Component {
   getData() {
     // each datapoint in form of [Country, year, total KCals, LifeExpect, population]
     const myData = [
-      ["Canada", 2012, 2055, 83, 100],
-      ["Oh Im sorry I thought this was Amurica", 2012, 2056, 76, 10],
-      ["A", 2012, 2008, 91, 100],
-      ["B", 2012, 2061, 78, 10],
-      ["C", 2012, 2164, 88, 100],
-      ["D", 2012, 2162, 64, 1],
-      ["E", 2012, 2323, 76, 1],
-      ["F", 2012, 2159, 78, 100],
-      ["G", 2012, 2308, 59, 10],
-      ["H", 2012, 2183, 86, 10],
-      ["I", 2012, 2155, 89, 10],
-      ["J", 2012, 2124, 79, 100],
-      ["K", 2012, 2124, 74, 100],
-      ["L", 2012, 2126, 76, 1],
-      ["M", 2012, 2199, 58, 1],
-      ["N", 2012, 2228, 99, 100],
-      ["Pop: 1", 2012, 2025, 100, 1],
-      ["Pop: 10", 2012, 2025, 90, 10],
-      ["Pop: 50", 2012, 2025, 80, 50],
-      ["Pop: 100", 2012, 2025, 70, 100],
-      ["Pop: 1000", 2012, 2025, 50, 1000]
+      ['Canada', 2012, 2055, 83, 100],
+      ['Oh Im sorry I thought this was Amurica', 2012, 2056, 76, 10],
+      ['A', 2012, 2008, 91, 100],
+      ['B', 2012, 2061, 78, 10],
+      ['C', 2012, 2164, 88, 100],
+      ['D', 2012, 2162, 64, 1],
+      ['E', 2012, 2323, 76, 1],
+      ['F', 2012, 2159, 78, 100],
+      ['G', 2012, 2308, 59, 10],
+      ['H', 2012, 2183, 86, 10],
+      ['I', 2012, 2155, 89, 10],
+      ['J', 2012, 2124, 79, 100],
+      ['K', 2012, 2124, 74, 100],
+      ['L', 2012, 2126, 76, 1],
+      ['M', 2012, 2199, 58, 1],
+      ['N', 2012, 2228, 99, 100],
+      ['Pop: 1', 2012, 2025, 100, 1],
+      ['Pop: 10', 2012, 2025, 90, 10],
+      ['Pop: 50', 2012, 2025, 80, 50],
+      ['Pop: 100', 2012, 2025, 70, 100],
+      ['Pop: 1000', 2012, 2025, 50, 1000],
     ];
     this.setState({
-      data: myData
+      data: myData,
     });
   }
 
   render() {
     return (
-      <div>
-        <h1>Life Expectancy vs Total KCal</h1>
-        <ScatterGraph
-          data={this.state.data}
-          {...settings}
-        />
-      </div>
+      <Card title="Life Expectancy vs Total KCal">
+        <ScatterGraph data={this.state.data} {...settings} />
+      </Card>
     );
   }
 }

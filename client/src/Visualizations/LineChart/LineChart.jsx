@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { Query } from 'react-apollo';
 import * as d3 from 'd3';
-import { withData } from '../../DataContext/withData';
+import Color from 'color';
+import { Card } from 'antd';
+import Selector from '../../Components/Selector';
+import MacroNameMap from '../../Modules/MacroNameMap';
+import { withData } from '../../Contexts/DataContext/withData';
+import { withInteraction } from '../../Contexts/InteractionContext/withInteraction';
 
 import './LineChart.css';
 
 const settings = {
-  width: 1000,
+  width: 900,
   height: 300,
   padding: 50,
-  numDataPoints: 50,
-  maxRange: () => Math.random() * 1000,
 };
 
 class XAxis extends React.Component {
@@ -94,8 +99,7 @@ class XYAxis extends React.Component {
     return (
       <g className="LE-xy-axis">
         <XAxis
-          translate={`translate(0, ${this.props.height -
-            (this.props.padding * 2) / 3})`}
+          translate={`translate(0, ${this.props.height - this.props.padding})`}
           scale={this.props.xScale}
         />
         <text
@@ -135,50 +139,102 @@ class XYAxis extends React.Component {
   }
 }
 
-class Lines extends React.Component {
+class Line extends React.Component {
   static propTypes = {
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
-  renderLine(coords) {
+  renderLine = (coords, index) => {
     return (
       <line
         x1={this.props.xScale(coords[0])}
         y1={this.props.yScale(coords[1])}
         x2={this.props.xScale(coords[2])}
         y2={this.props.yScale(coords[3])}
-        strokeWidth={2}
+        strokeWidth={1.5}
         stroke={this.props.color}
+        key={index}
       />
     );
-  }
+  };
 
   render() {
-    return <g>{this.props.data.map(this.renderLine.bind(this))}</g>;
+    return <g>{this.props.data.map(this.renderLine)}</g>;
   }
 }
 
-class DataCircles extends React.Component {
+// To be used later with interaction
+// class DataCircles extends React.Component {
+//   static propTypes = {
+//     xScale: PropTypes.func.isRequired,
+//     yScale: PropTypes.func.isRequired,
+//   };
+
+//   renderCircle(coords) {
+//     return (
+//       <circle
+//         cx={this.props.xScale(coords[2])}
+//         cy={this.props.yScale(coords[3])}
+//         r={3}
+//         key={Math.random()}
+//         fill={this.props.color}
+//       />
+//     );
+//   }
+
+//   render() {
+//     return <g>{this.props.data.map(this.renderCircle.bind(this))}</g>;
+//   }
+// }
+
+class FilledSeries extends Component {
+  static propTypes = {
+    xScale: PropTypes.func.isRequired,
+    yScale: PropTypes.func.isRequired,
+    data: PropTypes.array.isRequired,
+    color: PropTypes.string.isRequired,
+  };
+
+  render() {
+    const { xScale, yScale, data, color } = this.props;
+    return (
+      <React.Fragment>
+        <FillBottom xScale={xScale} yScale={yScale} data={data} color={color} />
+        <Line
+          xScale={xScale}
+          yScale={yScale}
+          data={data}
+          color={Color(color).darken(0.1)}
+        />
+      </React.Fragment>
+    );
+  }
+}
+
+class FillBottom extends React.Component {
   static propTypes = {
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
-  renderCircle(coords) {
+  renderFillBottom = (coords, index) => {
     return (
-      <circle
-        cx={this.props.xScale(coords[2])}
-        cy={this.props.yScale(coords[3])}
-        r={3}
-        key={Math.random()}
+      <polygon
+        points={`
+        ${this.props.xScale(coords[0])},${this.props.yScale(0)}
+        ${this.props.xScale(coords[2])},${this.props.yScale(0)}
+        ${this.props.xScale(coords[2])},${this.props.yScale(coords[3])}
+        ${this.props.xScale(coords[0])},${this.props.yScale(coords[1])}
+        `}
         fill={this.props.color}
+        key={index}
       />
     );
-  }
+  };
 
   render() {
-    return <g>{this.props.data.map(this.renderCircle.bind(this))}</g>;
+    return <g>{this.props.data.map(this.renderFillBottom)}</g>;
   }
 }
 
@@ -213,25 +269,30 @@ class LineGraph extends React.Component {
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     data: PropTypes.array.isRequired,
+    kcalMax: PropTypes.number.isRequired,
   };
 
   getXScale() {
+    const { availableYears } = this.props.interaction.fields;
+    const minYear = availableYears[0];
+    const maxYear = availableYears[availableYears.length - 1];
+
     return d3
       .scaleLinear()
-      .domain([1983, 2013]) // When data begins, ends
+      .domain([minYear, maxYear])
       .range([this.props.padding, this.props.width - this.props.padding * 2]);
   }
 
   getDataYScale() {
     return d3
       .scaleLinear()
-      .domain([0, 2500])
+      .domain([0, this.props.kcalMax])
       .range([this.props.height - this.props.padding, this.props.padding]);
   }
   getDeathYScale() {
     return d3
       .scaleLinear()
-      .domain([50, 100])
+      .domain([20, 80])
       .range([this.props.height - this.props.padding, this.props.padding]);
   }
 
@@ -242,75 +303,36 @@ class LineGraph extends React.Component {
 
     return (
       <svg width={this.props.width} height={this.props.height}>
-        <FillBottom
+        <FilledSeries
           xScale={xScale}
           yScale={yDataScale}
-          {...this.props}
-          data={this.props.data}
-          color="#edf3ff"
+          data={this.props.measure4}
+          color="#70b678"
         />
-        <Lines
+        <FilledSeries
           xScale={xScale}
           yScale={yDataScale}
-          {...this.props}
-          data={this.props.data}
-          color="#ccddff"
-        />
-        <FillBottom
-          xScale={xScale}
-          yScale={yDataScale}
-          {...this.props}
           data={this.props.measure3}
-          color="#ddeaff"
+          color="#bbdbad"
         />
-        <Lines
+        <FilledSeries
           xScale={xScale}
           yScale={yDataScale}
-          {...this.props}
-          data={this.props.measure3}
-          color="#b3d0ff"
-        />
-        <FillBottom
-          xScale={xScale}
-          yScale={yDataScale}
-          {...this.props}
           data={this.props.measure2}
-          color="#c1d8ff"
+          color="#c79fc8"
         />
-        <Lines
+        <FilledSeries
           xScale={xScale}
           yScale={yDataScale}
-          {...this.props}
-          data={this.props.measure2}
-          color="#99beff"
-        />
-        <FillBottom
-          xScale={xScale}
-          yScale={yDataScale}
-          {...this.props}
           data={this.props.measure1}
-          color="#a0c4ff"
+          color="#f4a58a"
         />
-        <Lines
-          xScale={xScale}
-          yScale={yDataScale}
-          {...this.props}
-          data={this.props.measure1}
-          color="#80b0ff"
-        />
-        <Lines
+        <Line
           xScale={xScale}
           yScale={yDeathDataScale}
           {...this.props}
           data={this.props.deathData}
-          color="#000000"
-        />
-        <DataCircles
-          xScale={xScale}
-          yScale={yDeathDataScale}
-          {...this.props}
-          data={this.props.deathData}
-          color="#000000"
+          color="#444444"
         />
         <XYAxis
           xScale={xScale}
@@ -325,42 +347,114 @@ class LineGraph extends React.Component {
 
 class LineChart extends React.Component {
   componentWillMount() {
-    this.getData();
+    this.processData();
   }
 
-  getData() {
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.data.data !== this.props.data.data ||
+      prevProps.interaction.fields.selectedCountry !==
+        this.props.interaction.fields.selectedCountry
+    ) {
+      this.processData();
+    }
+  }
+
+  processData() {
     // each datapoint in form of [year, totalKCal, measure1, measure2, measure3]
-    const myData = [
-      [1983, 2055, 400, 500, 700],
-      [1984, 2056, 500, 600, 500],
-      [1986, 2053, 600, 500, 600],
-      [1988, 2061, 300, 300, 500],
-      [1990, 2164, 200, 200, 700],
-      [1992, 2162, 400, 600, 700],
-      [1994, 2189, 500, 300, 800],
-      [1996, 2159, 600, 600, 700],
-      [1998, 2209, 500, 500, 500],
-      [2000, 2183, 400, 400, 600],
-      [2002, 2155, 200, 300, 500],
-      [2004, 2124, 600, 200, 600],
-      [2006, 2124, 500, 100, 700],
-      [2008, 2126, 600, 500, 700],
-      [2010, 2199, 500, 600, 600],
-      [2012, 2228, 400, 500, 800],
-    ];
+    const { selectedCountry } = this.props.interaction.fields;
+    let nextData = [];
+    if (!!selectedCountry) {
+      nextData = this.props.data.data.map(d => [
+        d.year,
+        d.countries
+          .filter(c => c.country === selectedCountry)[0]
+          .items.reduce(
+            (acc, item) => ({
+              ...acc,
+              [MacroNameMap[item.name]]: item.value,
+            }),
+            {}
+          ),
+      ]);
+    }
+
     this.setState({
+      data: nextData,
       // x1, y1, x2, y2
-      data: myData
+      totalData: nextData
         .map((yr, i, arr) => {
           if (i === 0) return undefined;
-          else return [yr[0], yr[1], [arr[i - 1][0]], [arr[i - 1][1]]];
+          else
+            return [
+              yr[0],
+              yr[1]['Grand Total'],
+              arr[i - 1][0],
+              arr[i - 1][1]['Grand Total'],
+            ];
         })
         .filter(d => !!d),
-      deathData: myData
-        .map(d => [d[0], d[1] / 27 + (Math.random() - 0.5) * 2])
+      deathData: nextData
+        .map(d => [d[0], 65 + (Math.random() - 0.5) * 10])
         .map((yr, i, arr) => {
           if (i === 0) return undefined;
-          else return [yr[0], yr[1], [arr[i - 1][0]], [arr[i - 1][1]]];
+          else return [yr[0], yr[1], arr[i - 1][0], arr[i - 1][1]];
+        })
+        .filter(d => !!d),
+      carbData: nextData
+        .map((yr, i, arr) => {
+          if (i === 0) return undefined;
+          else
+            return [
+              yr[0],
+              yr[1]['Carbs'],
+              arr[i - 1][0],
+              arr[i - 1][1]['Carbs'],
+            ];
+        })
+        .filter(d => !!d),
+      fatData: nextData
+        .map((yr, i, arr) => {
+          if (i === 0) return undefined;
+          else
+            return [
+              yr[0],
+              yr[1]['Carbs'] + yr[1]['Fat'],
+              arr[i - 1][0],
+              arr[i - 1][1]['Carbs'] + arr[i - 1][1]['Fat'],
+            ];
+        })
+        .filter(d => !!d),
+      animalProteinData: nextData
+        .map((yr, i, arr) => {
+          if (i === 0) return undefined;
+          else
+            return [
+              yr[0],
+              yr[1]['Carbs'] + yr[1]['Fat'] + yr[1]['Animal Protein'],
+              arr[i - 1][0],
+              arr[i - 1][1]['Carbs'] +
+                arr[i - 1][1]['Fat'] +
+                arr[i - 1][1]['Animal Protein'],
+            ];
+        })
+        .filter(d => !!d),
+      plantProteinData: nextData
+        .map((yr, i, arr) => {
+          if (i === 0) return undefined;
+          else
+            return [
+              yr[0],
+              yr[1]['Carbs'] +
+                yr[1]['Fat'] +
+                yr[1]['Animal Protein'] +
+                yr[1]['Plant Protein'],
+              arr[i - 1][0],
+              arr[i - 1][1]['Carbs'] +
+                arr[i - 1][1]['Fat'] +
+                arr[i - 1][1]['Animal Protein'] +
+                arr[i - 1][1]['Plant Protein'],
+            ];
         })
         .filter(d => !!d),
       measure1: myData
@@ -372,34 +466,86 @@ class LineChart extends React.Component {
       measure2: myData
         .map((yr, i, arr) => {
           if (i === 0) return undefined;
-          else return [yr[0], yr[2] + yr[3], [arr[i - 1][0]], [arr[i - 1][2] + arr[i - 1][3]]];
+          else
+            return [
+              yr[0],
+              yr[2] + yr[3],
+              [arr[i - 1][0]],
+              [arr[i - 1][2] + arr[i - 1][3]],
+            ];
         })
         .filter(d => !!d),
       measure3: myData
         .map((yr, i, arr) => {
           if (i === 0) return undefined;
-          else return [yr[0], yr[2] + yr[3] + yr[4], [arr[i - 1][0]], [arr[i - 1][2] + arr[i - 1][3] + arr[i - 1][4]]];
+          else
+            return [
+              yr[0],
+              yr[2] + yr[3] + yr[4],
+              [arr[i - 1][0]],
+              [arr[i - 1][2] + arr[i - 1][3] + arr[i - 1][4]],
+            ];
         })
         .filter(d => !!d),
     });
   }
 
   render() {
+    const GET_YEAR_RANGE = gql`
+      {
+        kcalRange {
+          max
+        }
+      }
+    `;
+
     return (
-      <div>
-        <h1>Total kCal Consumption & Mortality v. Time</h1>
-        <LineGraph
-          data={this.state.data}
-          deathData={this.state.deathData}
-          measure1={this.state.measure1}
-          measure2={this.state.measure2}
-          measure3={this.state.measure3}
-          {...settings}
-        />
-      </div>
+      <Card
+        title={
+          <div className="vizMenuBar">
+            <span>Life Expectancy v. Total kCal Consumption</span>
+            <Selector
+              options={this.props.interaction.fields.availableCountries || []}
+              handleChange={value =>
+                this.props.interaction.setFields({
+                  selectedCountry: value,
+                })
+              }
+              disabled={
+                !!this.props.data.loading ||
+                !this.props.interaction.fields.availableCountries
+              }
+              placeholder="Select Country"
+            />
+          </div>
+        }
+      >
+        <Query query={GET_YEAR_RANGE}>
+          {({ loading, error, data }) => {
+            if (this.props.data.loading || loading) return 'Loading...';
+            if (error) console.log('Error loading gql data for LineChart');
+            const { max } = data.kcalRange;
+
+            if (!this.props.interaction.fields.selectedCountry)
+              return 'select a country';
+            return (
+              <LineGraph
+                {...this.props}
+                data={this.state.totalData}
+                deathData={this.state.deathData}
+                measure1={this.state.carbData}
+                measure2={this.state.fatData}
+                measure3={this.state.animalProteinData}
+                measure4={this.state.plantProteinData}
+                kcalMax={max}
+                {...settings}
+              />
+            );
+          }}
+        </Query>
+      </Card>
     );
   }
 }
 
-export default withData(LineChart);
-
+export default withInteraction(withData(LineChart));

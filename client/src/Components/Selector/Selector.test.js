@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import YearSlider from './YearSlider';
+import Selector from './Selector';
 
-describe('<YearSlider />', () => {
+describe('<Selector />', () => {
   test('renders', () => {
-    const wrapper = shallow(<YearSlider />);
+    const wrapper = shallow(<Selector />);
     expect(wrapper).toMatchSnapshot();
   });
 });

@@ -5,11 +5,22 @@
   max-width: 250px !important;
   flex: 0 0 250px !important;
 }
-.sideBar > * {
-  margin-bottom: 0.5rem;
-}
 
 .dashboard {
   display: flex;
   flex-wrap: wrap;
+}
+
+.dashboard > * {
+  margin: 0.5rem;
+}
+
+.vizMenuBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vizMenuBarGroup > * {
+  margin-left: 1rem;
 }

@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
-import { withData } from '../../DataContext/withData';
-import { Typography } from 'antd';
+import { Card, Icon } from 'antd';
+import MacroNameMap from '../../../Modules/MacroNameMap';
 
 import './Waterfall.css';
-
-const { Title } = Typography;
 
 const MODE = ['ALIGN', 'FOLLOW'];
 
@@ -62,32 +60,40 @@ class XYAxis extends React.Component {
   };
 
   render() {
-    const { settings } = this.props;
+    const {
+      settings: { padding, width, height, mode },
+    } = this.props;
     return (
       <g className="xy-axis">
         <Axis
-          translate={`translate(0, ${settings.padding})`}
+          translate={`translate(0, ${padding})`}
           scale={this.props.xScale}
           orient="top"
         />
         <text
           className="axis"
           textAnchor="middle"
-          transform={`translate(${settings.width / 2}, 15)`}
+          transform={`translate(${width / 2}, 15)`}
         >
           [kCal / person / day]
         </text>
         <Axis
-          translate={`translate(${settings.width / 2}, 0)`}
+          translate={
+            mode === MODE[1]
+              ? `translate(${padding}, 0)`
+              : `translate(${width / 2}, 0)`
+          }
           scale={this.props.yScale}
           orient="left"
         />
         <text
           className="axis"
           textAnchor="middle"
-          transform={`translate(${settings.width / 2}, ${settings.height -
-            settings.padding +
-            15})`}
+          transform={
+            mode === MODE[1]
+              ? `translate(${padding}, ${height - padding + 20}), rotate(-90)`
+              : `translate(${width / 2}, ${height - padding + 15})`
+          }
         >
           [year]
         </text>
@@ -160,7 +166,7 @@ class DataRectangles extends React.Component {
         key={Math.random() * 1}
       >
         {coord.xDiff > 0 && '+'}
-        {coord.xDiff}
+        {coord.xDiff.toFixed(1)}
       </text>
     );
   };
@@ -197,14 +203,14 @@ class WaterfallPlot extends React.Component {
       var xMin = d3.min(this.props.data, d => d.xDiff);
       var xMax = d3.max(this.props.data, d => d.xDiff);
     } else if (settings.mode === MODE[1]) {
-      xMin = d3.min(this.props.data, d => d.xAbs);
-      xMax = d3.max(this.props.data, d => d.xAbs);
+      xMin = d3.min(this.props.data.map(d => [d.xAbs, d.xLast]).flat());
+      xMax = d3.max(this.props.data.map(d => [d.xAbs, d.xLast]).flat());
     }
 
     const absMax = d3.max([Math.abs(xMin), Math.abs(xMax)]);
     return d3
       .scaleLinear()
-      .domain([-absMax, absMax])
+      .domain([settings.mode === MODE[0] ? -absMax : xMin, absMax])
       .range([settings.padding, settings.width - settings.padding]);
   };
 
@@ -261,10 +267,15 @@ class Waterfall extends Component {
 
   state = {
     mode: MODE[1],
+    data: [],
   };
 
   componentWillMount() {
-    this.randomizeData();
+    this.processData();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.data !== this.props.data) this.processData();
   }
 
   toggleMode = () => {
@@ -273,17 +284,8 @@ class Waterfall extends Component {
     else if (mode === MODE[1]) this.setState({ mode: MODE[0] });
   };
 
-  randomizeData = () => {
-    const { settings } = this.props;
-
-    const randomData = d3
-      .range(settings.numDataPoints)
-      .map((value, index) => {
-        return [
-          settings.baseYear + index,
-          Math.floor(Math.random() * settings.maxRange()),
-        ];
-      })
+  processData = () => {
+    const nextData = this.props.data
       .map((datum, index, arr) => {
         if (index !== 0) {
           return {
@@ -296,30 +298,44 @@ class Waterfall extends Component {
         return null;
       })
       .filter(val => !!val);
-    this.setState({ data: randomData });
+    this.setState({ data: nextData });
   };
 
   render() {
-    const { settings } = this.props;
+    const { settings, country, group } = this.props;
 
     return (
-      <div style={{ width: settings.width }}>
-        <Title level={3}>Canada - Vegetables</Title>
+      <Card
+        title={
+          <div className="vizMenuBar">
+            <span>{`${country} - ${MacroNameMap[group]}`}</span>
+            <div className="vizMenuBarGroup">
+              <Icon type="swap" theme="outlined" onClick={this.toggleMode} />
+              <Icon
+                type="setting"
+                theme="filled"
+                onClick={this.props.toggleView}
+              />
+              <Icon
+                type="close"
+                theme="outlined"
+                onClick={this.props.handleClose}
+              />
+            </div>
+          </div>
+        }
+      >
         <WaterfallPlot
           data={this.state.data}
-          settings={{ ...settings, mode: this.state.mode }}
+          settings={{
+            ...settings,
+            numDataPoints: this.state.data.length + 1,
+            mode: this.state.mode,
+          }}
         />
-        <div className="controls">
-          <button className="btn randomize" onClick={this.toggleMode}>
-            Toggle Mode
-          </button>
-          <button className="btn randomize" onClick={this.randomizeData}>
-            Randomize Data
-          </button>
-        </div>
-      </div>
+      </Card>
     );
   }
 }
 
-export default withData(Waterfall);
+export default Waterfall;

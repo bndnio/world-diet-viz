@@ -2,41 +2,46 @@ import * as React from 'react';
 import { DataContext } from './data-context';
 import ApolloClient from 'apollo-boost';
 import gql from 'graphql-tag';
+import { ApolloProvider } from 'react-apollo';
 
 export default class DataProvider extends React.Component {
   constructor() {
     super();
     this.state = {
       setDate: this.setData,
+      setQuery: this.setQuery,
       data: [],
       queryParams: {
         type: 'MACRO',
-        countries: ['Canada'],
+        countries: [],
         years: [],
       },
+      loading: 0,
     };
     this.client = new ApolloClient({
+      // uri: 'http://localhost:4000/graphql',
       uri: 'http://gql.healthviz.xyz/graphql',
     });
-    this.getData();
   }
 
-  setQuery = nextQuery => {
-    this.setState(state => ({
+  setQuery = async nextQuery => {
+    await this.setState(state => ({
       queryParams: {
         ...state.queryParams,
         ...nextQuery,
       },
     }));
+    this.getData();
   };
 
   setData = nextData => {
     // save data to state
-    this.setState(state => ({ data: nextData }));
+    this.setState(state => ({ data: nextData, loading: state.loading - 1 }));
   };
 
   getData = () => {
     const { years, countries, type } = this.state.queryParams;
+    this.setState(state => ({ loading: state.loading + 1 }));
     this.client
       .query({
         query: gql`
@@ -58,7 +63,7 @@ export default class DataProvider extends React.Component {
                   country
                   year
                   type
-                  key
+                  name
                   value
                 }
               }
@@ -66,13 +71,16 @@ export default class DataProvider extends React.Component {
           }
         `,
       })
-      .then(result => this.setData(result.data.itemByYearCountry));
+      .then(result => this.setData(result.data.itemByYearCountry))
+      .catch(err => console.log(err));
   };
 
   render() {
     return (
       <DataContext.Provider value={this.state}>
-        {this.props.children}
+        <ApolloProvider client={this.client}>
+          {this.props.children}
+        </ApolloProvider>
       </DataContext.Provider>
     );
   }

@@ -1,113 +1,6 @@
 const { gql } = require('apollo-server');
 const runQuery = require('./db');
 
-const db_items = [
-  'Aquatic Plants',
-  'Rice (Milled Equivalent)',
-  'Olives (including preserved)',
-  'Cassava and products',
-  'Milk - Excluding Butter',
-  'Barley and products',
-  'Roots, Other',
-  'Population',
-  'Sunflower seed',
-  'Lemons, Limes and products',
-  'Spices, Other',
-  'Marine Fish, Other',
-  'Offals, Edible',
-  'Rape and Mustard Oil',
-  'Sweet potatoes',
-  'Pimento',
-  'Fish, Seafood',
-  'Sugar & Sweeteners',
-  'Groundnuts (Shelled Eq)',
-  'Starchy Roots',
-  'Sweeteners, Other',
-  'Bananas',
-  'Crustaceans',
-  'Sugar Crops',
-  'Vegetal Products',
-  'Mutton & Goat Meat',
-  'Cephalopods',
-  'Palm kernels',
-  'Grand Total',
-  'Sorghum and products',
-  'Fish, Body Oil',
-  'Palmkernel Oil',
-  'Soyabeans',
-  'Maize and products',
-  'Coconuts - Incl Copra',
-  'Sesame seed',
-  'Oilcrops',
-  'Freshwater Fish',
-  'Cereals, Other',
-  'Vegetables',
-  'Wheat and products',
-  'Potatoes and products',
-  'Oilcrops Oil, Other',
-  'Meat',
-  'Infant food',
-  'Vegetable Oils',
-  'Butter, Ghee',
-  'Eggs',
-  'Rye and products',
-  'Vegetables, Other',
-  'Demersal Fish',
-  'Molluscs, Other',
-  'Pulses',
-  'Yams',
-  'Groundnut Oil',
-  'Fruits - Excluding Wine',
-  'Offals',
-  'Honey',
-  'Cottonseed Oil',
-  'Oats',
-  'Grapefruit and products',
-  'Maize Germ Oil',
-  'Aquatic Animals, Others',
-  'Millet and products',
-  'Animal Products',
-  'Poultry Meat',
-  'Peas',
-  'Alcohol, Non-Food',
-  'Meat, Aquatic Mammals',
-  'Beverages, Alcoholic',
-  'Cloves',
-  'Ricebran Oil',
-  'Dates',
-  'Tomatoes and products',
-  'Wine',
-  'Sesameseed Oil',
-  'Cottonseed',
-  'Sugar non-centrifugal',
-  'Beer',
-  'Sunflowerseed Oil',
-  'Cream',
-  'Plantains',
-  'Pelagic Fish',
-  'Treenuts',
-  'Grapes and products (excl wine)',
-  'Aquatic Products, Other',
-];
-
-const FoodGroup = [
-  'Cereals and grains',
-  'Pulses',
-  'Starchy roots',
-  'Fruits and vegetables',
-  'Oils & fats',
-  'Sugar',
-  'Meat',
-  'Dairy & eggs',
-  'Alcoholic beverages',
-];
-
-const groupMap = item => {
-  // if (FoodGroup.includes(item)) return 'FOODGROUP';
-  // else return 'OTHER';
-  return 'OTHER';
-};
-
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
@@ -126,11 +19,16 @@ const typeDefs = gql`
     OTHER
   }
 
+  type Range {
+    min: Int!
+    max: Int!
+  }
+
   type Item {
     country: String!
     year: Int!
     type: Group!
-    key: String!
+    name: String!
     value: Float!
   }
 
@@ -168,13 +66,11 @@ const typeDefs = gql`
       type: Group
     ): [CountryYears!]
     countries: [String!]!
+    yearRange: Range!
+    kcalRange: Range!
+    names(type: Group): [String!]!
   }
 `;
-
-const queryString = `SELECT DISTINCT country, year, type, name, value 
-  FROM diet
-  WHERE country='Canada'
-  ORDER BY country, year;`;
 
 const aggregateItemByYearCountry = res => {
   const { rows } = res;
@@ -189,7 +85,7 @@ const aggregateItemByYearCountry = res => {
             country: row.country,
             year: row.year,
             type: row.type,
-            key: row.name,
+            name: row.name,
             value: row.value,
           },
         ],
@@ -220,7 +116,7 @@ const aggregateItemByCountryYear = res => {
             country: row.country,
             year: row.year,
             type: row.type,
-            key: row.name,
+            name: row.name,
             value: row.value,
           },
         ],
@@ -264,24 +160,35 @@ const buildQueryStr = ({ countries = [], years = [], type = '' }) =>
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    itemByYearCountry(parent, args) {
-      return runQuery(buildQueryStr(args), aggregateItemByYearCountry);
-    },
-    itemByCountryYear: args =>
-      runQuery(
-        `SELECT DISTINCT country, year, type, name, value FROM diet ` +
-          args.countries.length >
-          0 &&
-          `WHERE country='${args.countries[0]}' ${args.countries.length > 1 &&
-            args.countries.slice(1).map(c => `OR country='${c}' `)}` +
-            `ORDER BY country, year;`,
-        aggregateItemByCountryYear
-      ),
-    countries() {
-      return runQuery(`SELECT DISTINCT country FROM diet`, res =>
+    itemByYearCountry: (parent, args) =>
+      runQuery(buildQueryStr(args), aggregateItemByYearCountry),
+    itemByCountryYear: (parent, args) =>
+      runQuery(buildQueryStr(args), aggregateItemByCountryYear),
+    countries: () =>
+      runQuery(`SELECT DISTINCT country FROM diet ORDER BY country ASC`, res =>
         res.rows.map(r => r.country)
-      );
-    },
+      ),
+    yearRange: () => ({
+      min: runQuery(`SELECT MIN(year) from diet`, res => res.rows[0].min),
+      max: runQuery(`SELECT MAX(year) from diet`, res => res.rows[0].max),
+    }),
+    kcalRange: () => ({
+      min: runQuery(
+        `SELECT MIN(value) from diet WHERE name='Grand Total - Food supply'`,
+        res => res.rows[0].min
+      ),
+      max: runQuery(
+        `SELECT MAX(value) from diet WHERE name='Grand Total - Food supply'`,
+        res => res.rows[0].max
+      ),
+    }),
+    names: (parent, args) =>
+      runQuery(
+        `SELECT DISTINCT name from diet ${
+          !!args.type ? `WHERE type='${args.type}'` : ''
+        }`,
+        res => res.rows.map(r => r.name)
+      ),
   },
 };
 

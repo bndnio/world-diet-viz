@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import VisualizationSelector from '../VisualizationSelector';
-import VisualizationBase from '../VisualizationBase';
+import { Layout, Card } from 'antd';
 import {
   CountryPicker,
-  YearSlider,
+  YearRangeSlider,
   LineChart,
   Waterfall,
+  ScatterPlot,
 } from '../../Visualizations';
-import { Layout } from 'antd';
+import PresetButton from '../PresetButton/PresetButton';
 
 import './VisualizationContainer.css';
 import ScatterPlotViz from '../../Visualizations/ScatterPlot';
@@ -16,11 +16,14 @@ const { Sider, Content } = Layout;
 
 class VisualizationContainer extends Component {
   state = {
-    openVisualization: null,
+    waterfalls: [],
+    waterfallCount: 0,
   };
 
-  openVisualization = visualizationComponent => {
-    this.setState({ openVisualization: visualizationComponent });
+  handleCloseWaterfall = key => () => {
+    this.setState(state => ({
+      waterfalls: state.waterfalls.filter(w => +w.key !== key),
+    }));
   };
 
   render() {
@@ -28,25 +31,38 @@ class VisualizationContainer extends Component {
       <Layout style={{ height: '100vh' }}>
         <Sider theme="light" className="sideBar">
           <h1 className="App-title">Nutrition InfoViz</h1>
-          {/* <VisualizationSelector openVisualization={this.openVisualization} /> */}
           <CountryPicker />
-          <br />
-          <YearSlider />
+          <YearRangeSlider />
+          <PresetButton
+            countries={['Canada', 'Afghanistan', 'Mexico']}
+            yearRange={[1990, 2000]}
+          >
+            Preset 1
+          </PresetButton>
         </Sider>
         <Content className="dashboard">
-          <VisualizationBase>
-            {/* {!!this.state.openVisualization ? (
-              <this.state.openVisualization />
-            ) : null} */}
-            <ScatterPlotViz />
-            <LineChart />
-          </VisualizationBase>
-          <VisualizationBase width={375}>
-            <Waterfall />
-          </VisualizationBase>
-          <VisualizationBase width={375}>
+          <ScatterPlot />
+          <LineChart />
+          {this.state.waterfalls}
+          <Card
+            onClick={() =>
+              this.setState(state => ({
+                waterfalls: [
+                  ...state.waterfalls,
+                  <Waterfall
+                    key={state.waterfallCount}
+                    handleClose={this.handleCloseWaterfall(
+                      state.waterfallCount
+                    )}
+                  />,
+                ],
+                waterfallCount: state.waterfallCount + 1,
+              }))
+            }
+            style={{ width: 375 }}
+          >
             Click to add Waterfall
-          </VisualizationBase>
+          </Card>
         </Content>
       </Layout>
     );
