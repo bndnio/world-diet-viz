@@ -456,7 +456,7 @@ class LineChart extends React.Component {
                 })
               }
               disabled={
-                this.props.data.loading ||
+                !!this.props.data.loading ||
                 !this.props.interaction.fields.availableCountries
               }
             />
