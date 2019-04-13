@@ -16,13 +16,12 @@ export default class DataProvider extends React.Component {
         countries: [],
         years: [],
       },
-      loading: 1,
+      loading: 0,
     };
     this.client = new ApolloClient({
       uri: 'http://localhost:4000/graphql',
       // uri: 'http://gql.healthviz.xyz/graphql',
     });
-    this.getData();
   }
 
   setQuery = async nextQuery => {
@@ -38,12 +37,10 @@ export default class DataProvider extends React.Component {
   setData = nextData => {
     // save data to state
     this.setState(state => ({ data: nextData, loading: state.loading - 1 }));
-    console.log('setData', nextData);
   };
 
   getData = () => {
     const { years, countries, type } = this.state.queryParams;
-    console.log(this.state.queryParams);
     this.setState(state => ({ loading: state.loading + 1 }));
     this.client
       .query({
