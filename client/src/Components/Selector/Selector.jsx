@@ -6,7 +6,6 @@ const Option = Select.Option;
 
 const Selector = props => {
   function handleChange(value) {
-    console.log(`selected ${value}`);
     props.handleChange(value);
   }
 
