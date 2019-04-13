@@ -16,7 +16,7 @@ export default class DataProvider extends React.Component {
         countries: [],
         years: [],
       },
-      loading: true,
+      loading: 1,
     };
     this.client = new ApolloClient({
       uri: 'http://localhost:4000/graphql',
@@ -37,14 +37,14 @@ export default class DataProvider extends React.Component {
 
   setData = nextData => {
     // save data to state
-    this.setState({ data: nextData, loading: false });
+    this.setState(state => ({ data: nextData, loading: state.loading - 1 }));
     console.log('setData', nextData);
   };
 
   getData = () => {
     const { years, countries, type } = this.state.queryParams;
     console.log(this.state.queryParams);
-    this.setState({ loading: true });
+    this.setState(state => ({ loading: state.loading + 1 }));
     this.client
       .query({
         query: gql`
