@@ -10,6 +10,7 @@ import {
 import { Layout } from 'antd';
 
 import './VisualizationContainer.css';
+import ScatterPlotViz from '../../Visualizations/ScatterPlot';
 
 const { Sider, Content } = Layout;
 
@@ -37,6 +38,7 @@ class VisualizationContainer extends Component {
             {/* {!!this.state.openVisualization ? (
               <this.state.openVisualization />
             ) : null} */}
+            <ScatterPlotViz />
             <LineChart />
           </VisualizationBase>
           <VisualizationBase width={375}>

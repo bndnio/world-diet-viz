@@ -1,40 +1,75 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import { withData } from '../../DataContext/withData';
-import { Typography } from 'antd';
 
 import './ScatterPlot.css';
 
-const { Title } = Typography;
+const settings = {
+  width: 1000,
+  height: 300,
+  padding: 50,
+  numDataPoints: 50,
+  maxRange: () => Math.random() * 1000,
+};
 
-class Axis extends React.Component {
+class XAxis extends React.Component {
   static propTypes = {
     translate: PropTypes.string.isRequired,
-    orient: PropTypes.oneOf(['bottom', 'top', 'left']).isRequired,
     scale: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
-    this.renderAxis();
+    this.renderXAxis();
   }
 
   componentDidUpdate() {
-    this.renderAxis();
+    this.renderXAxis();
   }
 
-  renderAxis = () => {
+  renderXAxis() {
     const node = this.refs.axisContainer;
-    const baseAxis =
-      this.props.orient === 'bottom'
-        ? d3.axisBottom()
-        : this.props.orient === 'left'
-        ? d3.axisLeft()
-        : null;
-    const axis = baseAxis.ticks(5).scale(this.props.scale);
-
+    const baseAxis = d3
+      .axisBottom()
+      .ticks(5)
+      .tickFormat(d3.format('d'));
+    const axis = baseAxis.scale(this.props.scale);
     d3.select(node).call(axis);
+  }
+
+  render() {
+    return (
+      <g
+        className="axis"
+        ref="axisContainer"
+        transform={this.props.translate}
+      />
+    );
+  }
+}
+
+class YAxis extends React.Component {
+  static propTypes = {
+    translate: PropTypes.string.isRequired,
+    scale: PropTypes.func.isRequired,
   };
+
+  componentDidMount() {
+    this.renderYAxis();
+  }
+
+  componentDidUpdate() {
+    this.renderYAxis();
+  }
+
+  renderYAxis() {
+    const node = this.refs.axisContainer;
+    let baseAxis;
+    if (this.props.flip) baseAxis = d3.axisRight();
+    else baseAxis = d3.axisLeft();
+    const axis = baseAxis.ticks(5).scale(this.props.scale);
+    d3.select(node).call(axis);
+  }
 
   render() {
     return (
@@ -49,29 +84,38 @@ class Axis extends React.Component {
 
 class XYAxis extends React.Component {
   static propTypes = {
-    settings: PropTypes.shape({
-      width: PropTypes.number,
-      padding: PropTypes.number,
-    }),
+    padding: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
   render() {
-    const { settings } = this.props;
-
     return (
-      <g className="xy-axis">
-        <Axis
-          translate={`translate(0, ${settings.height - settings.padding})`}
+      <g className="LE-xy-axis">
+        <XAxis
+          translate={`translate(0, ${this.props.height -
+          (this.props.padding * 2) / 3})`}
           scale={this.props.xScale}
-          orient="bottom"
         />
-        <Axis
-          translate={`translate(${settings.padding}, 0)`}
+        <text
+          className="axis"
+          textAnchor="middle"
+          transform={`translate(${settings.width / 2 -
+          this.props.padding / 2}, ${settings.height - 5})`}
+        >
+          [Total KCals]
+        </text>
+        <YAxis
+          translate={`translate(${this.props.padding}, 0)`}
           scale={this.props.yScale}
-          orient="left"
         />
+        <text
+          className="axis"
+          textAnchor="middle"
+          transform={`translate(10, ${settings.height / 2}), rotate(-90)`}
+        >
+          [Life Expectancy]</text>
       </g>
     );
   }
@@ -79,136 +123,123 @@ class XYAxis extends React.Component {
 
 class DataCircles extends React.Component {
   static propTypes = {
-    settings: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      padding: PropTypes.number,
-      numDataPoints: PropTypes.number,
-    }),
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
-  renderCircle = coords => {
+  renderCircle(coords) {
     return (
       <circle
-        cx={this.props.xScale(coords[0])}
-        cy={this.props.yScale(coords[1])}
-        r={2}
-        key={Math.random() * 1}
+        cx={this.props.xScale(coords[2])}
+        cy={this.props.yScale(coords[3])}
+        r={3}
+        key={Math.random()}
+        fill={this.props.color}
       />
     );
-  };
+  }
 
   render() {
-    return <g>{this.props.data.map(this.renderCircle)}</g>;
+    return <g>{this.props.data.map(this.renderCircle.bind(this))}</g>;
   }
 }
 
-class ScatterPlot extends React.Component {
+class ScatterGraph extends React.Component {
   static propTypes = {
-    settings: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      padding: PropTypes.number,
-      numDataPoints: PropTypes.number,
-      maxRange: PropTypes.func,
-    }),
+    padding: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
     data: PropTypes.array.isRequired,
-    xScale: PropTypes.func,
-    yScale: PropTypes.func,
   };
 
-  getXScale = () => {
-    const { settings } = this.props;
-
-    const xMax = d3.max(this.props.data, d => d[0]);
-
+  getXScale() {
     return d3
       .scaleLinear()
-      .domain([0, xMax])
-      .range([settings.padding, settings.width - settings.padding * 2]);
-  };
+      .domain([2000, 2350]) // When data begins, ends
+      .range([this.props.padding, this.props.width - this.props.padding * 2]);
+  }
 
-  getYScale = () => {
-    const { settings } = this.props;
-
-    const yMax = d3.max(this.props.data, d => d[1]);
-
+  getDataYScale() {
     return d3
       .scaleLinear()
-      .domain([0, yMax])
-      .range([settings.height - settings.padding, settings.padding]);
-  };
+      .domain([50, 100])
+      .range([this.props.height - this.props.padding, this.props.padding]);
+  }
+  getDeathYScale() {
+    return d3
+      .scaleLinear()
+      .domain([50, 100])
+      .range([this.props.height - this.props.padding, this.props.padding]);
+  }
 
   render() {
-    const { settings } = this.props;
-
-    const xScale = settings.xScale || this.getXScale();
-    const yScale = settings.yScale || this.getYScale();
+    const xScale = this.getXScale();
+    const yDataScale = this.getDataYScale();
+    const yDeathDataScale = this.getDeathYScale();
 
     return (
-      <svg width={settings.width} height={settings.height}>
-        <DataCircles xScale={xScale} yScale={yScale} {...this.props} />
-        <XYAxis xScale={xScale} yScale={yScale} {...this.props} />
+      <svg width={this.props.width} height={this.props.height}>
+        <DataCircles
+          xScale={xScale}
+          yScale={yDeathDataScale}
+          {...this.props}
+          data={this.props.data}
+          color="#80b0ff"
+        />
+        <XYAxis
+          xScale={xScale}
+          yScale={yDataScale}
+          otherYScale={yDeathDataScale}
+          {...this.props}
+        />
       </svg>
     );
   }
 }
 
-class ScatterPlotViz extends Component {
-  static propTypes = {
-    settings: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      padding: PropTypes.number,
-      numDataPoints: PropTypes.number,
-      maxRange: PropTypes.func,
-    }),
-    xScale: PropTypes.func,
-    yScale: PropTypes.func,
-  };
-  static defaultProps = {
-    settings: {
-      width: 1000,
-      height: 600,
-      padding: 30,
-      numDataPoints: 50,
-      maxRange: () => Math.random() * 1000,
-    },
-  };
-
+class ScatterPlot extends React.Component {
   componentWillMount() {
-    this.randomizeData();
+    this.getData();
   }
 
-  randomizeData = () => {
-    const { settings } = this.props;
-
-    const randomData = d3.range(settings.numDataPoints).map(() => {
-      return [
-        Math.floor(Math.random() * settings.maxRange()),
-        Math.floor(Math.random() * settings.maxRange()),
-      ];
+  getData() {
+    // each datapoint in form of [Country, year, total KCals, LifeExpect]
+    const myData = [
+      ["Canada", 2012, 2055, 83],
+      ["Im sorry I thought this was Amurica", 2012, 2056, 76],
+      ["A", 2012, 2008, 91],
+      ["B", 2012, 2061, 78],
+      ["C", 2012, 2164, 88],
+      ["D", 2012, 2162, 64],
+      ["E", 2012, 2323, 76],
+      ["F", 2012, 2159, 78],
+      ["G", 2012, 2308, 59],
+      ["H", 2012, 2183, 86],
+      ["I", 2012, 2155, 89],
+      ["J", 2012, 2124, 79],
+      ["K", 2012, 2124, 74],
+      ["L", 2012, 2126, 76],
+      ["M", 2012, 2199, 58],
+      ["N", 2012, 2228, 99],
+    ];
+    this.setState({
+      // countryName, year, totalCals, lifeExpect
+      data: myData
     });
-    this.setState({ data: randomData });
-  };
+  }
 
   render() {
-    const { settings } = this.props;
-
     return (
       <div>
-        <Title>Sample Scatterplot</Title>
-        <ScatterPlot data={this.state.data} settings={settings} />
-        <div className="controls">
-          <button className="btn randomize" onClick={this.randomizeData}>
-            Randomize Data
-          </button>
-        </div>
+        <h1>Life Expectancy vs Total KCal</h1>
+        <ScatterGraph
+          data={this.state.data}
+          {...settings}
+        />
       </div>
     );
   }
 }
 
-export default withData(ScatterPlotViz);
+export default withData(ScatterPlot);
+
