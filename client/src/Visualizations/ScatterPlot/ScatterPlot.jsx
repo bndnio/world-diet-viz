@@ -9,8 +9,6 @@ const settings = {
   width: 1000,
   height: 300,
   padding: 50,
-  numDataPoints: 50,
-  maxRange: () => Math.random() * 1000,
 };
 
 class XAxis extends React.Component {
@@ -165,23 +163,16 @@ class ScatterGraph extends React.Component {
       .domain([50, 100])
       .range([this.props.height - this.props.padding, this.props.padding]);
   }
-  getDeathYScale() {
-    return d3
-      .scaleLinear()
-      .domain([50, 100])
-      .range([this.props.height - this.props.padding, this.props.padding]);
-  }
 
   render() {
     const xScale = this.getXScale();
     const yDataScale = this.getDataYScale();
-    const yDeathDataScale = this.getDeathYScale();
 
     return (
       <svg width={this.props.width} height={this.props.height}>
         <DataCircles
           xScale={xScale}
-          yScale={yDeathDataScale}
+          yScale={yDataScale}
           {...this.props}
           data={this.props.data}
           color="#80b0ff"
@@ -189,7 +180,6 @@ class ScatterGraph extends React.Component {
         <XYAxis
           xScale={xScale}
           yScale={yDataScale}
-          otherYScale={yDeathDataScale}
           {...this.props}
         />
       </svg>
@@ -223,7 +213,6 @@ class ScatterPlot extends React.Component {
       ["N", 2012, 2228, 99],
     ];
     this.setState({
-      // countryName, year, totalCals, lifeExpect
       data: myData
     });
   }
@@ -242,4 +231,3 @@ class ScatterPlot extends React.Component {
 }
 
 export default withData(ScatterPlot);
-
