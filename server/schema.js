@@ -67,6 +67,7 @@ const typeDefs = gql`
     ): [CountryYears!]
     countries: [String!]!
     yearRange: Range!
+    kcalRange: Range!
     names(type: Group): [String!]!
   }
 `;
@@ -170,6 +171,16 @@ const resolvers = {
     yearRange: () => ({
       min: runQuery(`SELECT MIN(year) from diet`, res => res.rows[0].min),
       max: runQuery(`SELECT MAX(year) from diet`, res => res.rows[0].max),
+    }),
+    kcalRange: () => ({
+      min: runQuery(
+        `SELECT MIN(value) from diet WHERE name='Grand Total - Food supply'`,
+        res => res.rows[0].min
+      ),
+      max: runQuery(
+        `SELECT MAX(value) from diet WHERE name='Grand Total - Food supply'`,
+        res => res.rows[0].max
+      ),
     }),
     names: (parent, args) =>
       runQuery(
