@@ -13,6 +13,9 @@ class MySlider extends Component {
     super(props);
     const { min, max } = this.props;
     this.handleRelease([min, max]);
+    this.state = {
+      value: [min, max],
+    };
   }
 
   static propTypes = {
@@ -25,6 +28,15 @@ class MySlider extends Component {
       setQuery: PropTypes.func.isRequired,
     }).isRequired,
   };
+
+  componentDidUpdate(prevProps) {
+    const { availableYears } = this.props.interaction.fields;
+    if (prevProps.interaction.fields.availableYears !== availableYears) {
+      this.setState({
+        value: [availableYears[0], availableYears[availableYears.length - 1]],
+      });
+    }
+  }
 
   handleRelease = value => {
     // Create array of all years from base year to top year
@@ -47,10 +59,10 @@ class MySlider extends Component {
         <Text>Year</Text>
         <Slider
           range
-          defaultValue={[min, max]}
           min={min}
           max={max}
           onAfterChange={this.handleRelease}
+          value={this.state.value}
         />
       </div>
     );

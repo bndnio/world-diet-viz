@@ -38,6 +38,7 @@ class CountryPicker extends Component {
                 placeholder="Please select"
                 defaultValue={[]}
                 onChange={this.handleChange}
+                value={this.props.interaction.fields.availableCountries}
               >
                 {countries.map(country => (
                   <Option key={country}>{country}</Option>
