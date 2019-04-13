@@ -16,6 +16,7 @@ const { Sider, Content } = Layout;
 class VisualizationContainer extends Component {
   state = {
     waterfalls: [],
+    waterfallCount: 0,
   };
 
   render() {
@@ -38,9 +39,13 @@ class VisualizationContainer extends Component {
           {this.state.waterfalls}
           <Card
             onClick={() =>
-              this.setState({
-                waterfalls: [...this.state.waterfalls, <Waterfall />],
-              })
+              this.setState(state => ({
+                waterfalls: [
+                  ...state.waterfalls,
+                  <Waterfall key={state.waterfallCount} />,
+                ],
+                waterfallCount: state.waterfallCount + 1,
+              }))
             }
             style={{ width: 375 }}
           >
