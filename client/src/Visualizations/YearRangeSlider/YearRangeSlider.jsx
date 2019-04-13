@@ -8,7 +8,7 @@ import { Slider, Typography } from 'antd';
 
 const { Text } = Typography;
 
-class MySlider extends Component {
+class YearRangeSlider extends Component {
   constructor(props) {
     super(props);
     const { min, max } = this.props;
@@ -65,6 +65,7 @@ class MySlider extends Component {
           range
           min={min}
           max={max}
+          marks={{ [min]: min, [max]: max }}
           onChange={this.handleChange}
           onAfterChange={this.handleRelease}
           value={this.state.value}
@@ -74,7 +75,7 @@ class MySlider extends Component {
   }
 }
 
-class YearSlider extends Component {
+class YearRangeSliderContainer extends Component {
   render() {
     const GET_YEAR_RANGE = gql`
       {
@@ -89,14 +90,15 @@ class YearSlider extends Component {
       <Query query={GET_YEAR_RANGE}>
         {({ loading, error, data }) => {
           if (loading) return 'Loading...';
-          if (error) console.log('Error loading gql data for YearSlider');
+          if (error)
+            console.log('Error loading gql data for YearRangeSliderContainer');
           const { min, max } = data.yearRange;
 
-          return <MySlider {...this.props} min={min} max={max} />;
+          return <YearRangeSlider {...this.props} min={min} max={max} />;
         }}
       </Query>
     );
   }
 }
 
-export default withInteraction(withData(YearSlider));
+export default withInteraction(withData(YearRangeSliderContainer));

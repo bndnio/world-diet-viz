@@ -37,7 +37,7 @@ class WaterfallConfig extends Component {
     return (
       <Query query={GET_GROUP_OPTIONS}>
         {({ loading, error, data }) => {
-          if (error) console.log('Error loading gql data for YearSlider');
+          if (error) console.log('Error loading gql data for WaterfallConfig');
 
           return (
             <Card title="Waterfall Config" loading={loading}>

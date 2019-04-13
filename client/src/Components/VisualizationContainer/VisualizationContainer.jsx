@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   CountryPicker,
-  YearSlider,
+  YearRangeSlider,
   LineChart,
   Waterfall,
   ScatterPlot,
@@ -24,7 +24,7 @@ class VisualizationContainer extends Component {
         <Sider theme="light" className="sideBar">
           <h1 className="App-title">Nutrition InfoViz</h1>
           <CountryPicker />
-          <YearSlider />
+          <YearRangeSlider />
           <PresetButton
             countries={['Canada', 'Afghanistan', 'Mexico']}
             yearRange={[1990, 2000]}
