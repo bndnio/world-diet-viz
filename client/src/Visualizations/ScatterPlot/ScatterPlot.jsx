@@ -127,9 +127,7 @@ class DataCircles extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = {
-      hovered: false
-    }
+    this.state = {hovered: false}
   }
 
   getCircleRadius(value) {
@@ -151,8 +149,8 @@ class DataCircles extends React.Component {
           //onMouseDown={function() {d3.select(this).attr('fill', 'red')}}            // doesn't work, but I feel like it should
           //onMouseOver={function() {console.log('Hovering')}}
           //onMouseOut={function() {console.log('Done hovering')}}
-          onMouseOver={() => this.setState({hovered: true})}
-          onMouseOut={() => this.setState({hovered: false})}
+          onMouseDown={() => this.setState({hovered: true})}
+          onMouseUp={() => this.setState({hovered: false})}
         />
         <text
           className="data_labels"
