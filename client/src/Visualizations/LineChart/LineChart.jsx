@@ -447,8 +447,8 @@ class LineChart extends React.Component {
     return (
       <Card
         title={
-          <div>
-            <span>"Life Expectancy v. Total kCal Consumption"</span>
+          <div className="vizMenuBar">
+            <span>Life Expectancy v. Total kCal Consumption</span>
             <Selector
               options={this.props.interaction.fields.availableCountries || []}
               handleChange={value =>
@@ -460,6 +460,7 @@ class LineChart extends React.Component {
                 !!this.props.data.loading ||
                 !this.props.interaction.fields.availableCountries
               }
+              placeholder="Select Country"
             />
           </div>
         }

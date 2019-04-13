@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Layout, Card } from 'antd';
 import {
   CountryPicker,
   YearRangeSlider,
@@ -6,10 +7,9 @@ import {
   Waterfall,
   ScatterPlot,
 } from '../../Visualizations';
-import { Layout, Card } from 'antd';
+import PresetButton from '../PresetButton/PresetButton';
 
 import './VisualizationContainer.css';
-import PresetButton from '../PresetButton/PresetButton';
 
 const { Sider, Content } = Layout;
 
@@ -17,6 +17,12 @@ class VisualizationContainer extends Component {
   state = {
     waterfalls: [],
     waterfallCount: 0,
+  };
+
+  handleCloseWaterfall = key => () => {
+    this.setState(state => ({
+      waterfalls: state.waterfalls.filter(w => +w.key !== key),
+    }));
   };
 
   render() {
@@ -42,7 +48,12 @@ class VisualizationContainer extends Component {
               this.setState(state => ({
                 waterfalls: [
                   ...state.waterfalls,
-                  <Waterfall key={state.waterfallCount} />,
+                  <Waterfall
+                    key={state.waterfallCount}
+                    handleClose={this.handleCloseWaterfall(
+                      state.waterfallCount
+                    )}
+                  />,
                 ],
                 waterfallCount: state.waterfallCount + 1,
               }))

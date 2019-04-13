@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
-import { Card } from 'antd';
+import { Card, Icon } from 'antd';
 import MacroNameMap from '../../../Modules/MacroNameMap';
 
 import './Waterfall.css';
@@ -79,7 +79,7 @@ class XYAxis extends React.Component {
         </text>
         <Axis
           translate={
-            mode === mode[1]
+            mode === MODE[1]
               ? `translate(${padding}, 0)`
               : `translate(${width / 2}, 0)`
           }
@@ -91,7 +91,7 @@ class XYAxis extends React.Component {
           textAnchor="middle"
           transform={
             mode === MODE[1]
-              ? `translate(${padding}, ${height - padding + 15})`
+              ? `translate(${padding}, ${height - padding + 20}), rotate(-90)`
               : `translate(${width / 2}, ${height - padding + 15})`
           }
         >
@@ -203,8 +203,8 @@ class WaterfallPlot extends React.Component {
       var xMin = d3.min(this.props.data, d => d.xDiff);
       var xMax = d3.max(this.props.data, d => d.xDiff);
     } else if (settings.mode === MODE[1]) {
-      xMin = d3.min(this.props.data, d => d.xAbs);
-      xMax = d3.max(this.props.data, d => d.xAbs);
+      xMin = d3.min(this.props.data.map(d => [d.xAbs, d.xLast]).flat());
+      xMax = d3.max(this.props.data.map(d => [d.xAbs, d.xLast]).flat());
     }
 
     const absMax = d3.max([Math.abs(xMin), Math.abs(xMax)]);
@@ -305,7 +305,26 @@ class Waterfall extends Component {
     const { settings, country, group } = this.props;
 
     return (
-      <Card title={`${country} - ${MacroNameMap[group]}`}>
+      <Card
+        title={
+          <div className="vizMenuBar">
+            <span>{`${country} - ${MacroNameMap[group]}`}</span>
+            <div className="vizMenuBarGroup">
+              <Icon type="swap" theme="outlined" onClick={this.toggleMode} />
+              <Icon
+                type="setting"
+                theme="filled"
+                onClick={this.props.toggleView}
+              />
+              <Icon
+                type="close"
+                theme="outlined"
+                onClick={this.props.handleClose}
+              />
+            </div>
+          </div>
+        }
+      >
         <WaterfallPlot
           data={this.state.data}
           settings={{
@@ -314,14 +333,6 @@ class Waterfall extends Component {
             mode: this.state.mode,
           }}
         />
-        <div className="controls">
-          <button className="btn randomize" onClick={this.toggleMode}>
-            Toggle Mode
-          </button>
-          <button className="btn randomize" onClick={this.processData}>
-            Randomize Data
-          </button>
-        </div>
       </Card>
     );
   }

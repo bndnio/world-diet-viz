@@ -46,6 +46,7 @@ class WaterfallContainer extends Component {
           <WaterfallConfig
             handleChange={this.handleChange}
             toggleView={this.toggleView}
+            handleClose={this.props.handleClose}
             {...config}
           />
         ) : (
@@ -53,6 +54,7 @@ class WaterfallContainer extends Component {
             {...this.props}
             {...config}
             toggleView={this.toggleView}
+            handleClose={this.props.handleClose}
             data={data}
           />
         )}
