@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
+import { Card } from 'antd';
 import { withData } from '../../Contexts/DataContext/withData';
 
 import './ScatterPlot.css';
@@ -195,15 +196,14 @@ class ScatterPlotViz extends Component {
     const { settings } = this.props;
 
     return (
-      <div>
-        <h2>Sample Scatterplot</h2>
+      <Card title="Sample Scatterplot">
         <ScatterPlot data={this.state.data} settings={settings} />
         <div className="controls">
           <button className="btn randomize" onClick={this.randomizeData}>
             Randomize Data
           </button>
         </div>
-      </div>
+      </Card>
     );
   }
 }

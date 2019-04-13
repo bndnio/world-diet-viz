@@ -13,3 +13,7 @@
   display: flex;
   flex-wrap: wrap;
 }
+
+.dashboard > * {
+  margin: 0.5rem;
+}

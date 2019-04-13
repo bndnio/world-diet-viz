@@ -42,20 +42,19 @@ class WaterfallContainer extends Component {
     const { data, ...config } = this.state;
     return (
       <div>
-        <span>
-          <button
-            onClick={this.toggleView}
-            type="primary"
-            shape="circle"
-            icon="search"
-          >
-            switch
-          </button>
-        </span>
         {this.state.displayConfig ? (
-          <WaterfallConfig handleChange={this.handleChange} {...config} />
+          <WaterfallConfig
+            handleChange={this.handleChange}
+            toggleView={this.toggleView}
+            {...config}
+          />
         ) : (
-          <WaterfallViz {...this.props} {...config} data={data} />
+          <WaterfallViz
+            {...this.props}
+            {...config}
+            toggleView={this.toggleView}
+            data={data}
+          />
         )}
       </div>
     );

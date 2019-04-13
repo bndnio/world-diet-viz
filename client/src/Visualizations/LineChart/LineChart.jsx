@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
+import { Card } from 'antd';
 import { withData } from '../../Contexts/DataContext/withData';
 
 import './LineChart.css';
@@ -398,8 +399,7 @@ class LineChart extends React.Component {
 
   render() {
     return (
-      <div>
-        <h1>Total kCal Consumption & Mortality v. Time</h1>
+      <Card title="Total kCal Consumption & Mortality v. Time">
         <LineGraph
           data={this.state.data}
           deathData={this.state.deathData}
@@ -408,7 +408,7 @@ class LineChart extends React.Component {
           measure3={this.state.measure3}
           {...settings}
         />
-      </div>
+      </Card>
     );
   }
 }

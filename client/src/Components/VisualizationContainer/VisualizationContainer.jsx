@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import VisualizationBase from '../VisualizationBase';
 import {
   CountryPicker,
   YearSlider,
@@ -7,7 +6,7 @@ import {
   Waterfall,
   ScatterPlot,
 } from '../../Visualizations';
-import { Layout } from 'antd';
+import { Layout, Card } from 'antd';
 
 import './VisualizationContainer.css';
 
@@ -18,43 +17,29 @@ class VisualizationContainer extends Component {
     waterfalls: [],
   };
 
-  openVisualization = visualizationComponent => {
-    this.setState({ openVisualization: visualizationComponent });
-  };
-
   render() {
     return (
       <Layout style={{ height: '100vh' }}>
         <Sider theme="light" className="sideBar">
           <h1 className="App-title">Nutrition InfoViz</h1>
-          {/* <VisualizationSelector openVisualization={this.openVisualization} /> */}
           <CountryPicker />
           <br />
           <YearSlider />
         </Sider>
         <Content className="dashboard">
-          <VisualizationBase>
-            <ScatterPlot />
-          </VisualizationBase>
-          <VisualizationBase>
-            <LineChart />
-          </VisualizationBase>
+          <ScatterPlot />
+          <LineChart />
           {this.state.waterfalls}
-          <VisualizationBase
+          <Card
             onClick={() =>
               this.setState({
-                waterfalls: [
-                  ...this.state.waterfalls,
-                  <VisualizationBase>
-                    <Waterfall />
-                  </VisualizationBase>,
-                ],
+                waterfalls: [...this.state.waterfalls, <Waterfall />],
               })
             }
             style={{ width: 375 }}
           >
             Click to add Waterfall
-          </VisualizationBase>
+          </Card>
         </Content>
       </Layout>
     );

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
+import { Card } from 'antd';
+import MacroNameMap from '../../../Modules/MacroNameMap';
 
 import './Waterfall.css';
-import MacroNameMap from '../../../Modules/MacroNameMap';
 
 const MODE = ['ALIGN', 'FOLLOW'];
 
@@ -304,10 +305,7 @@ class Waterfall extends Component {
     const { settings, country, group } = this.props;
 
     return (
-      <div style={{ width: settings.width }}>
-        <h3>
-          {country} - {MacroNameMap[group]}
-        </h3>
+      <Card title={`${country} - ${MacroNameMap[group]}`}>
         <WaterfallPlot
           data={this.state.data}
           settings={{
@@ -324,7 +322,7 @@ class Waterfall extends Component {
             Randomize Data
           </button>
         </div>
-      </div>
+      </Card>
     );
   }
 }
