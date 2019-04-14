@@ -128,30 +128,30 @@ class DataCircles extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { hovered: false };
+    this.state = { hovered: undefined };
   }
 
-  getCircleRadius(value) {
+  getCircleRadius = value => {
     return Math.sqrt(value / Math.PI) * 2.5;
-  }
+  };
 
-  renderCircle(coords) {
+  renderCircle = (coords, index) => {
     return (
       <svg>
         <circle
           cx={this.props.xScale(coords[2])}
           cy={this.props.yScale(coords[3])}
           r={this.getCircleRadius(coords[4])}
-          key={Math.random()}
+          key={index}
           //fill={this.props.color}
-          fill={this.state.hovered ? 'red' : this.props.color}
+          fill={this.state.hovered === index ? 'red' : this.props.color}
           //onMouseDown={function() {d3.select('circle').attr('fill', 'red')}}        // selects the first circle element
           //onMouseDown={function() {d3.selectAll('circle').attr('fill', 'red')}}     // selects all circle element
           //onMouseDown={function() {d3.select(this).attr('fill', 'red')}}            // doesn't work, but I feel like it should
           //onMouseOver={function() {console.log('Hovering')}}
           //onMouseOut={function() {console.log('Done hovering')}}
-          onMouseDown={() => this.setState({ hovered: true })}
-          onMouseUp={() => this.setState({ hovered: false })}
+          onMouseOver={() => this.setState({ hovered: index })}
+          onMouseOut={() => this.setState({ hovered: undefined })}
         />
         <text
           className="data_labels"
@@ -162,10 +162,10 @@ class DataCircles extends React.Component {
         </text>
       </svg>
     );
-  }
+  };
 
   render() {
-    return <g>{this.props.data.map(this.renderCircle.bind(this))}</g>;
+    return <g>{this.props.data.map(this.renderCircle)}</g>;
   }
 }
 
