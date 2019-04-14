@@ -207,7 +207,7 @@ const resolvers = {
       ),
     alls: (parent, args) =>
       runQuery(
-        `SELECT DISTINCT * FROM (${buildDietsQueryStr(
+        `SELECT DISTINCT d.country as country, d.year as year, d.type as type, d.name as name, d.value as value, le.life_expectancy as life_expectancy FROM (${buildDietsQueryStr(
           args
         )}) d INNER JOIN (${buildLifeExpsQueryStr(
           args
