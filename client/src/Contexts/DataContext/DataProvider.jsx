@@ -20,7 +20,7 @@ export default class DataProvider extends React.Component {
     };
     this.client = new ApolloClient({
       // uri: 'http://localhost:4000/graphql',
-      uri: 'http://gql.healthviz.xyz/graphql',
+      uri: 'https://gql.healthviz.xyz/graphql',
     });
   }
 
