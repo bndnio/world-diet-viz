@@ -32,19 +32,9 @@ const typeDefs = gql`
     value: Float!
   }
 
-  type YearItem {
-    year: Int!
-    items: [Item!]!
-  }
-
   type CountryItem {
     country: String!
     items: [Item!]!
-  }
-
-  type CountryYears {
-    country: String!
-    years: [YearItem]!
   }
 
   type YearCountries {
@@ -60,11 +50,6 @@ const typeDefs = gql`
       countries: [String!]
       type: Group
     ): [YearCountries!]
-    itemByCountryYear(
-      countries: [String!]
-      years: [Int!]
-      type: Group
-    ): [CountryYears!]
     countries: [String!]!
     yearRange: Range!
     kcalRange: Range!
@@ -103,37 +88,6 @@ const aggregateItemByYearCountry = res => {
   return output;
 };
 
-const aggregateItemByCountryYear = res => {
-  const { rows } = res;
-  const countryGrouped = rows.reduce(
-    (acc, row) => ({
-      ...acc,
-      [row.country]: {
-        ...(acc[row.country] || {}),
-        [row.year]: [
-          ...((acc[row.country] && acc[row.country][row.year]) || []),
-          {
-            country: row.country,
-            year: row.year,
-            type: row.type,
-            name: row.name,
-            value: row.value,
-          },
-        ],
-      },
-    }),
-    {}
-  );
-  const output = Object.entries(countryGrouped).map(([country, years]) => ({
-    country,
-    years: Object.entries(years).map(([year, items]) => ({
-      year,
-      items,
-    })),
-  }));
-  return output;
-};
-
 const buildQueryStr = ({ countries = [], years = [], type = '' }) =>
   [
     `SELECT DISTINCT country, year, type, name, value FROM diet`,
@@ -162,8 +116,6 @@ const resolvers = {
   Query: {
     itemByYearCountry: (parent, args) =>
       runQuery(buildQueryStr(args), aggregateItemByYearCountry),
-    itemByCountryYear: (parent, args) =>
-      runQuery(buildQueryStr(args), aggregateItemByCountryYear),
     countries: () =>
       runQuery(`SELECT DISTINCT country FROM diet ORDER BY country ASC`, res =>
         res.rows.map(r => r.country)
