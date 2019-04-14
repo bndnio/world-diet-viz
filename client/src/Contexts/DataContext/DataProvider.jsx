@@ -76,7 +76,7 @@ export default class DataProvider extends React.Component {
           }
         `,
       })
-      .then(result => this.setData(result.data.itemByYearCountry))
+      .then(result => this.setData(result.data.diets))
       .catch(err => console.log(err));
   };
 

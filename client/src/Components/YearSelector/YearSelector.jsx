@@ -4,6 +4,8 @@ import { withData } from '../../Contexts/DataContext/withData';
 import { withInteraction } from '../../Contexts/InteractionContext/withInteraction';
 import { Slider, Typography } from 'antd';
 
+import './YearSelector.css';
+
 class YearSelector extends Component {
   static propTypes = {
     interaction: PropTypes.shape({

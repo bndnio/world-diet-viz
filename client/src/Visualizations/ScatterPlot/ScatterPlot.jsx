@@ -6,6 +6,7 @@ import * as d3 from 'd3';
 import { Card } from 'antd';
 import { withData } from '../../Contexts/DataContext/withData';
 import { withInteraction } from '../../Contexts/InteractionContext/withInteraction';
+import YearSelector from '../../Components/YearSelector';
 
 import './ScatterPlot.css';
 
@@ -213,11 +214,13 @@ class ScatterPlotViz extends Component {
     yScale: PropTypes.func,
   };
 
+  state = { data: [] };
+
   componentWillMount() {
-    this.getData();
+    this.processData();
   }
 
-  getData() {
+  processData() {
     // each datapoint in form of [Country, year, total KCals, LifeExpect, population]
     const myData = [
       ['Canada', 2012, 2055, 83, 100],
@@ -264,25 +267,32 @@ class ScatterPlotViz extends Component {
     `;
 
     return (
-      <Card size="small" title="Life Expectancy v. Total kcal">
-        <Query query={GET_RANGES}>
-          {({ loading, error, data }) => {
-            if (loading) return 'Loading...';
-            if (error)
-              console.log('Error loading gql data for WaterfallConfig');
+      <div id="scatterplot">
+        <Card
+          size="small"
+          bodyStyle={{ width: 524, height: 424 }}
+          title="Life Expectancy v. Total kcal"
+          extra={<YearSelector />}
+        >
+          <Query query={GET_RANGES}>
+            {({ loading, error, data }) => {
+              if (loading) return 'Loading...';
+              if (error)
+                console.log('Error loading gql data for WaterfallConfig');
 
-            const { kcalRange, lifeExpRange } = data;
-            return (
-              <ScatterGraph
-                data={this.state.data}
-                xRange={[kcalRange.min, kcalRange.max]}
-                yRange={[lifeExpRange.min, lifeExpRange.max]}
-                {...settings}
-              />
-            );
-          }}
-        </Query>
-      </Card>
+              const { kcalRange, lifeExpRange } = data;
+              return (
+                <ScatterGraph
+                  data={this.state.data}
+                  xRange={[kcalRange.min, kcalRange.max]}
+                  yRange={[lifeExpRange.min, lifeExpRange.max]}
+                  {...settings}
+                />
+              );
+            }}
+          </Query>
+        </Card>
+      </div>
     );
   }
 }

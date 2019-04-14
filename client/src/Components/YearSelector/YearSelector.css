@@ -1,0 +1,8 @@
+#scatterplot .ant-card-extra {
+  padding: 0 !important;
+}
+
+#scatterplot .ant-slider {
+  margin-top: 12px;
+  margin-bottom: 24px;
+}

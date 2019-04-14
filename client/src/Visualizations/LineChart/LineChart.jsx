@@ -14,7 +14,7 @@ import './LineChart.css';
 
 const settings = {
   width: 800,
-  height: 389,
+  height: 400,
   padding: 50,
 };
 
@@ -447,7 +447,7 @@ class LineChart extends React.Component {
     return (
       <Card
         size="small"
-        bodyStyle={{ width: 824, height: 413 }}
+        bodyStyle={{ width: 824, height: 424 }}
         title="Life Expectancy v. Total kCal Consumption"
         extra={
           <Selector
