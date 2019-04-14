@@ -5,6 +5,7 @@ import { Query } from 'react-apollo';
 import * as d3 from 'd3';
 import { Card } from 'antd';
 import { withData } from '../../Contexts/DataContext/withData';
+import { withInteraction } from '../../Contexts/InteractionContext/withInteraction';
 
 import './ScatterPlot.css';
 
@@ -247,27 +248,35 @@ class ScatterPlotViz extends Component {
   }
 
   render() {
-    const GET_GROUP_OPTIONS = gql`
+    const GET_RANGES = gql`
       {
-        kcalRange
-        lifeExpsRange
+        kcalRange {
+          min
+          max
+        }
+        lifeExpRange(countries: [${this.props.interaction.fields.availableCountries
+          .map(c => `"${c}"`)
+          .toString()}]) {
+          min
+          max
+        }
       }
     `;
 
     return (
       <Card size="small" title="Life Expectancy v. Total kcal">
-        <Query query={GET_GROUP_OPTIONS}>
+        <Query query={GET_RANGES}>
           {({ loading, error, data }) => {
             if (loading) return 'Loading...';
             if (error)
               console.log('Error loading gql data for WaterfallConfig');
 
-            const { kcalRange, lifeExpsRange } = data;
+            const { kcalRange, lifeExpRange } = data;
             return (
               <ScatterGraph
                 data={this.state.data}
                 xRange={[kcalRange.min, kcalRange.max]}
-                yRange={[lifeExpsRange.min, lifeExpsRange.max]}
+                yRange={[lifeExpRange.min, lifeExpRange.max]}
                 {...settings}
               />
             );
@@ -278,4 +287,4 @@ class ScatterPlotViz extends Component {
   }
 }
 
-export default withData(ScatterPlotViz);
+export default withInteraction(withData(ScatterPlotViz));
