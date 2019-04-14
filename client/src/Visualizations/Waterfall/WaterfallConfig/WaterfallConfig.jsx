@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Button, Card, Icon } from 'antd';
+import { withData } from '../../../Contexts/DataContext/withData';
 import { withInteraction } from '../../../Contexts/InteractionContext/withInteraction';
 import Selector from '../../../Components/Selector';
 import MacroNameMap from '../../../Modules/MacroNameMap';
@@ -51,9 +52,10 @@ class WaterfallConfig extends Component {
                   onClick={this.props.handleClose}
                 />
               }
-              loading={loading}
             >
-              {!loading && (
+              {loading || this.props.data.loading ? (
+                'Loading...'
+              ) : (
                 <div className="WaterfallConfig">
                   <Selector
                     placeholder="Select a country"
@@ -83,4 +85,4 @@ class WaterfallConfig extends Component {
   }
 }
 
-export default withInteraction(WaterfallConfig);
+export default withInteraction(withData(WaterfallConfig));

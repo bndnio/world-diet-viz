@@ -467,7 +467,7 @@ class LineChart extends React.Component {
       >
         <Query query={GET_YEAR_RANGE}>
           {({ loading, error, data }) => {
-            if (this.props.data.loading || loading) return 'Loading...';
+            if (loading || this.props.data.loading) return 'Loading...';
             if (error) console.log('Error loading gql data for LineChart');
             const { max } = data.kcalRange;
 

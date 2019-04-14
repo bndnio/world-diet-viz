@@ -68,6 +68,7 @@ class YearSelector extends Component {
         onAfterChange={this.handleRelease}
         value={this.state.value}
         style={{ width: 100 }}
+        disabled={this.props.disabled}
       />
     );
   }

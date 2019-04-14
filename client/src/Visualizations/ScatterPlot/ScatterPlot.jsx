@@ -258,7 +258,7 @@ class ScatterPlotViz extends Component {
           max
         }
         lifeExpRange(countries: ${JSON.stringify(
-          this.props.interactions.fields.availableCountries
+          this.props.interaction.fields.availableCountries
         )}) {
           min
           max
@@ -272,11 +272,11 @@ class ScatterPlotViz extends Component {
           size="small"
           bodyStyle={{ width: 524, height: 424 }}
           title="Life Expectancy v. Total kcal"
-          extra={<YearSelector />}
+          extra={<YearSelector disabled={!!this.props.data.loading} />}
         >
           <Query query={GET_RANGES}>
             {({ loading, error, data }) => {
-              if (loading) return 'Loading...';
+              if (loading || this.props.data.loading) return 'Loading...';
               if (error)
                 console.log('Error loading gql data for WaterfallConfig');
 
