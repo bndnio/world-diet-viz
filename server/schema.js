@@ -19,9 +19,14 @@ const typeDefs = gql`
     OTHER
   }
 
-  type Range {
+  type IntRange {
     min: Int!
     max: Int!
+  }
+
+  type FloatRange {
+    min: Float!
+    max: Float!
   }
 
   type YearCountriesDiet {
@@ -73,10 +78,11 @@ const typeDefs = gql`
     ): [YearCountriesLifeExp!]
 
     countries: [String!]!
-    yearRange: Range!
-    kcalRange: Range!
-    lifeExpRange: Range!
     names(type: Group): [String!]!
+
+    yearRange: IntRange!
+    kcalRange: FloatRange!
+    lifeExpRange(countries: [String!]): FloatRange!
   }
 `;
 
@@ -134,12 +140,11 @@ const buildDietsQueryStr = ({ countries = [], years = [], type = '' }) =>
     .flat()
     .join(' ');
 
-const lifeExpsItemFunc = row =>
-  console.log(row) || {
-    country: row.country,
-    year: row.year,
-    value: row.value || null,
-  };
+const lifeExpsItemFunc = row => ({
+  country: row.country,
+  year: row.year,
+  value: row.value || null,
+});
 
 const buildLifeExpsQueryStr = ({ countries = [], years = [] }) =>
   [
@@ -154,7 +159,7 @@ const buildLifeExpsQueryStr = ({ countries = [], years = [] }) =>
     years.length > 0 ? `( year=${years[0]}` : '',
     years.length > 1 ? years.slice(1).map(y => `OR year=${y}`) : '',
     years.length > 0 ? `)` : '',
-    `ORDER BY country, year;`,
+    `ORDER BY country, year`,
   ]
     .flat()
     .join(' ');
@@ -177,6 +182,13 @@ const resolvers = {
       runQuery(`SELECT DISTINCT country FROM diet ORDER BY country ASC`, res =>
         res.rows.map(r => r.country)
       ),
+    names: (parent, args) =>
+      runQuery(
+        `SELECT DISTINCT name from diet ${
+          !!args.type ? `WHERE type='${args.type}'` : ''
+        }`,
+        res => res.rows.map(r => r.name)
+      ),
     yearRange: () => ({
       min: runQuery(`SELECT MIN(year) from diet`, res => res.rows[0].min),
       max: runQuery(`SELECT MAX(year) from diet`, res => res.rows[0].max),
@@ -191,13 +203,16 @@ const resolvers = {
         res => res.rows[0].max
       ),
     }),
-    names: (parent, args) =>
-      runQuery(
-        `SELECT DISTINCT name from diet ${
-          !!args.type ? `WHERE type='${args.type}'` : ''
-        }`,
-        res => res.rows.map(r => r.name)
+    lifeExpRange: (parent, args) => ({
+      min: runQuery(
+        `SELECT MIN(value) from (${buildLifeExpsQueryStr(args)}) AS SUBQUERY`,
+        res => res.rows[0].min
       ),
+      max: runQuery(
+        `SELECT MAX(value) from (${buildLifeExpsQueryStr(args)})  AS SUBQUERY`,
+        res => res.rows[0].max
+      ),
+    }),
   },
 };
 
