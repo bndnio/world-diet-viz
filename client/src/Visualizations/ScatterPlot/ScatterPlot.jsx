@@ -142,13 +142,13 @@ class DataCircles extends React.Component {
 
   renderCircle = (coords, index) => {
     return (
-      <svg>
+      <svg key={index}>
         <circle
           cx={this.props.xScale(coords[2])}
           cy={this.props.yScale(coords[3])}
           r={3}
           // r={this.getCircleRadius(coords[4])}
-          key={index}
+
           fill={this.state.hovered === index ? 'red' : this.props.color}
           onMouseOver={() => this.setState({ hovered: index })}
           onMouseOut={() => this.setState({ hovered: undefined })}
@@ -233,29 +233,6 @@ class ScatterPlotViz extends Component {
 
   processData() {
     // each datapoint in form of [Country, year, total KCals, LifeExpect, population]
-    const myData = [
-      ['Canada', 2012, 2055, 83, 100],
-      ['Oh Im sorry I thought this was Amurica', 2012, 2056, 76, 10],
-      ['A', 2012, 2008, 91, 100],
-      ['B', 2012, 2061, 78, 10],
-      ['C', 2012, 2164, 88, 100],
-      ['D', 2012, 2162, 64, 1],
-      ['E', 2012, 2323, 76, 1],
-      ['F', 2012, 2159, 78, 100],
-      ['G', 2012, 2308, 59, 10],
-      ['H', 2012, 2183, 86, 10],
-      ['I', 2012, 2155, 89, 10],
-      ['J', 2012, 2124, 79, 100],
-      ['K', 2012, 2124, 74, 100],
-      ['L', 2012, 2126, 76, 1],
-      ['M', 2012, 2199, 58, 1],
-      ['N', 2012, 2228, 99, 100],
-      ['Pop: 1', 2012, 2025, 100, 1],
-      ['Pop: 10', 2012, 2025, 90, 10],
-      ['Pop: 50', 2012, 2025, 80, 50],
-      ['Pop: 100', 2012, 2025, 70, 100],
-      ['Pop: 1000', 2012, 2025, 50, 1000],
-    ];
     const { availableCountries } = this.props.interaction.fields;
     let nextData = [];
 
