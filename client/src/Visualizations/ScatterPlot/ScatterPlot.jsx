@@ -147,7 +147,7 @@ class DataCircles extends React.Component {
         <circle
           cx={this.props.xScale(coords[2])}
           cy={this.props.yScale(coords[3])}
-          r={3}
+          r={5}
           // r={this.getCircleRadius(coords[4])}
 
           fill={this.state.hovered === index ? 'red' : this.props.color}
