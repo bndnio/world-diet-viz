@@ -63,6 +63,25 @@ const typeDefs = gql`
     value: Float
   }
 
+  type YearCountriesAll {
+    year: Int!
+    countries: [CountryAll!]!
+  }
+
+  type CountryAll {
+    country: String!
+    items: [All!]!
+  }
+
+  type All {
+    country: String!
+    year: Int!
+    type: Group!
+    name: String!
+    value: Float!
+    lifeExp: Float
+  }
+
   # The "Query" type is the root of all GraphQL queries.
   # (A "Mutation" type will be covered later on.)
   type Query {
@@ -73,6 +92,8 @@ const typeDefs = gql`
     ): [YearCountriesDiet!]
 
     lifeExps(years: [Int!], countries: [String!]): [YearCountriesLifeExp!]
+
+    alls(years: [Int!], countries: [String!], type: Group): [YearCountriesAll!]
 
     countries: [String!]!
     names(type: Group): [String!]!
@@ -132,20 +153,20 @@ const buildDietsQueryStr = ({ countries = [], years = [], type = '' }) =>
     countries.length === 0 && years.length === 0 && !!type ? `WHERE` : '',
     (countries.length > 0 || years.length > 0) && !!type ? `AND` : '',
     !!type ? `type='${type}'` : '',
-    `ORDER BY country, year;`,
+    `ORDER BY country, year`,
   ]
     .flat()
     .join(' ');
 
-const lifeExpsItemFunc = row => ({
+const lifeExpItemFunc = row => ({
   country: row.country,
   year: row.year,
-  value: row.value || null,
+  value: row.life_expectancy || null,
 });
 
 const buildLifeExpsQueryStr = ({ countries = [], years = [] }) =>
   [
-    `SELECT DISTINCT country, year, life_expectancy as value FROM life_expectancy`,
+    `SELECT DISTINCT country, year, life_expectancy FROM life_expectancy`,
     countries.length > 0 ? `WHERE ( country='${countries[0]}'` : '',
     countries.length > 1
       ? countries.slice(1).map(c => `OR country='${c}'`)
@@ -161,6 +182,15 @@ const buildLifeExpsQueryStr = ({ countries = [], years = [] }) =>
     .flat()
     .join(' ');
 
+const allItemFunc = row => ({
+  country: row.country,
+  year: row.year,
+  type: row.type,
+  name: row.name,
+  value: row.value,
+  lifeExp: row.life_expectancy,
+});
+
 // Resolvers define the technique for fetching the types in the
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
@@ -173,7 +203,16 @@ const resolvers = {
     lifeExps: (parent, args) =>
       runQuery(
         buildLifeExpsQueryStr(args),
-        aggregateItemByYearCountry(lifeExpsItemFunc)
+        aggregateItemByYearCountry(lifeExpItemFunc)
+      ),
+    alls: (parent, args) =>
+      runQuery(
+        `SELECT DISTINCT * FROM (${buildDietsQueryStr(
+          args
+        )}) d INNER JOIN (${buildLifeExpsQueryStr(
+          args
+        )}) le ON d.country=le.country`,
+        aggregateItemByYearCountry(allItemFunc)
       ),
     countries: () =>
       runQuery(`SELECT DISTINCT country FROM diet ORDER BY country ASC`, res =>
@@ -202,11 +241,15 @@ const resolvers = {
     }),
     lifeExpRange: (parent, args) => ({
       min: runQuery(
-        `SELECT MIN(value) from (${buildLifeExpsQueryStr(args)}) AS SUBQUERY`,
+        `SELECT MIN(life_expectancy) from (${buildLifeExpsQueryStr(
+          args
+        )}) AS SUBQUERY`,
         res => res.rows[0].min
       ),
       max: runQuery(
-        `SELECT MAX(value) from (${buildLifeExpsQueryStr(args)})  AS SUBQUERY`,
+        `SELECT MAX(life_expectancy) from (${buildLifeExpsQueryStr(
+          args
+        )})  AS SUBQUERY`,
         res => res.rows[0].max
       ),
     }),
