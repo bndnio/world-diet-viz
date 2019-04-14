@@ -129,6 +129,7 @@ class DataCircles extends React.Component {
   static propTypes = {
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
+    handleSelect: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -150,6 +151,7 @@ class DataCircles extends React.Component {
           // r={this.getCircleRadius(coords[4])}
 
           fill={this.state.hovered === index ? 'red' : this.props.color}
+          onClick={() => this.props.handleSelect(coords[0])}
           onMouseOver={() => this.setState({ hovered: index })}
           onMouseOut={() => this.setState({ hovered: undefined })}
         />
@@ -203,6 +205,7 @@ class ScatterGraph extends React.Component {
           yScale={yDataScale}
           {...this.props}
           data={this.props.data}
+          handleSelect={this.props.handleSelect}
           color="#80b0ff"
         />
         <XYAxis xScale={xScale} yScale={yDataScale} {...this.props} />
@@ -304,6 +307,11 @@ class ScatterPlotViz extends Component {
                   data={this.state.data}
                   xRange={[kcalRange.min, kcalRange.max]}
                   yRange={[lifeExpRange.min, lifeExpRange.max]}
+                  handleSelect={country =>
+                    this.props.interaction.setFields({
+                      selectedCountry: country,
+                    })
+                  }
                   {...settings}
                 />
               );
