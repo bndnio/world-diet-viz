@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Card } from 'antd';
+import { Layout, Card, Icon } from 'antd';
 import {
   CountryPicker,
   YearRangeSlider,
@@ -44,6 +44,16 @@ class VisualizationContainer extends Component {
           <LineChart />
           {this.state.waterfalls}
           <Card
+            size="small"
+            hoverable
+            bodyStyle={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              width: '200px',
+              height: '120px',
+            }}
             onClick={() =>
               this.setState(state => ({
                 waterfalls: [
@@ -58,9 +68,10 @@ class VisualizationContainer extends Component {
                 waterfallCount: state.waterfallCount + 1,
               }))
             }
-            style={{ width: 375 }}
           >
-            Click to add Waterfall
+            Waterfall
+            <br />
+            <Icon type="plus" theme="outlined" style={{ fontSize: 30 }} />
           </Card>
         </Content>
       </Layout>

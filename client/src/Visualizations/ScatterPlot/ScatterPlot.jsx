@@ -6,33 +6,69 @@ import { withData } from '../../Contexts/DataContext/withData';
 
 import './ScatterPlot.css';
 
-class Axis extends React.Component {
+const settings = {
+  width: 500,
+  height: 400,
+  padding: 50,
+};
+
+class XAxis extends React.Component {
   static propTypes = {
     translate: PropTypes.string.isRequired,
-    orient: PropTypes.oneOf(['bottom', 'top', 'left']).isRequired,
     scale: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
-    this.renderAxis();
+    this.renderXAxis();
   }
 
   componentDidUpdate() {
-    this.renderAxis();
+    this.renderXAxis();
   }
 
-  renderAxis = () => {
+  renderXAxis() {
     const node = this.refs.axisContainer;
-    const baseAxis =
-      this.props.orient === 'bottom'
-        ? d3.axisBottom()
-        : this.props.orient === 'left'
-        ? d3.axisLeft()
-        : null;
-    const axis = baseAxis.ticks(5).scale(this.props.scale);
-
+    const baseAxis = d3
+      .axisBottom()
+      .ticks(5)
+      .tickFormat(d3.format('d'));
+    const axis = baseAxis.scale(this.props.scale);
     d3.select(node).call(axis);
+  }
+
+  render() {
+    return (
+      <g
+        className="axis"
+        ref="axisContainer"
+        transform={this.props.translate}
+      />
+    );
+  }
+}
+
+class YAxis extends React.Component {
+  static propTypes = {
+    translate: PropTypes.string.isRequired,
+    scale: PropTypes.func.isRequired,
   };
+
+  componentDidMount() {
+    this.renderYAxis();
+  }
+
+  componentDidUpdate() {
+    this.renderYAxis();
+  }
+
+  renderYAxis() {
+    const node = this.refs.axisContainer;
+    let baseAxis;
+    if (this.props.flip) baseAxis = d3.axisRight();
+    else baseAxis = d3.axisLeft();
+    const axis = baseAxis.ticks(5).scale(this.props.scale);
+    d3.select(node).call(axis);
+  }
 
   render() {
     return (
@@ -47,29 +83,38 @@ class Axis extends React.Component {
 
 class XYAxis extends React.Component {
   static propTypes = {
-    settings: PropTypes.shape({
-      width: PropTypes.number,
-      padding: PropTypes.number,
-    }),
+    padding: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
   render() {
-    const { settings } = this.props;
-
     return (
-      <g className="xy-axis">
-        <Axis
-          translate={`translate(0, ${settings.height - settings.padding})`}
+      <g className="LE-xy-axis">
+        <XAxis
+          translate={`translate(0, ${this.props.height - this.props.padding})`}
           scale={this.props.xScale}
-          orient="bottom"
         />
-        <Axis
-          translate={`translate(${settings.padding}, 0)`}
+        <text
+          className="axis"
+          textAnchor="middle"
+          transform={`translate(${settings.width / 2 -
+            this.props.padding / 2}, ${settings.height - 10})`}
+        >
+          [Total KCals]
+        </text>
+        <YAxis
+          translate={`translate(${this.props.padding}, 0)`}
           scale={this.props.yScale}
-          orient="left"
         />
+        <text
+          className="axis"
+          textAnchor="middle"
+          transform={`translate(10, ${settings.height / 2}), rotate(-90)`}
+        >
+          [Life Expectancy]
+        </text>
       </g>
     );
   }
@@ -77,24 +122,45 @@ class XYAxis extends React.Component {
 
 class DataCircles extends React.Component {
   static propTypes = {
-    settings: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      padding: PropTypes.number,
-      numDataPoints: PropTypes.number,
-    }),
     xScale: PropTypes.func.isRequired,
     yScale: PropTypes.func.isRequired,
   };
 
-  renderCircle = coords => {
+  constructor(props) {
+    super(props);
+    this.state = { hovered: undefined };
+  }
+
+  getCircleRadius = value => {
+    return Math.sqrt(value / Math.PI) * 2.5;
+  };
+
+  renderCircle = (coords, index) => {
     return (
-      <circle
-        cx={this.props.xScale(coords[0])}
-        cy={this.props.yScale(coords[1])}
-        r={2}
-        key={Math.random() * 1}
-      />
+      <svg>
+        <circle
+          cx={this.props.xScale(coords[2])}
+          cy={this.props.yScale(coords[3])}
+          r={this.getCircleRadius(coords[4])}
+          key={index}
+          //fill={this.props.color}
+          fill={this.state.hovered === index ? 'red' : this.props.color}
+          //onMouseDown={function() {d3.select('circle').attr('fill', 'red')}}        // selects the first circle element
+          //onMouseDown={function() {d3.selectAll('circle').attr('fill', 'red')}}     // selects all circle element
+          //onMouseDown={function() {d3.select(this).attr('fill', 'red')}}            // doesn't work, but I feel like it should
+          //onMouseOver={function() {console.log('Hovering')}}
+          //onMouseOut={function() {console.log('Done hovering')}}
+          onMouseOver={() => this.setState({ hovered: index })}
+          onMouseOut={() => this.setState({ hovered: undefined })}
+        />
+        <text
+          className="data_labels"
+          x={this.props.xScale(coords[2]) + this.getCircleRadius(coords[4])}
+          y={this.props.yScale(coords[3]) - 3}
+        >
+          {coords[0]}
+        </text>
+      </svg>
     );
   };
 
@@ -103,52 +169,42 @@ class DataCircles extends React.Component {
   }
 }
 
-class ScatterPlot extends React.Component {
+class ScatterGraph extends React.Component {
   static propTypes = {
-    settings: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      padding: PropTypes.number,
-      numDataPoints: PropTypes.number,
-      maxRange: PropTypes.func,
-    }),
+    padding: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
     data: PropTypes.array.isRequired,
-    xScale: PropTypes.func,
-    yScale: PropTypes.func,
   };
 
-  getXScale = () => {
-    const { settings } = this.props;
-
-    const xMax = d3.max(this.props.data, d => d[0]);
-
+  getXScale() {
     return d3
       .scaleLinear()
-      .domain([0, xMax])
-      .range([settings.padding, settings.width - settings.padding * 2]);
-  };
+      .domain([2000, 2350]) // When data begins, ends
+      .range([this.props.padding, this.props.width - this.props.padding / 2]);
+  }
 
-  getYScale = () => {
-    const { settings } = this.props;
-
-    const yMax = d3.max(this.props.data, d => d[1]);
-
+  getDataYScale() {
     return d3
       .scaleLinear()
-      .domain([0, yMax])
-      .range([settings.height - settings.padding, settings.padding]);
-  };
+      .domain([50, 100])
+      .range([this.props.height - this.props.padding, this.props.padding / 2]);
+  }
 
   render() {
-    const { settings } = this.props;
-
-    const xScale = settings.xScale || this.getXScale();
-    const yScale = settings.yScale || this.getYScale();
+    const xScale = this.getXScale();
+    const yDataScale = this.getDataYScale();
 
     return (
-      <svg width={settings.width} height={settings.height}>
-        <DataCircles xScale={xScale} yScale={yScale} {...this.props} />
-        <XYAxis xScale={xScale} yScale={yScale} {...this.props} />
+      <svg width={this.props.width} height={this.props.height}>
+        <DataCircles
+          xScale={xScale}
+          yScale={yDataScale}
+          {...this.props}
+          data={this.props.data}
+          color="#80b0ff"
+        />
+        <XYAxis xScale={xScale} yScale={yDataScale} {...this.props} />
       </svg>
     );
   }
@@ -156,53 +212,48 @@ class ScatterPlot extends React.Component {
 
 class ScatterPlotViz extends Component {
   static propTypes = {
-    settings: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      padding: PropTypes.number,
-      numDataPoints: PropTypes.number,
-      maxRange: PropTypes.func,
-    }),
     xScale: PropTypes.func,
     yScale: PropTypes.func,
   };
-  static defaultProps = {
-    settings: {
-      width: 350,
-      height: 350,
-      padding: 30,
-      numDataPoints: 50,
-      maxRange: () => Math.random() * 1000,
-    },
-  };
 
   componentWillMount() {
-    this.randomizeData();
+    this.getData();
   }
 
-  randomizeData = () => {
-    const { settings } = this.props;
-
-    const randomData = d3.range(settings.numDataPoints).map(() => {
-      return [
-        Math.floor(Math.random() * settings.maxRange()),
-        Math.floor(Math.random() * settings.maxRange()),
-      ];
+  getData() {
+    // each datapoint in form of [Country, year, total KCals, LifeExpect, population]
+    const myData = [
+      ['Canada', 2012, 2055, 83, 100],
+      ['Oh Im sorry I thought this was Amurica', 2012, 2056, 76, 10],
+      ['A', 2012, 2008, 91, 100],
+      ['B', 2012, 2061, 78, 10],
+      ['C', 2012, 2164, 88, 100],
+      ['D', 2012, 2162, 64, 1],
+      ['E', 2012, 2323, 76, 1],
+      ['F', 2012, 2159, 78, 100],
+      ['G', 2012, 2308, 59, 10],
+      ['H', 2012, 2183, 86, 10],
+      ['I', 2012, 2155, 89, 10],
+      ['J', 2012, 2124, 79, 100],
+      ['K', 2012, 2124, 74, 100],
+      ['L', 2012, 2126, 76, 1],
+      ['M', 2012, 2199, 58, 1],
+      ['N', 2012, 2228, 99, 100],
+      ['Pop: 1', 2012, 2025, 100, 1],
+      ['Pop: 10', 2012, 2025, 90, 10],
+      ['Pop: 50', 2012, 2025, 80, 50],
+      ['Pop: 100', 2012, 2025, 70, 100],
+      ['Pop: 1000', 2012, 2025, 50, 1000],
+    ];
+    this.setState({
+      data: myData,
     });
-    this.setState({ data: randomData });
-  };
+  }
 
   render() {
-    const { settings } = this.props;
-
     return (
-      <Card title="Sample Scatterplot">
-        <ScatterPlot data={this.state.data} settings={settings} />
-        <div className="controls">
-          <button className="btn randomize" onClick={this.randomizeData}>
-            Randomize Data
-          </button>
-        </div>
+      <Card size="small" title="Life Expectancy v. Total kcal">
+        <ScatterGraph data={this.state.data} {...settings} />
       </Card>
     );
   }

@@ -13,8 +13,8 @@ import { withInteraction } from '../../Contexts/InteractionContext/withInteracti
 import './LineChart.css';
 
 const settings = {
-  width: 900,
-  height: 300,
+  width: 800,
+  height: 389,
   padding: 50,
 };
 
@@ -122,7 +122,7 @@ class XYAxis extends React.Component {
           [total kCal]
         </text>
         <YAxis
-          translate={`translate(${settings.width - this.props.padding * 2}, 0)`}
+          translate={`translate(${settings.width - this.props.padding}, 0)`}
           scale={this.props.otherYScale}
           flip
         />
@@ -255,20 +255,20 @@ class LineGraph extends React.Component {
     return d3
       .scaleLinear()
       .domain([minYear, maxYear])
-      .range([this.props.padding, this.props.width - this.props.padding * 2]);
+      .range([this.props.padding, this.props.width - this.props.padding]);
   }
 
   getDataYScale() {
     return d3
       .scaleLinear()
       .domain([0, this.props.kcalMax])
-      .range([this.props.height - this.props.padding, this.props.padding]);
+      .range([this.props.height - this.props.padding, this.props.padding / 2]);
   }
   getDeathYScale() {
     return d3
       .scaleLinear()
       .domain([20, 80])
-      .range([this.props.height - this.props.padding, this.props.padding]);
+      .range([this.props.height - this.props.padding, this.props.padding / 2]);
   }
 
   render() {
@@ -446,23 +446,23 @@ class LineChart extends React.Component {
 
     return (
       <Card
-        title={
-          <div className="vizMenuBar">
-            <span>Life Expectancy v. Total kCal Consumption</span>
-            <Selector
-              options={this.props.interaction.fields.availableCountries || []}
-              handleChange={value =>
-                this.props.interaction.setFields({
-                  selectedCountry: value,
-                })
-              }
-              disabled={
-                !!this.props.data.loading ||
-                !this.props.interaction.fields.availableCountries
-              }
-              placeholder="Select Country"
-            />
-          </div>
+        size="small"
+        bodyStyle={{ width: 824, height: 413 }}
+        title="Life Expectancy v. Total kCal Consumption"
+        extra={
+          <Selector
+            options={this.props.interaction.fields.availableCountries || []}
+            handleChange={value =>
+              this.props.interaction.setFields({
+                selectedCountry: value,
+              })
+            }
+            disabled={
+              !!this.props.data.loading ||
+              !this.props.interaction.fields.availableCountries
+            }
+            placeholder="Select Country"
+          />
         }
       >
         <Query query={GET_YEAR_RANGE}>

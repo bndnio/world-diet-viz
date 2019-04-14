@@ -3,3 +3,8 @@
   margin: 1rem auto;
   background-color: aquawhite;
 }
+
+.data_labels {
+  fill: grey;
+  font-size: 12px;
+}

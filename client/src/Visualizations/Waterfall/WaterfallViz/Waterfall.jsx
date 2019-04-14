@@ -306,22 +306,22 @@ class Waterfall extends Component {
 
     return (
       <Card
-        title={
-          <div className="vizMenuBar">
-            <span>{`${country} - ${MacroNameMap[group]}`}</span>
-            <div className="vizMenuBarGroup">
-              <Icon type="swap" theme="outlined" onClick={this.toggleMode} />
-              <Icon
-                type="setting"
-                theme="filled"
-                onClick={this.props.toggleView}
-              />
-              <Icon
-                type="close"
-                theme="outlined"
-                onClick={this.props.handleClose}
-              />
-            </div>
+        size="small"
+        bodyStyle={{ width: 324, height: 424 }}
+        title={`${country} - ${MacroNameMap[group]}`}
+        extra={
+          <div className="vizMenuExtra">
+            <Icon type="swap" theme="outlined" onClick={this.toggleMode} />
+            <Icon
+              type="setting"
+              theme="filled"
+              onClick={this.props.toggleView}
+            />
+            <Icon
+              type="close"
+              theme="outlined"
+              onClick={this.props.handleClose}
+            />
           </div>
         }
       >
