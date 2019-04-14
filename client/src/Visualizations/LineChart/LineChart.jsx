@@ -273,46 +273,46 @@ class LineGraph extends React.Component {
 
   render() {
     const xScale = this.getXScale();
-    const yDataScale = this.getDataYScale();
-    const yDeathDataScale = this.getDeathYScale();
+    const yDietScale = this.getDataYScale();
+    const yLifeExpScale = this.getDeathYScale();
 
     return (
       <svg width={this.props.width} height={this.props.height}>
         <FilledSeries
           xScale={xScale}
-          yScale={yDataScale}
+          yScale={yDietScale}
           data={this.props.measure4}
           color="#70b678"
         />
         <FilledSeries
           xScale={xScale}
-          yScale={yDataScale}
+          yScale={yDietScale}
           data={this.props.measure3}
           color="#bbdbad"
         />
         <FilledSeries
           xScale={xScale}
-          yScale={yDataScale}
+          yScale={yDietScale}
           data={this.props.measure2}
           color="#c79fc8"
         />
         <FilledSeries
           xScale={xScale}
-          yScale={yDataScale}
+          yScale={yDietScale}
           data={this.props.measure1}
           color="#f4a58a"
         />
         <Line
           xScale={xScale}
-          yScale={yDeathDataScale}
+          yScale={yLifeExpScale}
           {...this.props}
-          data={this.props.deathData}
+          data={this.props.lifeExpData}
           color="#444444"
         />
         <XYAxis
           xScale={xScale}
-          yScale={yDataScale}
-          otherYScale={yDeathDataScale}
+          yScale={yDietScale}
+          otherYScale={yLifeExpScale}
           {...this.props}
         />
       </svg>
@@ -345,10 +345,12 @@ class LineChart extends React.Component {
         d.countries
           .filter(c => c.country === selectedCountry)[0]
           .items.reduce(
-            (acc, item) => ({
-              ...acc,
-              [MacroNameMap[item.name]]: item.value,
-            }),
+            (acc, item) =>
+              console.log(item.year, item.lifeExp) || {
+                ...acc,
+                [MacroNameMap[item.name]]: item.value,
+                lifeExp: item.lifeExp,
+              },
             {}
           ),
       ]);
@@ -369,11 +371,16 @@ class LineChart extends React.Component {
             ];
         })
         .filter(d => !!d),
-      deathData: nextData
-        .map(d => [d[0], 65 + (Math.random() - 0.5) * 10])
+      lifeExpData: nextData
         .map((yr, i, arr) => {
           if (i === 0) return undefined;
-          else return [yr[0], yr[1], arr[i - 1][0], arr[i - 1][1]];
+          else
+            return [
+              yr[0],
+              yr[1]['lifeExp'],
+              arr[i - 1][0],
+              arr[i - 1][1]['lifeExp'],
+            ];
         })
         .filter(d => !!d),
       carbData: nextData
@@ -477,7 +484,7 @@ class LineChart extends React.Component {
               <LineGraph
                 {...this.props}
                 data={this.state.totalData}
-                deathData={this.state.deathData}
+                lifeExpData={this.state.lifeExpData}
                 measure1={this.state.carbData}
                 measure2={this.state.fatData}
                 measure3={this.state.animalProteinData}

@@ -211,7 +211,7 @@ const resolvers = {
           args
         )}) d INNER JOIN (${buildLifeExpsQueryStr(
           args
-        )}) le ON d.country=le.country`,
+        )}) le ON d.country=le.country AND d.year=le.year`,
         aggregateItemByYearCountry(allItemFunc)
       ),
     countries: () =>
