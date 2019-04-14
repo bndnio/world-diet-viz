@@ -257,9 +257,9 @@ class ScatterPlotViz extends Component {
           min
           max
         }
-        lifeExpRange(countries: [${this.props.interaction.fields.availableCountries
-          .map(c => `"${c}"`)
-          .toString()}]) {
+        lifeExpRange(countries: ${JSON.stringify(
+          this.props.interactions.fields.availableCountries
+        )}) {
           min
           max
         }

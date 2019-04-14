@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withData } from '../../Contexts/DataContext/withData';
 import { withInteraction } from '../../Contexts/InteractionContext/withInteraction';
-import { Slider, Typography } from 'antd';
+import { Slider } from 'antd';
 
 import './YearSelector.css';
 

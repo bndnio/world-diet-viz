@@ -72,10 +72,7 @@ const typeDefs = gql`
       type: Group
     ): [YearCountriesDiet!]
 
-    lifeExpectancies(
-      years: [Int!]
-      countries: [String!]
-    ): [YearCountriesLifeExp!]
+    lifeExps(years: [Int!], countries: [String!]): [YearCountriesLifeExp!]
 
     countries: [String!]!
     names(type: Group): [String!]!
@@ -173,7 +170,7 @@ const resolvers = {
         buildDietsQueryStr(args),
         aggregateItemByYearCountry(dietItemFunc)
       ),
-    lifeExpectancies: (parent, args) =>
+    lifeExps: (parent, args) =>
       runQuery(
         buildLifeExpsQueryStr(args),
         aggregateItemByYearCountry(lifeExpsItemFunc)
