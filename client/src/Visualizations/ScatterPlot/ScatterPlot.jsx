@@ -6,6 +6,7 @@ import * as d3 from 'd3';
 import { Card } from 'antd';
 import { withData } from '../../Contexts/DataContext/withData';
 import { withInteraction } from '../../Contexts/InteractionContext/withInteraction';
+import MacroNameMap from '../../Modules/MacroNameMap';
 import YearSelector from '../../Components/YearSelector';
 
 import './ScatterPlot.css';
@@ -145,7 +146,8 @@ class DataCircles extends React.Component {
         <circle
           cx={this.props.xScale(coords[2])}
           cy={this.props.yScale(coords[3])}
-          r={this.getCircleRadius(coords[4])}
+          r={3}
+          // r={this.getCircleRadius(coords[4])}
           key={index}
           fill={this.state.hovered === index ? 'red' : this.props.color}
           onMouseOver={() => this.setState({ hovered: index })}
@@ -153,7 +155,8 @@ class DataCircles extends React.Component {
         />
         <text
           className="data_labels"
-          x={this.props.xScale(coords[2]) + this.getCircleRadius(coords[4])}
+          x={this.props.xScale(coords[2])}
+          // x={this.props.xScale(coords[2]) + this.getCircleRadius(coords[4])}
           y={this.props.yScale(coords[3]) - 3}
         >
           {coords[0]}
@@ -216,8 +219,16 @@ class ScatterPlotViz extends Component {
 
   state = { data: [] };
 
-  componentWillMount() {
-    this.processData();
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.data.data !== this.props.data.data ||
+      prevProps.interaction.fields.availableCountries !==
+        this.props.interaction.fields.availableCountries ||
+      prevProps.interaction.fields.selectedYear !==
+        this.props.interaction.fields.selectedYear
+    ) {
+      this.processData();
+    }
   }
 
   processData() {
@@ -245,8 +256,34 @@ class ScatterPlotViz extends Component {
       ['Pop: 100', 2012, 2025, 70, 100],
       ['Pop: 1000', 2012, 2025, 50, 1000],
     ];
+    const { availableCountries } = this.props.interaction.fields;
+    let nextData = [];
+
+    if (this.props.data.data.length !== 0 && availableCountries.length !== 0) {
+      nextData = this.props.data.data
+        .map(d => [
+          d.year,
+          d.countries
+            .filter(c => availableCountries.includes(c.country))
+            .map(c =>
+              c.items.reduce(
+                (acc, item) => ({
+                  ...acc,
+                  [MacroNameMap[item.name]]: item.value,
+                  lifeExp: item.lifeExp,
+                }),
+                { country: c.country, year: d.year }
+              )
+            ),
+        ])
+        .filter(
+          yr => yr[0] === this.props.interaction.fields.selectedYear
+        )[0][1]
+        .map(c => [c.country, c.year, c['Grand Total'], c.lifeExp]);
+    }
+
     this.setState({
-      data: myData,
+      data: nextData || [],
     });
   }
 

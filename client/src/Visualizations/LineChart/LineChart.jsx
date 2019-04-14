@@ -345,12 +345,11 @@ class LineChart extends React.Component {
         d.countries
           .filter(c => c.country === selectedCountry)[0]
           .items.reduce(
-            (acc, item) =>
-              console.log(item.year, item.lifeExp) || {
-                ...acc,
-                [MacroNameMap[item.name]]: item.value,
-                lifeExp: item.lifeExp,
-              },
+            (acc, item) => ({
+              ...acc,
+              [MacroNameMap[item.name]]: item.value,
+              lifeExp: item.lifeExp,
+            }),
             {}
           ),
       ]);
