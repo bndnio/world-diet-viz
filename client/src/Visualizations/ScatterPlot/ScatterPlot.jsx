@@ -285,7 +285,7 @@ class ScatterPlotViz extends Component {
         <Card
           size="small"
           bodyStyle={{ width: 524, height: 424 }}
-          title="Life Expectancy v. Total kcal"
+          title="Life Expectancy v. Total kCal"
           extra={<YearSelector disabled={!!this.props.data.loading} />}
         >
           <Query query={GET_RANGES}>
