@@ -10,7 +10,6 @@ import {
 import PresetButton from '../PresetButton/PresetButton';
 
 import './VisualizationContainer.css';
-import ScatterPlotViz from '../../Visualizations/ScatterPlot';
 
 const { Sider, Content } = Layout;
 

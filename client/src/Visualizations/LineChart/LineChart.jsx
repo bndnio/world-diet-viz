@@ -238,31 +238,6 @@ class FillBottom extends React.Component {
   }
 }
 
-class FillBottom extends React.Component {
-  static propTypes = {
-    xScale: PropTypes.func.isRequired,
-    yScale: PropTypes.func.isRequired,
-  };
-
-  renderFillBottom(coords) {
-    return (
-      <polygon
-        points={`
-        ${this.props.xScale(coords[0])},${this.props.yScale(0)}
-        ${this.props.xScale(coords[2])},${this.props.yScale(0)}
-        ${this.props.xScale(coords[2])},${this.props.yScale(coords[3])}
-        ${this.props.xScale(coords[0])},${this.props.yScale(coords[1])}
-        `}
-        fill={this.props.color}
-      />
-    );
-  }
-
-  render() {
-    return <g>{this.props.data.map(this.renderFillBottom.bind(this))}</g>;
-  }
-}
-
 class LineGraph extends React.Component {
   static propTypes = {
     padding: PropTypes.number.isRequired,
@@ -454,36 +429,6 @@ class LineChart extends React.Component {
                 arr[i - 1][1]['Fat'] +
                 arr[i - 1][1]['Animal Protein'] +
                 arr[i - 1][1]['Plant Protein'],
-            ];
-        })
-        .filter(d => !!d),
-      measure1: myData
-        .map((yr, i, arr) => {
-          if (i === 0) return undefined;
-          else return [yr[0], yr[2], [arr[i - 1][0]], [arr[i - 1][2]]];
-        })
-        .filter(d => !!d),
-      measure2: myData
-        .map((yr, i, arr) => {
-          if (i === 0) return undefined;
-          else
-            return [
-              yr[0],
-              yr[2] + yr[3],
-              [arr[i - 1][0]],
-              [arr[i - 1][2] + arr[i - 1][3]],
-            ];
-        })
-        .filter(d => !!d),
-      measure3: myData
-        .map((yr, i, arr) => {
-          if (i === 0) return undefined;
-          else
-            return [
-              yr[0],
-              yr[2] + yr[3] + yr[4],
-              [arr[i - 1][0]],
-              [arr[i - 1][2] + arr[i - 1][3] + arr[i - 1][4]],
             ];
         })
         .filter(d => !!d),

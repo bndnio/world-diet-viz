@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import { Card } from 'antd';
-import { withData } from '../../DataContext/withData';
+import { withData } from '../../Contexts/DataContext/withData';
 
 import './ScatterPlot.css';
 
@@ -276,4 +276,4 @@ class ScatterPlotViz extends Component {
   }
 }
 
-export default withData(ScatterPlot);
+export default withData(ScatterPlotViz);
