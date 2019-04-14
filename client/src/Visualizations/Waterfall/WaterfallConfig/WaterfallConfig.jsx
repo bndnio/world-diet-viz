@@ -41,6 +41,8 @@ class WaterfallConfig extends Component {
 
           return (
             <Card
+              size="small"
+              bodyStyle={{ width: 324, height: 424 }}
               title="Waterfall Config"
               extra={
                 <Icon

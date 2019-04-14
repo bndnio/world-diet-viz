@@ -307,6 +307,7 @@ class Waterfall extends Component {
     return (
       <Card
         size="small"
+        bodyStyle={{ width: 324, height: 424 }}
         title={`${country} - ${MacroNameMap[group]}`}
         extra={
           <div className="vizMenuExtra">

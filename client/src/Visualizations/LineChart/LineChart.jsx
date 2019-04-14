@@ -447,6 +447,7 @@ class LineChart extends React.Component {
     return (
       <Card
         size="small"
+        bodyStyle={{ width: 824, height: 413 }}
         title="Life Expectancy v. Total kCal Consumption"
         extra={
           <Selector
