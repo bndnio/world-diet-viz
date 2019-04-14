@@ -51,7 +51,7 @@ export default class DataProvider extends React.Component {
       .query({
         query: gql`
           {
-            itemByYearCountry(
+            diets(
               ${years.length > 0 ? `years:${JSON.stringify(years)}, ` : ''}
               ${
                 countries.length > 0

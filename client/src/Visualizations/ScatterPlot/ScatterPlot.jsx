@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { Query } from 'react-apollo';
 import * as d3 from 'd3';
 import { Card } from 'antd';
 import { withData } from '../../Contexts/DataContext/withData';
@@ -143,13 +145,7 @@ class DataCircles extends React.Component {
           cy={this.props.yScale(coords[3])}
           r={this.getCircleRadius(coords[4])}
           key={index}
-          //fill={this.props.color}
           fill={this.state.hovered === index ? 'red' : this.props.color}
-          //onMouseDown={function() {d3.select('circle').attr('fill', 'red')}}        // selects the first circle element
-          //onMouseDown={function() {d3.selectAll('circle').attr('fill', 'red')}}     // selects all circle element
-          //onMouseDown={function() {d3.select(this).attr('fill', 'red')}}            // doesn't work, but I feel like it should
-          //onMouseOver={function() {console.log('Hovering')}}
-          //onMouseOut={function() {console.log('Done hovering')}}
           onMouseOver={() => this.setState({ hovered: index })}
           onMouseOut={() => this.setState({ hovered: undefined })}
         />
@@ -180,14 +176,14 @@ class ScatterGraph extends React.Component {
   getXScale() {
     return d3
       .scaleLinear()
-      .domain([2000, 2350]) // When data begins, ends
+      .domain(this.props.xRange) // When data begins, ends
       .range([this.props.padding, this.props.width - this.props.padding / 2]);
   }
 
   getDataYScale() {
     return d3
       .scaleLinear()
-      .domain([50, 100])
+      .domain(this.props.yRange)
       .range([this.props.height - this.props.padding, this.props.padding / 2]);
   }
 
@@ -251,9 +247,32 @@ class ScatterPlotViz extends Component {
   }
 
   render() {
+    const GET_GROUP_OPTIONS = gql`
+      {
+        kcalRange
+        lifeExpsRange
+      }
+    `;
+
     return (
       <Card size="small" title="Life Expectancy v. Total kcal">
-        <ScatterGraph data={this.state.data} {...settings} />
+        <Query query={GET_GROUP_OPTIONS}>
+          {({ loading, error, data }) => {
+            if (loading) return 'Loading...';
+            if (error)
+              console.log('Error loading gql data for WaterfallConfig');
+
+            const { kcalRange, lifeExpsRange } = data;
+            return (
+              <ScatterGraph
+                data={this.state.data}
+                xRange={[kcalRange.min, kcalRange.max]}
+                yRange={[lifeExpsRange.min, lifeExpsRange.max]}
+                {...settings}
+              />
+            );
+          }}
+        </Query>
       </Card>
     );
   }
