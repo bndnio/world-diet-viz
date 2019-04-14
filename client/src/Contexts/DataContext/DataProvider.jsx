@@ -42,6 +42,11 @@ export default class DataProvider extends React.Component {
   getData = () => {
     const { years, countries, type } = this.state.queryParams;
     this.setState(state => ({ loading: state.loading + 1 }));
+
+    if (years.length === 0 || countries.length === 0) {
+      return this.setData([]);
+    }
+
     this.client
       .query({
         query: gql`
