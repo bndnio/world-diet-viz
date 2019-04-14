@@ -18,44 +18,30 @@ class YearSelector extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      value: this.props.interaction.fields.availableYears[0],
-    };
+    this.props.interaction.setFields({
+      selectedYear: this.props.interaction.fields.availableYears[0],
+    });
   }
 
   componentDidUpdate(prevProps) {
     const { selectedYear, availableYears } = this.props.interaction.fields;
-    if (prevProps.interaction.fields.selectedYear !== selectedYear) {
-      this.setState({
-        value: selectedYear,
-      });
-    }
+
     if (availableYears[0] > selectedYear) {
-      this.setState({
-        value: availableYears[0],
-      });
-      this.handleRelease(availableYears[0]);
+      this.handleChange(availableYears[0]);
     }
     if (availableYears[availableYears.length - 1] < selectedYear) {
-      this.setState({
-        value: availableYears[availableYears.length - 1],
-      });
-      this.handleRelease(availableYears[availableYears.length - 1]);
+      this.handleChange(availableYears[availableYears.length - 1]);
     }
   }
 
   handleChange = value => {
-    this.setState({ value });
-  };
-
-  handleRelease = value => {
     this.props.interaction.setFields({
       selectedYear: value,
     });
   };
 
   render() {
-    const { availableYears } = this.props.interaction.fields;
+    const { availableYears, selectedYear } = this.props.interaction.fields;
     const min = availableYears[0];
     const max = availableYears[availableYears.length - 1];
 
@@ -66,7 +52,7 @@ class YearSelector extends Component {
         marks={{ [min]: min, [max]: max }}
         onChange={this.handleChange}
         onAfterChange={this.handleRelease}
-        value={this.state.value}
+        value={selectedYear || min}
         style={{ width: 100 }}
         disabled={this.props.disabled}
       />
