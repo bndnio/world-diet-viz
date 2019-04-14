@@ -24,7 +24,17 @@ const typeDefs = gql`
     max: Int!
   }
 
-  type Item {
+  type YearCountriesDiet {
+    year: Int!
+    countries: [CountryDiet!]!
+  }
+
+  type CountryDiet {
+    country: String!
+    items: [Diet]!
+  }
+
+  type Diet {
     country: String!
     year: Int!
     type: Group!
@@ -32,32 +42,45 @@ const typeDefs = gql`
     value: Float!
   }
 
-  type CountryItem {
-    country: String!
-    items: [Item!]!
+  type YearCountriesLifeExp {
+    year: Int!
+    countries: [CountryLifeExp!]!
   }
 
-  type YearCountries {
+  type CountryLifeExp {
+    country: String!
+    items: [LifeExp!]!
+  }
+
+  type LifeExp {
+    country: String!
     year: Int!
-    countries: [CountryItem!]!
+    value: Float
   }
 
   # The "Query" type is the root of all GraphQL queries.
   # (A "Mutation" type will be covered later on.)
   type Query {
-    itemByYearCountry(
+    diets(
       years: [Int!]
       countries: [String!]
       type: Group
-    ): [YearCountries!]
+    ): [YearCountriesDiet!]
+
+    lifeExpectancies(
+      years: [Int!]
+      countries: [String!]
+    ): [YearCountriesLifeExp!]
+
     countries: [String!]!
     yearRange: Range!
     kcalRange: Range!
+    lifeExpRange: Range!
     names(type: Group): [String!]!
   }
 `;
 
-const aggregateItemByYearCountry = res => {
+const aggregateItemByYearCountry = itemFunc => res => {
   const { rows } = res;
   const yearGrouped = rows.reduce(
     (acc, row) => ({
@@ -66,13 +89,7 @@ const aggregateItemByYearCountry = res => {
         ...(acc[row.year] || {}),
         [row.country]: [
           ...((acc[row.year] && acc[row.year][row.country]) || []),
-          {
-            country: row.country,
-            year: row.year,
-            type: row.type,
-            name: row.name,
-            value: row.value,
-          },
+          itemFunc(row),
         ],
       },
     }),
@@ -88,7 +105,15 @@ const aggregateItemByYearCountry = res => {
   return output;
 };
 
-const buildQueryStr = ({ countries = [], years = [], type = '' }) =>
+const dietItemFunc = row => ({
+  country: row.country,
+  year: row.year,
+  type: row.type,
+  name: row.name,
+  value: row.value,
+});
+
+const buildDietsQueryStr = ({ countries = [], years = [], type = '' }) =>
   [
     `SELECT DISTINCT country, year, type, name, value FROM diet`,
     countries.length > 0 ? `WHERE ( country='${countries[0]}'` : '',
@@ -104,7 +129,31 @@ const buildQueryStr = ({ countries = [], years = [], type = '' }) =>
     countries.length === 0 && years.length === 0 && !!type ? `WHERE` : '',
     (countries.length > 0 || years.length > 0) && !!type ? `AND` : '',
     !!type ? `type='${type}'` : '',
+    `ORDER BY country, year;`,
+  ]
+    .flat()
+    .join(' ');
 
+const lifeExpsItemFunc = row =>
+  console.log(row) || {
+    country: row.country,
+    year: row.year,
+    value: row.value || null,
+  };
+
+const buildLifeExpsQueryStr = ({ countries = [], years = [] }) =>
+  [
+    `SELECT DISTINCT country, year, life_expectancy as value FROM life_expectancy`,
+    countries.length > 0 ? `WHERE ( country='${countries[0]}'` : '',
+    countries.length > 1
+      ? countries.slice(1).map(c => `OR country='${c}'`)
+      : '',
+    countries.length > 0 ? `)` : '',
+    countries.length > 0 && years.length > 0 ? `AND` : '',
+    countries.length === 0 && years.length > 0 ? `WHERE` : '',
+    years.length > 0 ? `( year=${years[0]}` : '',
+    years.length > 1 ? years.slice(1).map(y => `OR year=${y}`) : '',
+    years.length > 0 ? `)` : '',
     `ORDER BY country, year;`,
   ]
     .flat()
@@ -114,8 +163,16 @@ const buildQueryStr = ({ countries = [], years = [], type = '' }) =>
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    itemByYearCountry: (parent, args) =>
-      runQuery(buildQueryStr(args), aggregateItemByYearCountry),
+    diets: (parent, args) =>
+      runQuery(
+        buildDietsQueryStr(args),
+        aggregateItemByYearCountry(dietItemFunc)
+      ),
+    lifeExpectancies: (parent, args) =>
+      runQuery(
+        buildLifeExpsQueryStr(args),
+        aggregateItemByYearCountry(lifeExpsItemFunc)
+      ),
     countries: () =>
       runQuery(`SELECT DISTINCT country FROM diet ORDER BY country ASC`, res =>
         res.rows.map(r => r.country)
