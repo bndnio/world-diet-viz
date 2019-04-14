@@ -12,8 +12,7 @@ class WaterfallContainer extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    if (prevProps.data.data.diets !== this.props.data.data.diets)
-      this.filterData();
+    if (prevProps.data.data !== this.props.data.data) this.filterData();
   }
 
   toggleView = () => {
@@ -29,7 +28,7 @@ class WaterfallContainer extends Component {
     const { country, group } = this.state;
     let nextData = [];
     if (!!country && !!group) {
-      nextData = this.props.data.data.diets.map(d => [
+      nextData = this.props.data.data.map(d => [
         d.year,
         d.countries
           .filter(c => c.country === country)[0]

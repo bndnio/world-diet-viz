@@ -10,10 +10,7 @@ export default class DataProvider extends React.Component {
     this.state = {
       setDate: this.setData,
       setQuery: this.setQuery,
-      data: {
-        diets: [],
-        lifeExps: [],
-      },
+      data: [],
       queryParams: {
         type: 'MACRO',
         countries: [],
@@ -54,7 +51,7 @@ export default class DataProvider extends React.Component {
       .query({
         query: gql`
           {
-            diets(
+            alls(
               ${years.length > 0 ? `years:${JSON.stringify(years)}, ` : ''}
               ${
                 countries.length > 0
@@ -73,37 +70,14 @@ export default class DataProvider extends React.Component {
                   type
                   name
                   value
-                }
-              }
-            }
-            lifeExps(
-              ${years.length > 0 ? `years:${JSON.stringify(years)}, ` : ''}
-              ${
-                countries.length > 0
-                  ? `countries:${JSON.stringify(countries)}, `
-                  : ''
-              }
-            )
-              {
-              year
-              countries {
-                country
-                items {
-                  country
-                  year
-                  value
+                  lifeExp
                 }
               }
             }
           }
         `,
       })
-      .then(result =>
-        this.setData({
-          diets: result.data.diets || [],
-          lifeExps: result.data.lifeExps || [],
-        })
-      )
+      .then(result => this.setData(result.data.alls || []))
       .catch(err => console.log(err));
   };
 

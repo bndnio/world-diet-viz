@@ -340,7 +340,7 @@ class LineChart extends React.Component {
     const { selectedCountry } = this.props.interaction.fields;
     let nextData = [];
     if (!!selectedCountry) {
-      nextData = this.props.data.data.diets.map(d => [
+      nextData = this.props.data.data.map(d => [
         d.year,
         d.countries
           .filter(c => c.country === selectedCountry)[0]
