@@ -7,8 +7,8 @@ import { withData } from '../../Contexts/DataContext/withData';
 import './ScatterPlot.css';
 
 const settings = {
-  width: 1000,
-  height: 300,
+  width: 500,
+  height: 400,
   padding: 50,
 };
 
@@ -93,15 +93,14 @@ class XYAxis extends React.Component {
     return (
       <g className="LE-xy-axis">
         <XAxis
-          translate={`translate(0, ${this.props.height -
-            (this.props.padding * 2) / 3})`}
+          translate={`translate(0, ${this.props.height - this.props.padding})`}
           scale={this.props.xScale}
         />
         <text
           className="axis"
           textAnchor="middle"
           transform={`translate(${settings.width / 2 -
-            this.props.padding / 2}, ${settings.height - 5})`}
+            this.props.padding / 2}, ${settings.height - 10})`}
         >
           [Total KCals]
         </text>
@@ -182,14 +181,14 @@ class ScatterGraph extends React.Component {
     return d3
       .scaleLinear()
       .domain([2000, 2350]) // When data begins, ends
-      .range([this.props.padding, this.props.width - this.props.padding * 2]);
+      .range([this.props.padding, this.props.width - this.props.padding / 2]);
   }
 
   getDataYScale() {
     return d3
       .scaleLinear()
       .domain([50, 100])
-      .range([this.props.height - this.props.padding, this.props.padding]);
+      .range([this.props.height - this.props.padding, this.props.padding / 2]);
   }
 
   render() {
@@ -213,24 +212,8 @@ class ScatterGraph extends React.Component {
 
 class ScatterPlotViz extends Component {
   static propTypes = {
-    settings: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      padding: PropTypes.number,
-      numDataPoints: PropTypes.number,
-      maxRange: PropTypes.func,
-    }),
     xScale: PropTypes.func,
     yScale: PropTypes.func,
-  };
-  static defaultProps = {
-    settings: {
-      width: 350,
-      height: 350,
-      padding: 30,
-      numDataPoints: 50,
-      maxRange: () => Math.random() * 1000,
-    },
   };
 
   componentWillMount() {
@@ -269,7 +252,7 @@ class ScatterPlotViz extends Component {
 
   render() {
     return (
-      <Card title="Life Expectancy vs Total KCal">
+      <Card size="small" title="Life Expectancy v. Total kcal">
         <ScatterGraph data={this.state.data} {...settings} />
       </Card>
     );

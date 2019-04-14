@@ -41,15 +41,13 @@ class WaterfallConfig extends Component {
 
           return (
             <Card
-              title={
-                <div className="vizMenuBar">
-                  <span>Waterfall Config</span>
-                  <Icon
-                    type="close"
-                    theme="outlined"
-                    onClick={this.props.handleClose}
-                  />
-                </div>
+              title="Waterfall Config"
+              extra={
+                <Icon
+                  type="close"
+                  theme="outlined"
+                  onClick={this.props.handleClose}
+                />
               }
               loading={loading}
             >

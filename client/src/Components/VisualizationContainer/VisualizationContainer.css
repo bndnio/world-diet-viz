@@ -9,18 +9,13 @@
 .dashboard {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .dashboard > * {
   margin: 0.5rem;
 }
 
-.vizMenuBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.vizMenuBarGroup > * {
+.vizMenuExtra > * {
   margin-left: 1rem;
 }
