@@ -16,16 +16,18 @@ class YearSelector extends Component {
     }).isRequired,
   };
 
-  constructor(props) {
-    super(props);
-    this.props.interaction.setFields({
-      selectedYear: this.props.interaction.fields.availableYears[0],
-    });
+  componentDidUpdate(prevProps) {
+    this.catchOutOfBoundsYear();
   }
 
-  componentDidUpdate(prevProps) {
+  catchOutOfBoundsYear() {
     const { selectedYear, availableYears } = this.props.interaction.fields;
 
+    if (!selectedYear && availableYears.length > 0) {
+      this.props.interaction.setFields({
+        selectedYear: availableYears[0],
+      });
+    }
     if (availableYears[0] > selectedYear) {
       this.handleChange(availableYears[0]);
     }

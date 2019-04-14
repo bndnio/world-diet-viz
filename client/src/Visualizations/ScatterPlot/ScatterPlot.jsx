@@ -233,10 +233,14 @@ class ScatterPlotViz extends Component {
 
   processData() {
     // each datapoint in form of [Country, year, total KCals, LifeExpect, population]
-    const { availableCountries } = this.props.interaction.fields;
+    const { availableCountries, selectedYear } = this.props.interaction.fields;
     let nextData = [];
 
-    if (this.props.data.data.length !== 0 && availableCountries.length !== 0) {
+    if (
+      this.props.data.data.length !== 0 &&
+      availableCountries.length !== 0 &&
+      !!selectedYear
+    ) {
       nextData = this.props.data.data
         .map(d => [
           d.year,
