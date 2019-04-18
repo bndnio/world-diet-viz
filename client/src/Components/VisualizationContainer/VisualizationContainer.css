@@ -1,24 +1,27 @@
+.sidebar {
+  max-width: 250px !important;
+  flex: 0 0 250px !important;
+  padding: 1rem;
+}
+
 .sidebar > .ant-layout-sider-children {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1rem;
-  max-width: 250px !important;
-  flex: 0 0 250px !important;
 }
 
-.sidebar i {
+.sidebar .anticon-github {
   align-items: flex-start;
   font-size: 30px;
   height: 35px;
   text-align: left;
 }
 
-.sidebar svg {
+.sidebar anticon-github svg {
   transition: all 0.4s ease;
 }
 
-.sidebar svg:hover {
+.sidebar anticon-github svg:hover {
   color: #91d5ff;
 }
 
