@@ -28,16 +28,21 @@ class VisualizationContainer extends Component {
   render() {
     return (
       <Layout style={{ height: '100vh' }}>
-        <Sider theme="light" className="sideBar">
-          <h1 className="App-title">Nutrition InfoViz</h1>
-          <CountryPicker />
-          <YearRangeSlider />
-          <PresetButton
-            countries={['Canada', 'Afghanistan', 'Mexico']}
-            yearRange={[1990, 2000]}
-          >
-            Preset 1
-          </PresetButton>
+        <Sider theme="light" className="sidebar">
+          <div className="sidebarContent">
+            <h1 className="App-title">Nutrition InfoViz</h1>
+            <CountryPicker />
+            <YearRangeSlider />
+            <PresetButton
+              countries={['Canada', 'Afghanistan', 'Mexico']}
+              yearRange={[1990, 2000]}
+            >
+              Preset 1
+            </PresetButton>
+          </div>
+          <a target="_blank" href="https://github.com/bndnio/world-diet-viz">
+            <Icon type="github" theme="outlined" />
+          </a>
         </Sider>
         <Content className="dashboard">
           <ScatterPlot />

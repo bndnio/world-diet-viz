@@ -1,9 +1,34 @@
-.sideBar {
+.sidebar > .ant-layout-sider-children {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   padding: 1rem;
   max-width: 250px !important;
   flex: 0 0 250px !important;
+}
+
+.sidebar i {
+  align-items: flex-start;
+  font-size: 30px;
+  height: 35px;
+  text-align: left;
+}
+
+.sidebar svg {
+  transition: all 0.4s ease;
+}
+
+.sidebar svg:hover {
+  color: #91d5ff;
+}
+
+.sidebarContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarContent > h1 {
+  margin: 0 -1rem;
 }
 
 .dashboard {
