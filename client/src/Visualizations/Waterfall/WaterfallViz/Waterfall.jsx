@@ -354,7 +354,7 @@ class Waterfall extends Component {
           interaction={this.props.interaction}
           settings={{
             ...settings,
-            numDataPoints: this.state.data.length + 1,
+            numDataPoints: this.state.data.length,
             mode: this.state.mode,
           }}
         />

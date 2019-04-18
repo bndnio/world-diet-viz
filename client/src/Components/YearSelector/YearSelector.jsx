@@ -43,7 +43,11 @@ class YearSelector extends Component {
   };
 
   render() {
-    const { availableYears, selectedYear } = this.props.interaction.fields;
+    const {
+      availableYears,
+      selectedYear,
+      hoveredYear,
+    } = this.props.interaction.fields;
     const min = availableYears[0];
     const max = availableYears[availableYears.length - 1];
 
@@ -54,7 +58,7 @@ class YearSelector extends Component {
         marks={{ [min]: min, [max]: max }}
         onChange={this.handleChange}
         onAfterChange={this.handleRelease}
-        value={selectedYear || min}
+        value={hoveredYear || selectedYear || min}
         style={{ width: 100 }}
         disabled={this.props.disabled}
       />

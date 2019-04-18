@@ -228,7 +228,9 @@ class ScatterPlotViz extends Component {
       prevProps.interaction.fields.availableCountries !==
         this.props.interaction.fields.availableCountries ||
       prevProps.interaction.fields.selectedYear !==
-        this.props.interaction.fields.selectedYear
+        this.props.interaction.fields.selectedYear ||
+      prevProps.interaction.fields.hoveredYear !==
+        this.props.interaction.fields.hoveredYear
     ) {
       this.processData();
     }
@@ -236,7 +238,11 @@ class ScatterPlotViz extends Component {
 
   processData() {
     // each datapoint in form of [Country, year, total KCals, LifeExpect, population]
-    const { availableCountries, selectedYear } = this.props.interaction.fields;
+    const {
+      availableCountries,
+      selectedYear,
+      hoveredYear,
+    } = this.props.interaction.fields;
     let nextData = [];
 
     if (
@@ -260,8 +266,8 @@ class ScatterPlotViz extends Component {
               )
             ),
         ])
-        .filter(
-          yr => yr[0] === this.props.interaction.fields.selectedYear
+        .filter(yr =>
+          !!hoveredYear ? yr[0] === hoveredYear : yr[0] === selectedYear
         )[0][1]
         .map(c => [c.country, c.year, c['Grand Total'], c.lifeExp]);
     }
