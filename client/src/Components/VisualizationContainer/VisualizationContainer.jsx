@@ -40,7 +40,11 @@ class VisualizationContainer extends Component {
               Preset 1
             </PresetButton>
           </div>
-          <a target="_blank" href="https://github.com/bndnio/world-diet-viz">
+          <a
+            target="_blank"
+            href="https://github.com/bndnio/world-diet-viz"
+            rel="noopener noreferrer"
+          >
             <Icon type="github" theme="outlined" />
           </a>
         </Sider>
