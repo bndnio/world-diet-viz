@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 import { Card, Icon } from 'antd';
 import MacroNameMap from '../../../Modules/MacroNameMap';
+import { withInteraction } from '../../../Contexts/InteractionContext/withInteraction';
 
 import './Waterfall.css';
 
@@ -131,16 +132,39 @@ class DataRectangles extends React.Component {
     }
 
     return (
-      <rect
-        x={x}
-        y={this.props.yScale(coord.year)}
-        width={width}
-        height={
-          (settings.height - settings.padding * 2) / settings.numDataPoints
+      <g
+        onMouseEnter={() =>
+          this.props.interaction.setFields({ hoveredYear: coord.year })
         }
-        className={coord.xDiff > 0 ? 'goodBar' : 'badBar'}
-        key={Math.random() * 1}
-      />
+        onMouseLeave={() =>
+          this.props.interaction.setFields({ hoveredYear: null })
+        }
+      >
+        <rect
+          x={settings.padding}
+          y={this.props.yScale(coord.year)}
+          width={settings.width - settings.padding * 2}
+          height={
+            (settings.height - settings.padding * 2) / settings.numDataPoints
+          }
+          className={
+            this.props.interaction.fields.hoveredYear === coord.year
+              ? 'hoverBar'
+              : ''
+          }
+          key={Math.random() * 1}
+        />
+        <rect
+          x={x}
+          y={this.props.yScale(coord.year)}
+          width={width}
+          height={
+            (settings.height - settings.padding * 2) / settings.numDataPoints
+          }
+          className={coord.xDiff > 0 ? 'goodBar' : 'badBar'}
+          key={Math.random() * 1}
+        />
+      </g>
     );
   };
 
@@ -327,6 +351,7 @@ class Waterfall extends Component {
       >
         <WaterfallPlot
           data={this.state.data}
+          interaction={this.props.interaction}
           settings={{
             ...settings,
             numDataPoints: this.state.data.length + 1,
@@ -338,4 +363,4 @@ class Waterfall extends Component {
   }
 }
 
-export default Waterfall;
+export default withInteraction(Waterfall);
