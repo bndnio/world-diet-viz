@@ -26,7 +26,8 @@ class CountryPicker extends Component {
       <Query query={GET_COUNTRIES}>
         {({ loading, error, data }) => {
           if (loading) return 'Loading...';
-          if (error) console.log('Error loading gql data for CountryPicker');
+          if (error)
+            return console.log('Error loading gql data for CountryPicker');
           const { countries } = data;
 
           return (

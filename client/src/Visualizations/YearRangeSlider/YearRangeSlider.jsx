@@ -91,7 +91,9 @@ class YearRangeSliderContainer extends Component {
         {({ loading, error, data }) => {
           if (loading) return 'Loading...';
           if (error)
-            console.log('Error loading gql data for YearRangeSliderContainer');
+            return console.log(
+              'Error loading gql data for YearRangeSliderContainer'
+            );
           const { min, max } = data.yearRange;
 
           return <YearRangeSlider {...this.props} min={min} max={max} />;

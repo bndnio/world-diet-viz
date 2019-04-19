@@ -305,7 +305,9 @@ class ScatterPlotViz extends Component {
             {({ loading, error, data }) => {
               if (loading || this.props.data.loading) return 'Loading...';
               if (error)
-                console.log('Error loading gql data for WaterfallConfig');
+                return console.log(
+                  'Error loading gql data for WaterfallConfig'
+                );
 
               const { kcalRange, lifeExpRange } = data;
               return (
