@@ -164,6 +164,34 @@ class Line extends React.Component {
   }
 }
 
+class InteractionLine extends React.Component {
+  static propTypes = {
+    xScale: PropTypes.func.isRequired,
+  };
+
+  render() {
+    const { xScale } = this.props;
+    const { hoveredYear, selectedYear } = this.props.interaction.fields;
+
+    const renderYear = hoveredYear || selectedYear;
+
+    if (!renderYear) return null;
+
+    return (
+      <g>
+        <line
+          x1={xScale(renderYear)}
+          y1={settings.height - settings.padding}
+          x2={xScale(renderYear)}
+          y2={settings.padding / 2}
+          strokeWidth={1}
+          stroke="gray"
+        />
+      </g>
+    );
+  }
+}
+
 // To be used later with interaction
 // class DataCircles extends React.Component {
 //   static propTypes = {
@@ -315,6 +343,7 @@ class LineGraph extends React.Component {
           otherYScale={yLifeExpScale}
           {...this.props}
         />
+        <InteractionLine xScale={xScale} {...this.props} />
       </svg>
     );
   }
@@ -475,7 +504,8 @@ class LineChart extends React.Component {
         <Query query={GET_YEAR_RANGE}>
           {({ loading, error, data }) => {
             if (loading || this.props.data.loading) return 'Loading...';
-            if (error) console.log('Error loading gql data for LineChart');
+            if (error)
+              return console.log('Error loading gql data for LineChart');
             const { max } = data.kcalRange;
 
             if (!this.props.interaction.fields.selectedCountry)
