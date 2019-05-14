@@ -10,7 +10,7 @@ We found that there was no real correlation. However, this in itself is interest
 
 ### Screenshots
 
-![screenshot](/Users/brnd/repo/world-diet-viz/imgs/screenshot.png)
+![screenshot](./imgs/screenshot.png)
 
 ### Process
 
